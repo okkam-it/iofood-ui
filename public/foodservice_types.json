@@ -1,0 +1,359 @@
+[
+  {
+    "id": 1,
+    "name": [
+      {
+        "value": "Ristorante",
+        "language": "it"
+      },
+      {
+        "value": "Restaurant",
+        "language": "en"
+      },
+      {
+        "value": "Restaurant",
+        "language": "de"
+      },
+      {
+        "value": "Restaurant",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": [
+      {
+        "value": "Trattoria",
+        "language": "it"
+      },
+      {
+        "value": "Tavern",
+        "language": "en"
+      },
+      {
+        "value": "Trattoria",
+        "language": "de"
+      },
+      {
+        "value": "Bistrot",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": [
+      {
+        "value": "Mensa",
+        "language": "it"
+      },
+      {
+        "value": "Canteen",
+        "language": "en"
+      },
+      {
+        "value": "Kantine",
+        "language": "de"
+      },
+      {
+        "value": "Cantine",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": [
+      {
+        "value": "Catering",
+        "language": "it"
+      },
+      {
+        "value": "Catering",
+        "language": "en"
+      },
+      {
+        "value": "Catering",
+        "language": "de"
+      },
+      {
+        "value": "Catering",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": [
+      {
+        "value": "Albergo",
+        "language": "it"
+      },
+      {
+        "value": "Hotel",
+        "language": "en"
+      },
+      {
+        "value": "Hotel",
+        "language": "de"
+      },
+      {
+        "value": "Auberge",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": [
+      {
+        "value": "Bed & Breakfast",
+        "language": "it"
+      },
+      {
+        "value": "Bed & Breakfast",
+        "language": "en"
+      },
+      {
+        "value": "Bed & Breakfast",
+        "language": "de"
+      },
+      {
+        "value": "Bed & Breakfast",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": [
+      {
+        "value": "Panificio",
+        "language": "it"
+      },
+      {
+        "value": "Bakery",
+        "language": "en"
+      },
+      {
+        "value": "Bäckerei",
+        "language": "de"
+      },
+      {
+        "value": "Boulangerie",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": [
+      {
+        "value": "Pasticceria",
+        "language": "it"
+      },
+      {
+        "value": "Pastry shop",
+        "language": "en"
+      },
+      {
+        "value": "Konditorei",
+        "language": "de"
+      },
+      {
+        "value": "Pattiserie",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": [
+      {
+        "value": "Gelateria",
+        "language": "it"
+      },
+      {
+        "value": "Ice-cream shop",
+        "language": "en"
+      },
+      {
+        "value": "Eisladen",
+        "language": "de"
+      },
+      {
+        "value": "Glacerie",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": [
+      {
+        "value": "Pizza al taglio",
+        "language": "it"
+      },
+      {
+        "value": "Pizza takeaway",
+        "language": "en"
+      },
+      {
+        "value": "Pizza in Stücken",
+        "language": "de"
+      },
+      {
+        "value": "Pizza à la coupe",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": [
+      {
+        "value": "Gastronomia",
+        "language": "it"
+      },
+      {
+        "value": "Deli",
+        "language": "en"
+      },
+      {
+        "value": "Gastronomie",
+        "language": "de"
+      },
+      {
+        "value": "Gastronomie",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": [
+      {
+        "value": "Bar/Pub",
+        "language": "it"
+      },
+      {
+        "value": "Pub",
+        "language": "en"
+      },
+      {
+        "value": "Lokal",
+        "language": "de"
+      },
+      {
+        "value": "Bar/Pub",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": [
+      {
+        "value": "Pizzeria",
+        "language": "it"
+      },
+      {
+        "value": "Pizzeria",
+        "language": "en"
+      },
+      {
+        "value": "Pizzeria",
+        "language": "de"
+      },
+      {
+        "value": "Pizzeria",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": [
+      {
+        "value": "Ristorante/Pizzeria",
+        "language": "it"
+      },
+      {
+        "value": "Restaurant/Pizzeria",
+        "language": "en"
+      },
+      {
+        "value": "Restaurant/Pizzeria",
+        "language": "de"
+      },
+      {
+        "value": "Restaurant/Pizzeria",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "name": [
+      {
+        "value": "Enoteca",
+        "language": "it"
+      },
+      {
+        "value": "Wine Shop",
+        "language": "en"
+      },
+      {
+        "value": "Weinladen",
+        "language": "de"
+      },
+      {
+        "value": "Cave à Vins ",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": [
+      {
+        "value": "Ristorante di Pesce",
+        "language": "it"
+      },
+      {
+        "value": "Seafood Restaurant",
+        "language": "en"
+      },
+      {
+        "value": "Fischrestaurant",
+        "language": "de"
+      },
+      {
+        "value": "Restaurant de Fruits de Mer ",
+        "language": "fr"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "name": [
+      {
+        "value": "Food Truck",
+        "language": "it"
+      },
+      {
+        "value": "Food Truck",
+        "language": "en"
+      },
+      {
+        "value": "Food Truck",
+        "language": "de"
+      },
+      {
+        "value": "Food Truck",
+        "language": "fr"
+      }
+    ]
+  }
+]

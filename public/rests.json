@@ -1,0 +1,442 @@
+[
+  {
+    "id": 3,
+    "name": "Ristorante Pizzeria Alla Torre",
+    "description": null,
+    "coverImage": "rist_demo_2.png",
+    "logo": "alla_torre4362751832324939333802614087157342970.png",
+    "coverImageUrl": null,
+    "logoUrl": "https://myfood-api.okkam.org/images/io-food/restaurant_fngk9m3-l4b9rq0-29de85j-pgsdp6b/logo/alla_torre4362751832324939333802614087157342970.png",
+    "okkamId": "fngk9m3-l4b9rq0-29de85j-pgsdp6b",
+    "verified": false,
+    "type": {
+      "id": 15,
+      "name": [
+        {
+          "value": "Enoteca",
+          "language": "it"
+        },
+        {
+          "value": "Wine Shop",
+          "language": "en"
+        },
+        {
+          "value": "Weinladen",
+          "language": "de"
+        },
+        {
+          "value": "Cave à Vins ",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.06234381",
+      "lng": "11.15411679"
+    }
+  },
+  {
+    "id": 4,
+    "name": "Altamarea Enoteca Bistrot ",
+    "description": null,
+    "coverImage": "rist_demo_3.jpeg",
+    "logo": "altamarea69033285809157211047101307059725087901.png",
+    "coverImageUrl": null,
+    "logoUrl": "https://myfood-api.okkam.org/images/io-food/restaurant_usgaj9i-gdse555-6dg3r8q-lbcfsjn/logo/altamarea69033285809157211047101307059725087901.png",
+    "okkamId": "usgaj9i-gdse555-6dg3r8q-lbcfsjn",
+    "verified": false,
+    "type": {
+      "id": 1,
+      "name": [
+        {
+          "value": "Ristorante",
+          "language": "it"
+        },
+        {
+          "value": "Restaurant",
+          "language": "en"
+        },
+        {
+          "value": "Restaurant",
+          "language": "de"
+        },
+        {
+          "value": "Restaurant",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.07273982",
+      "lng": "11.1125584"
+    }
+  },
+  {
+    "id": 5,
+    "name": "Bar Ristorantino Tecla alle Gru",
+    "description": null,
+    "coverImage": "rist_demo.png",
+    "logo": "tecla_alle_gru6810522449157293890704073554675728964.png",
+    "coverImageUrl": null,
+    "logoUrl": "https://myfood-api.okkam.org/images/io-food/restaurant_r3vu69i-p3os3em-95j2dto-betvr1c/logo/tecla_alle_gru6810522449157293890704073554675728964.png",
+    "okkamId": "r3vu69i-p3os3em-95j2dto-betvr1c",
+    "verified": false,
+    "type": {
+      "id": 2,
+      "name": [
+        {
+          "value": "Trattoria",
+          "language": "it"
+        },
+        {
+          "value": "Tavern",
+          "language": "en"
+        },
+        {
+          "value": "Trattoria",
+          "language": "de"
+        },
+        {
+          "value": "Bistrot",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.05858682",
+      "lng": "11.13690423"
+    }
+  },
+  {
+    "id": 6,
+    "name": "Chiosco Skipper ",
+    "description": null,
+    "coverImage": "rist_demo_4.jpeg",
+    "logo": null,
+    "coverImageUrl": null,
+    "logoUrl": null,
+    "okkamId": "er7l2sc-dbq1m40-17m2j9o-oa4vcck",
+    "verified": false,
+    "type": {
+      "id": 1,
+      "name": [
+        {
+          "value": "Ristorante",
+          "language": "it"
+        },
+        {
+          "value": "Restaurant",
+          "language": "en"
+        },
+        {
+          "value": "Restaurant",
+          "language": "de"
+        },
+        {
+          "value": "Restaurant",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.0785331",
+      "lng": "11.08778055"
+    }
+  },
+  {
+    "id": 7,
+    "name": "Albergo Gnan",
+    "description": null,
+    "coverImage": "rist_demo_5.jpeg",
+    "logo": "gnan-logo2318951501342766296119527361305591926.png",
+    "coverImageUrl": null,
+    "logoUrl": "https://myfood-api.okkam.org/images/io-food/restaurant_71jk4i2-jjtlc4s-i0utqdc-vbcg697/logo/gnan-logo2318951501342766296119527361305591926.png",
+    "okkamId": "71jk4i2-jjtlc4s-i0utqdc-vbcg697",
+    "verified": false,
+    "type": {
+      "id": 1,
+      "name": [
+        {
+          "value": "Ristorante",
+          "language": "it"
+        },
+        {
+          "value": "Restaurant",
+          "language": "en"
+        },
+        {
+          "value": "Restaurant",
+          "language": "de"
+        },
+        {
+          "value": "Restaurant",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.08228029",
+      "lng": "11.11206003"
+    }
+  },
+  {
+    "id": 8,
+    "name": "RISTORANTE SAN BARNABA",
+    "description": null,
+    "coverImage": "rist_demo_6.jpeg",
+    "logo": "barnaba-logo53154793654731298567701251204706901508.png",
+    "coverImageUrl": null,
+    "logoUrl": "https://myfood-api.okkam.org/images/io-food/restaurant_mq5ehu6-j5h9q7k-ejpj85t-72vbdc6/logo/barnaba-logo53154793654731298567701251204706901508.png",
+    "okkamId": "mq5ehu6-j5h9q7k-ejpj85t-72vbdc6",
+    "verified": false,
+    "type": {
+      "id": 1,
+      "name": [
+        {
+          "value": "Ristorante",
+          "language": "it"
+        },
+        {
+          "value": "Restaurant",
+          "language": "en"
+        },
+        {
+          "value": "Restaurant",
+          "language": "de"
+        },
+        {
+          "value": "Restaurant",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.05656039",
+      "lng": "11.09237941"
+    }
+  },
+  {
+    "id": 9,
+    "name": "Ristorante Pizzeria Al Progresso",
+    "description": null,
+    "coverImage": "rist_demo_7.jpeg",
+    "logo": "progresso-logo41654898029557521095525540656640604392.png",
+    "coverImageUrl": null,
+    "logoUrl": "https://myfood-api.okkam.org/images/io-food/restaurant_s2ig7uj-b4mupdh-j8m3jdf-o9dqci2/logo/progresso-logo41654898029557521095525540656640604392.png",
+    "okkamId": "s2ig7uj-b4mupdh-j8m3jdf-o9dqci2",
+    "verified": false,
+    "type": {
+      "id": 1,
+      "name": [
+        {
+          "value": "Ristorante",
+          "language": "it"
+        },
+        {
+          "value": "Restaurant",
+          "language": "en"
+        },
+        {
+          "value": "Restaurant",
+          "language": "de"
+        },
+        {
+          "value": "Restaurant",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.04740068",
+      "lng": "11.09545686"
+    }
+  },
+  {
+    "id": 10,
+    "name": "Ošterija Na Planinci",
+    "description": null,
+    "coverImage": "rist_demo_8.jpeg",
+    "logo": "logo60783465619218371357938804810283789191.png",
+    "coverImageUrl": null,
+    "logoUrl": "https://myfood-api.okkam.org/images/io-food/restaurant_bp3gvg5-6ivf8f5-612lahg-dn6o2kr/logo/logo60783465619218371357938804810283789191.png",
+    "okkamId": "bp3gvg5-6ivf8f5-612lahg-dn6o2kr",
+    "verified": false,
+    "type": {
+      "id": 1,
+      "name": [
+        {
+          "value": "Ristorante",
+          "language": "it"
+        },
+        {
+          "value": "Restaurant",
+          "language": "en"
+        },
+        {
+          "value": "Restaurant",
+          "language": "de"
+        },
+        {
+          "value": "Restaurant",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.05950767",
+      "lng": "11.15175734"
+    }
+  },
+  {
+    "id": 11,
+    "name": "Piripero",
+    "description": null,
+    "coverImage": "rist_demo_9.jpeg",
+    "logo": null,
+    "coverImageUrl": null,
+    "logoUrl": null,
+    "okkamId": "drgr44r-493f8mk-9sa8qod-9fcd7dp",
+    "verified": false,
+    "type": {
+      "id": 1,
+      "name": [
+        {
+          "value": "Ristorante",
+          "language": "it"
+        },
+        {
+          "value": "Restaurant",
+          "language": "en"
+        },
+        {
+          "value": "Restaurant",
+          "language": "de"
+        },
+        {
+          "value": "Restaurant",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.0425577",
+      "lng": "11.11747118"
+    }
+  },
+  {
+    "id": 12,
+    "name": "La Braciera",
+    "description": null,
+    "coverImage": "rist_demo_10.jpeg",
+    "logo": "la_braciera_logo60359309812767664834960997297722634122.png",
+    "coverImageUrl": null,
+    "logoUrl": "https://myfood-api.okkam.org/images/io-food/restaurant_2ibtjhk-pbkr0tb-epa0k27-1jobgrj/logo/la_braciera_logo60359309812767664834960997297722634122.png",
+    "okkamId": "2ibtjhk-pbkr0tb-epa0k27-1jobgrj",
+    "verified": false,
+    "type": {
+      "id": 15,
+      "name": [
+        {
+          "value": "Enoteca",
+          "language": "it"
+        },
+        {
+          "value": "Wine Shop",
+          "language": "en"
+        },
+        {
+          "value": "Weinladen",
+          "language": "de"
+        },
+        {
+          "value": "Cave à Vins ",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de",
+      "fr"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.07204616",
+      "lng": "11.12123478"
+    }
+  }
+]
