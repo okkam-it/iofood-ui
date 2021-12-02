@@ -1,0 +1,14 @@
+{
+    "explore_shortcuts": {
+        "allfs": "Tutti i ristoranti",
+        "pizza": "Pizza",
+        "sushi": "Sushi",
+        "poke": "Poke",
+        "hamburger": "Hamburger",
+        "traditional_cuisine": "Cucina tipica",
+        "happy_hour": "Ora dell'aperitivo?",
+        "opennow": "Aperti ora",
+        "cheap_fs": "Ristoranti economici",
+        "delivery_takeaway": "Asporto/Delivery"
+    }
+}

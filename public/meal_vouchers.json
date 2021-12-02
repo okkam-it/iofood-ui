@@ -1,0 +1,87 @@
+[
+  {
+    "id": 1,
+    "name": "E-Lunch",
+    "icon": "elunch.png"
+  },
+  {
+    "id": 2,
+    "name": "Ticket Restaurant",
+    "icon": "ticket-restaurant.png"
+  },
+  {
+    "id": 3,
+    "name": "Day",
+    "icon": "day.png"
+  },
+  {
+    "id": 4,
+    "name": "BuonChef",
+    "icon": "buonochef.png"
+  },
+  {
+    "id": 5,
+    "name": "Lunch Time",
+    "icon": "lunchtime.png"
+  },
+  {
+    "id": 6,
+    "name": "Bluticket",
+    "icon": "bluticket.png"
+  },
+  {
+    "id": 7,
+    "name": "Pellegrini Card",
+    "icon": "pellegrini-card.png"
+  },
+  {
+    "id": 8,
+    "name": "Lunch GM",
+    "icon": "ep40.png"
+  },
+  {
+    "id": 9,
+    "name": "Miglunch",
+    "icon": "mig-lunch.png"
+  },
+  {
+    "id": 10,
+    "name": "Agape",
+    "icon": "sodexo.png"
+  },
+  {
+    "id": 11,
+    "name": "City Time",
+    "icon": "citytime.png"
+  },
+  {
+    "id": 12,
+    "name": "MealTicket",
+    "icon": "meal-ticket.png"
+  },
+  {
+    "id": 13,
+    "name": "QUI! TICKET - TORNAQUI!",
+    "icon": "qui_ticket.png"
+  },
+  {
+    "id": 14,
+    "name": "Repas",
+    "icon": "repas.png"
+  },
+  {
+    "id": 15,
+    "name": "Ristomat",
+    "icon": "ristomat.png"
+  },
+  {
+    "id": 16,
+    "name": "Passlunch",
+    "icon": "pass-lunch.png"
+  },
+  {
+    "id": 17,
+    "name": "Lunch Tronic",
+    "icon": "lunchtronic.png"
+  }
+]

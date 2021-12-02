@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "code": "gluten",
+    "name": "Glutine"
+  },
+  {
+    "id": 2,
+    "code": "shellfish",
+    "name": "Crostacei"
+  },
+  {
+    "id": 3,
+    "code": "eggs",
+    "name": "Uova"
+  },
+  {
+    "id": 4,
+    "code": "fish",
+    "name": "Pesce"
+  },
+  {
+    "id": 5,
+    "code": "peanuts",
+    "name": "Arachidi"
+  },
+  {
+    "id": 6,
+    "code": "soy",
+    "name": "Soia"
+  },
+  {
+    "id": 7,
+    "code": "milk",
+    "name": "Latte"
+  },
+  {
+    "id": 8,
+    "code": "nuts",
+    "name": "Frutta a guscio"
+  },
+  {
+    "id": 9,
+    "code": "celary",
+    "name": "Sedano"
+  },
+  {
+    "id": 10,
+    "code": "mustard",
+    "name": "Senape"
+  },
+  {
+    "id": 11,
+    "code": "sesame_seeds",
+    "name": "Sesamo"
+  },
+  {
+    "id": 12,
+    "code": "sulfite",
+    "name": "Solfiti"
+  },
+  {
+    "id": 13,
+    "code": "lupins",
+    "name": "Lupini"
+  },
+  {
+    "id": 14,
+    "code": "molluscs",
+    "name": "Molluschi"
+  }
+]
