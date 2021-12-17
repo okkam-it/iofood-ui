@@ -48,14 +48,27 @@ export default {
 
         window.history.replaceState({}, document.title, clean_uri);
       } */
-      if (this.$route.hash && this.$route.hash === "#mobilemodal") {
-        this.$router.go(-1);
-      }
       this.$emit("hide");
+      this.$nextTick(() => {
+        if (this.$route.hash && this.$route.hash === "#mobilemodal") {
+          this.$router.back();
+          /* this.$router.replace({
+            name: this.$route.name,
+            params: this.$route.params
+          }); */
+        }
+      });
     }
   },
   mounted() {
-    location.hash = "mobilemodal";
+    if (!this.$route.path.includes("#mobilemodal")) {
+      this.$router.push({
+        path: this.$route.path + "#mobilemodal"
+      });
+    }
+
+    // location.hash = "mobilemodal";
+    // location.hash = "mobilemodal";
   }
 };
 </script>

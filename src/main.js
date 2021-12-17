@@ -26,9 +26,9 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
-new Vue({
-  router,
+new Vue({  
   store,
   i18n,
+  router,
   render: h => h(App)
 }).$mount("#app");

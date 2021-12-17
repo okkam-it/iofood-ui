@@ -55,7 +55,10 @@
             <div
               v-for="categoryShortcut in categoriesShortcuts"
               :key="categoryShortcut"
-              @click="goToResults(categoryShortcut)"
+              @click="goToResults([{
+                type: 'what',
+                value: [categoryShortcut]
+              }])"
             >
               <b-img
                 :src="require('@/assets/food_icons/' + categoryShortcut.toLowerCase() + '.png')"
@@ -69,7 +72,7 @@
                 {{$t("explore_shortcuts." + category.title)}}
                 <span
                   class="show-all-button"
-                  @click="goToResults(category.title)"
+                  @click="goToResults(category.filters)"
                 >
                   Vedi tutti
                   <b-icon-arrow-right />
@@ -97,7 +100,7 @@
                     </p>
                   </div>
                 </template>
-                <div class="show-all-card" @click="goToResults(category.title)">
+                <div class="show-all-card" @click="goToResults(category.filters)">
                   <p>
                     <span>
                       Vedi tutti
@@ -148,20 +151,65 @@ export default {
       foodServiceIdToShow: null,
       categoriesShortcuts: ["pizza", "sushi", "poke", "hamburger"],
       categoriesPreviews: [
-        { title: "traditional_cuisine", foodServices: [] },
-        { title: "happy_hour", foodServices: [] },
-        { title: "opennow", foodServices: [] },
-        { title: "cheap_fs", foodServices: [] },
-        { title: "delivery_takeaway", foodServices: [] }
+        {
+          title: "traditional_cuisine",
+          foodServices: [],
+          filters: [
+            {
+              type: "cuisine",
+              value: [124]
+            } /* , { type: "cuisine", value: 1 } */
+          ]
+        },
+        {
+          title: "happy_hour",
+          foodServices: [],
+          filters: [{ type: "situations", value: "Aperitivo" }]
+        },
+        {
+          title: "opennow",
+          foodServices: [],
+          filters: [{ type: "opennow", value: true }]
+        },
+        {
+          title: "cheap_fs",
+          foodServices: [],
+          filters: [{ type: "price", value: "€" }]
+        },
+        {
+          title: "delivery_takeaway",
+          foodServices: [],
+          filters: [
+            { type: "delivery", value: true },
+            { type: "takeaway", value: true }
+          ]
+        }
       ],
       foodServices: [],
       loadingHeader: true,
-      loadingContent: true
+      loadingContent: true,
+      hidingFsPage: false
     };
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.$refs.locationpicker && this.$refs.locationpicker.isOpen()) {
+      this.$refs.locationpicker.hide();
+      next(false);
+    } else {
+      next();
+    }
   },
   watch: {
     $route(to) {
       this.checkRouteState(to);
+
+      if (this.hidingFsPage) {
+        if (to.name !== "Explore") {
+          this.$router.back();
+        } else {
+          this.hidingFsPage = false;
+        }
+      }
     }
   },
   methods: {
@@ -192,13 +240,47 @@ export default {
       this.$router.push({ name: "FoodServiceExplore", params: { id: fsId } });
     },
     hideFoodServicePage() {
-      this.$router.go(-1);
+      // this.$router.go(-1);
+      // this.$router.replace({ name: "Explore", params: this.$route.params });
+      /* console.log(this.$route.query);
+      this.$router.replace({
+        name: "Explore",
+        params: this.$route.params,
+        query: this.$route.query
+      }); */
+      /* var historyLen = window.history.length;
+      for (let r in historyLen) {
+        console.log(r);
+        this.$router.go(-1);
+        if (this.$route.name === "Explore") {
+          break;
+        }
+      } */
+      console.log("back");
+      this.hidingFsPage = true;
+      this.$router.back();
     },
-    goToResults(filter) {
-      if (filter) {
+    goToResults(filters) {
+      if (filters) {
+        // let query = {};
+        const query = Object.assign({}, this.$route.query);
+        for (let filter of filters) {
+          if (Array.isArray(filter.value)) {
+            // query[filter.type] = filter.value.join(",");
+            query[filter.type] = filter.value;
+          } else {
+            query[filter.type] = filter.value;
+          }
+        }
+        /* let query = {};
+        for (let filter of filters) {
+          query[filter.type] = filter.value;
+        } */
+
+        // let query = { what: encodeURIComponent(filter.toLowerCase()) };
         this.$router.push({
           name: "Results",
-          query: { what: encodeURIComponent(filter.toLowerCase()) }
+          query
         });
       } else {
         this.$router.push({ name: "Results" });

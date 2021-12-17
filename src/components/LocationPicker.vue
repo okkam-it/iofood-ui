@@ -6,16 +6,34 @@
       </div>
       <div class="search-input-box">
         <b-icon-search scale=".8" />
-        <input
+        <!-- <input
           ref="searchinput"
           v-model="searchString"
           type="text"
           placeholder="Dove vuoi cercare?"
-        />
+          @input="debounceInput"
+        /> -->
+        <input
+            ref="searchinput"
+            :value="searchString"
+            @input="search"
+            type="text"
+            placeholder="Dove vuoi cercare?"
+          />
       </div>
       <hr />
       <div class="content">
-        <template v-if="searchString.length"></template>
+        <template v-if="searchString.length">
+          <div
+            class="item"
+            v-for="(pred, k) in predictions"
+            :key="'pred-' + k"
+            @click="findCoordinates(pred.description)"
+          >
+            <b-icon-geo-alt class="mr-2" />
+            {{pred.description}}
+          </div>
+        </template>
         <template v-else>
           <div class="item" @click="setCurrentLocation()">
             <b-icon-cursor-fill class="mr-3 cursor-icon" scale="1.3" />
@@ -52,6 +70,8 @@
 </template>
 
 <script>
+import api from "@/helpers/api";
+import _ from "lodash";
 export default {
   name: "LocationPicker",
   components: {},
@@ -64,10 +84,73 @@ export default {
         { name: "Trento", latitude: 46.066669, longitude: 11.11907 },
         { name: "Jesolo", latitude: 45.536591, longitude: 12.63933 },
         { name: "Trieste", latitude: 45.653599, longitude: 13.77852 }
-      ]
+      ],
+      predictions: []
     };
   },
+  watch: {
+    /* searchString() {
+      this.autocompleteLocation();
+    } */
+  },
   methods: {
+    isOpen() {
+      return this.showPicker;
+    },
+    /* onSearchStringChange: _.debounce(() => {
+      console.log("Debounce button clickedd!");
+      this.autocompleteLocation();
+      // console.log("Debounce button clicked!");
+    }, 500), */
+    search: _.debounce(function(e) {
+      this.searchString = e.target.value;
+      // this.autocompleteLocation();
+      // console.log("weee: " + e.target.value);
+      // this.filterKey = e.target.value;
+    }, 500),
+    autocompleteLocation() {
+      var searchString = this.searchString;
+      this.axios
+        .get(api.GET_AUTOCOMPLETE_PLACE, {
+          params: {
+            input: searchString,
+            type: "geocode"
+          }
+        })
+        .then(response => {
+          // console.log(JSON.stringify(response.data));
+          this.predictions = response.data.predictions;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    findCoordinates(address) {
+      console.log(address);
+      this.axios
+        .get(
+          "http://nominatim.openstreetmap.org/search?q=" +
+            address +
+            "&format=json"
+        )
+        .then(response => {
+          var location = {
+            latitude: response.data.lat,
+            longitude: response.data.lon,
+            address: address
+          };
+          console.log(JSON.stringify(response.data));
+          this.$store.dispatch("geolocationModule/setUserLocation", location);
+          this.$emit("locationChanged");
+          this.searchString = "";
+          this.hide();
+          // console.log(JSON.stringify(response.data));
+          // ctx.$store.dispatch("geolocationModule/setUserLocationNominatim", coords);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     setLocation(city) {
       var latitude = city.latitude;
       var longitude = city.longitude;

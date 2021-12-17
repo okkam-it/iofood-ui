@@ -10,5 +10,10 @@
         "opennow": "Aperti ora",
         "cheap_fs": "Ristoranti economici",
         "delivery_takeaway": "Asporto/Delivery"
+    },
+    "langs": {
+        "it": "Italiano",
+        "en": "Inglese",
+        "de": "Tedesco"
     }
 }

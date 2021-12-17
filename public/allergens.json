@@ -2,71 +2,71 @@
   {
     "id": 1,
     "code": "gluten",
-    "name": "Glutine"
+    "name": "Senza Glutine"
   },
   {
     "id": 2,
     "code": "shellfish",
-    "name": "Crostacei"
+    "name": "Senza Crostacei"
   },
   {
     "id": 3,
     "code": "eggs",
-    "name": "Uova"
+    "name": "Senza Uova"
   },
   {
     "id": 4,
     "code": "fish",
-    "name": "Pesce"
+    "name": "Senza Pesce"
   },
   {
     "id": 5,
     "code": "peanuts",
-    "name": "Arachidi"
+    "name": "Senza Arachidi"
   },
   {
     "id": 6,
     "code": "soy",
-    "name": "Soia"
+    "name": "Senza Soia"
   },
   {
     "id": 7,
     "code": "milk",
-    "name": "Latte"
+    "name": "Senza Latte"
   },
   {
     "id": 8,
     "code": "nuts",
-    "name": "Frutta a guscio"
+    "name": "Senza Frutta a guscio"
   },
   {
     "id": 9,
     "code": "celary",
-    "name": "Sedano"
+    "name": "Senza Sedano"
   },
   {
     "id": 10,
     "code": "mustard",
-    "name": "Senape"
+    "name": "Senza Senape"
   },
   {
     "id": 11,
     "code": "sesame_seeds",
-    "name": "Sesamo"
+    "name": "Senza Sesamo"
   },
   {
     "id": 12,
     "code": "sulfite",
-    "name": "Solfiti"
+    "name": "Senza Solfiti"
   },
   {
     "id": 13,
     "code": "lupins",
-    "name": "Lupini"
+    "name": "Senza Lupini"
   },
   {
     "id": 14,
     "code": "molluscs",
-    "name": "Molluschi"
+    "name": "Senza Molluschi"
   }
 ]

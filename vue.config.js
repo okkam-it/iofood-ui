@@ -29,5 +29,14 @@ module.exports = {
       swSrc: "src/service-worker.js"
       // ...other Workbox options...
     } */
-  }
+  },
+  pluginOptions: {
+    i18n: {
+      locale: "it",
+      fallbackLocale: "it",
+      localeDir: "locales",
+      enableInSFC: false
+    }
+  },
+  runtimeCompiler: true
 };

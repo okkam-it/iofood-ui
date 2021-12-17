@@ -1,7 +1,7 @@
 <template>
   <div class="pfp-box">
     <div class="pfp-image" v-if="pfp.image">
-      <img :src="pfp.imageUrl" />
+      <img :src="getImage(pfp)" />
     </div>
     <p class="title">{{getTrad(pfp.name)}}</p>
     <hr />
@@ -20,6 +20,7 @@
           <p class="pfp-modifiers">...</p>
         </div>
       </template>
+      <template v-if="pfp.allergens && pfp.allergens.length">
       <label>Allergeni</label>
       <div>
         <div v-for="allergen in pfp.allergens" :key="allergen" class="allergen-item">
@@ -31,8 +32,9 @@
           {{allergen}}
         </div>
       </div>
-      <label>Valori nutrizionali</label>
-      <div></div>
+      </template>
+      <!-- <label>Valori nutrizionali</label>
+      <div></div> -->
 
       <!-- <button @click="hide()">Chiudi</button> -->
     </div>
@@ -58,6 +60,12 @@ export default {
     // this.loadModifiers();
   },
   methods: {
+    getImage(pfp) {
+      if (pfp.otherImages && pfp.otherImages.smallThumbnailImage) {
+        return pfp.otherImages.mediumThumbnailImage;
+      }
+      return pfp.imageUrl;
+    },
     hide() {
       if (this.$route.hash && this.$route.hash === "#mobilemodal") {
         this.$router.go(-1);
@@ -79,7 +87,7 @@ export default {
 
       for (let ing of this.pfp.ingredients) {
         // if (ing.showInMenu) {
-        ingredientsString.push(ing.id);
+        ingredientsString.push(this.getTrad(ing.name));
         // }
       }
       console.log(ingredientsString.join(", "));

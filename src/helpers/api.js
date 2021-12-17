@@ -13,4 +13,5 @@ export default {
   GET_ALL_RESTAURANT_MENUS: ROOT_API + "menu",
   GET_INGREDIENT: ROOT_API + "ingredient/find/byid",
   GET_PFP_MODIFIERS: ROOT_API + "pfp/{id}/modifier",
+  GET_AUTOCOMPLETE_PLACE: ROOT_API + "iofood/autocomplete/places/",
 };
