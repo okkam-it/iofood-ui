@@ -35,7 +35,8 @@
       <div class="what-box" v-if="selectedWhat.length">
         <template v-for="what in selectedWhat">
           <div :key="what" @click="removeWhat(what)">
-            {{$t("explore_shortcuts." + what)}}
+            <!-- {{$t("explore_shortcuts." + what)}} -->
+            {{what}}
             <b-icon-x />
           </div>
         </template>
@@ -239,7 +240,7 @@
           >{{alternative}}</span>-->
           <span
             @click="toggleAlternative(alternative)"
-            :class="{ selected : selectedFilters[selectedFilter.code] && selectedFilters[selectedFilter.code].includes(alternative) }"
+            :class="{ selected : selectedFilters[selectedFilter.code] && selectedFilters[selectedFilter.code].find(x => x.id ? (alternative.id ? x.id === alternative.id : x.id === alternative) : (alternative.id ? x === alternative.id : x === alternative))/* && selectedFilters[selectedFilter.code].includes(alternative) */ }"
             v-for="alternative in selectedFilter.alternatives"
             :key="alternative"
           >{{alternative}}</span>
@@ -323,12 +324,32 @@ export default {
           label: "Prezzo",
           code: "price",
           alternatives: ["€", "€€", "€€€"]
+        },
+        {
+          label: "Asporto",
+          code: "takeaway"
+        },
+        {
+          label: "Consegna a domicilio",
+          code: "delivery"
         }
       ],
       selectedFilters: this.initSelectedFilters(),
       selectedFilter: null,
-      selectedWhat: []
+      selectedWhat: [],
+      hidingFsPage: false
     };
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.$refs.searchwhatpicker && this.$refs.searchwhatpicker.isOpen()) {
+      this.$refs.searchwhatpicker.hide();
+      next(false);
+    } else if (this.$refs.locationpicker && this.$refs.locationpicker.isOpen()) {
+      this.$refs.locationpicker.hide();
+      next(false);
+    } else {
+      next();
+    }
   },
   computed: {
     selectedFiltersSize() {
@@ -363,14 +384,56 @@ export default {
     }
   },
   mounted() {
-    var whatFilter = this.$route.query.what;
+    /* var whatFilter = this.$route.query.what;
     if (whatFilter && whatFilter !== "allfs") {
       if (this.checkNotFilter(whatFilter)) {
         this.selectedFilters[whatFilter] = true;
       } else {
         this.selectedWhat.push(whatFilter);
       }
+    } */
+
+    var filters = this.$route.query;
+    if (filters) {
+      for (let filter in filters) {
+        if (filter === "what") {
+          // this.selectedWhat.push(filters[filter]);
+          var what = filters[filter];
+          if (Array.isArray(what)) {
+            this.selectedWhat = what;
+          } else {
+            this.selectedWhat = [what];
+          }
+        } else if (filter in this.selectedFilters) {
+          if (Array.isArray(this.selectedFilters[filter])) {
+            for (let val of filters[filter]) {
+              if (this.isNumeric(val)) {
+                this.selectedFilters[filter].push(parseInt(val));
+              } else {
+                this.selectedFilters[filter].push(val);
+              }
+            }
+            // this.selectedFilters[filter] = filters[filter];
+            // this.selectedFilters[filter] = filters[filter].split(",");
+            // console.log("is array")
+            // console.log(filters[filter]);
+            /* for (let val of filters[filter]) {
+              this.selectedFilters[filter].push(val);
+              console.log(val);
+            } */
+            // this.selectedFilters[filter].push(filters[filter]);
+          } else {
+            var val = filters[filter];
+            if (this.isNumeric(val)) {
+              this.selectedFilters[filter] = parseInt(val);
+            } else {
+              this.selectedFilters[filter] = val;
+            }
+          }
+        }
+      }
     }
+    // console.log(filters);
 
     this.getUserLocation();
     // this.$refs.myMap.mapObject.invalidateSize();
@@ -384,6 +447,9 @@ export default {
     // this.buildMarkers();
   },
   methods: {
+    isNumeric(val) {
+      return /^-?\d+$/.test(val);
+    },
     checkNotFilter(whatFilter) {
       if (whatFilter in this.selectedFilters) {
         return true;
@@ -625,11 +691,42 @@ export default {
     showFoodServicePage(id) {
       // this.$router.push({ name: "FoodService" });
       // this.foodServiceIdToShow = 12;
-      this.$router.push({ name: "FoodServiceResult", params: { id } });
+      this.$router.push({
+        name: "FoodServiceResult",
+        params: { id }
+      });
     },
     hideFoodServicePage() {
-      // this.foodServiceIdToShow = null;
+      console.log("backk");
+      this.hidingFsPage = true;
       this.$router.go(-1);
+      // this.foodServiceIdToShow = null;
+      // this.$router.go(-1);
+      // this.$router.go(-1);
+      // this.$router.replace({ name: "Results" });
+      /* console.log(this.$route.query);
+      this.$router.replace({
+        name: "Results",
+        params: this.$route.params,
+        query: this.$route.query
+      }); */
+
+      // this.$router.go(-1);
+      /* while (this.$route.name !== "Results") {
+        setTimeout(() => {
+          this.$router.go(-1);
+        }, 100);
+      } */
+      // this.$router.go(-1);
+      /* var historyLen = window.history.length;
+      for (let r in historyLen) {
+        console.log(r);
+        this.$router.go(-1);
+        if (this.$route.name === "Results") {
+          break;
+        }
+      } */
+      // this.$router.back();
     },
     hideFilters() {
       this.$router.go(-1);
@@ -694,19 +791,29 @@ export default {
       }
     },
     updateQueryParams() {
-      const query = Object.assign({}, this.$route.query);
-      let filters = [];
+      // const query = Object.assign({}, this.$route.query);
+      var query = {};
+      // let filters = [];
       for (let qp in this.selectedFilters) {
         var filter = this.selectedFilters[qp];
-        if (filter) {
-          if (typeof filter == "boolean") {
+        if ((Array.isArray(filter) && filter.length) || filter) {
+          query[qp] = filter;
+          // filters.push({qp: filter });
+          /* if (typeof filter == "boolean") {
             filters.push(qp);
           } else if (Array.isArray(filter) && filter.length) {
             filters.push(qp);
+          } */
+        } else {
+          if (query[qp]) {
+            delete query[qp];
           }
         }
       }
-      query.filters = filters.join(",");
+
+      query["what"] = this.selectedWhat;
+
+      // query.filters = filters.join(",");
 
       // this.addParamsToLocation(query);
       this.$router.replace({ query });
@@ -734,6 +841,17 @@ export default {
   watch: {
     $route(to) {
       this.checkRouteState(to);
+
+      if (this.hidingFsPage) {
+        if (to.name !== "Results") {
+          this.$router.back();
+        } else {
+          this.hidingFsPage = false;
+        }
+      }
+    },
+    selectedWhat() {
+      this.updateQueryParams();
     },
     selectedFilters: {
       handler: function() {
@@ -904,6 +1022,7 @@ export default {
 .filters-box {
   margin-top: 2vh;
   display: flex;
+  overflow: auto;
   -ms-overflow-style: none; /* for Internet Explorer, Edge */
   scrollbar-width: none; /* for Firefox */
 }
@@ -924,6 +1043,12 @@ export default {
   margin-right: 5px;
   margin-bottom: 3px;
   flex-shrink: 0;
+}
+
+.filters-box > div:first-child {
+  position: sticky;
+  left: 0;
+  background-color: #fff;
 }
 
 .filters-box > div.active {
@@ -1112,7 +1237,10 @@ export default {
   margin-left: 8px;
   font-weight: bold;
   font-size: 14px;
-  color: var(--primary-color);
+  color: #fff;
+  padding: 3px 7px;
+  border-radius: 20px;
+  background-color: var(--primary-color);
 }
 
 .location-active .b-icon {

@@ -322,29 +322,6 @@
     "regional": false
   },
   {
-    "id": 15,
-    "name": [
-      {
-        "value": "Bar",
-        "language": "it"
-      },
-      {
-        "value": "Bar",
-        "language": "en"
-      },
-      {
-        "value": "Bar",
-        "language": "de"
-      },
-      {
-        "value": "Bar",
-        "language": "fr"
-      }
-    ],
-    "order": null,
-    "regional": false
-  },
-  {
     "id": 16,
     "name": [
       {
@@ -2162,29 +2139,6 @@
     "regional": false
   },
   {
-    "id": 95,
-    "name": [
-      {
-        "value": "Pesce",
-        "language": "it"
-      },
-      {
-        "value": "Pesce",
-        "language": "en"
-      },
-      {
-        "value": "Pesce",
-        "language": "de"
-      },
-      {
-        "value": "Pesce",
-        "language": "fr"
-      }
-    ],
-    "order": null,
-    "regional": false
-  },
-  {
     "id": 96,
     "name": [
       {
@@ -2229,29 +2183,6 @@
     ],
     "order": null,
     "regional": true
-  },
-  {
-    "id": 98,
-    "name": [
-      {
-        "value": "Pizza",
-        "language": "it"
-      },
-      {
-        "value": "Pizza",
-        "language": "en"
-      },
-      {
-        "value": "Pizza",
-        "language": "de"
-      },
-      {
-        "value": "Pizza",
-        "language": "fr"
-      }
-    ],
-    "order": null,
-    "regional": false
   },
   {
     "id": 99,
@@ -2638,29 +2569,6 @@
       },
       {
         "value": "Sudamericana",
-        "language": "fr"
-      }
-    ],
-    "order": null,
-    "regional": false
-  },
-  {
-    "id": 116,
-    "name": [
-      {
-        "value": "Sushi",
-        "language": "it"
-      },
-      {
-        "value": "Sushi",
-        "language": "en"
-      },
-      {
-        "value": "Sushi",
-        "language": "de"
-      },
-      {
-        "value": "Sushi",
         "language": "fr"
       }
     ],

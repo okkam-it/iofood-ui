@@ -7,7 +7,13 @@
             <b-icon-chevron-left scale="1.3" shift-h="-2" shift-v="-8" />
           </div>
         </div>
-        <img :src="require('@/assets/pics-demo/rist_demo_3.jpeg')" />
+        <template v-if="foodService.coverImage">
+            <img :src="foodService.coverImageUrl" />
+        </template>
+        <template v-else>
+            <img :src="require('@/assets/bg_blank.png')" />
+        </template>
+        
       </div>
       <div class="sticky-header" v-if="showStickyHeader">
         <div class="back-button" @click="hide()">
@@ -80,13 +86,13 @@
           </p>-->
 
           <div class="actions">
-            <div>
+            <div @click="openPhoneCall()">
               <b-icon-telephone-fill scale="1.5" />Chiama
             </div>
             <div @click="openGMaps()">
               <b-icon-cursor-fill scale="1.5" rotate="-45" />Indicazioni
             </div>
-            <div>
+            <div @click="openShare()" v-if="sharingEnabled">
               <b-icon-share-fill scale="1.5" />Condividi
             </div>
           </div>
@@ -141,8 +147,9 @@
                         @click="dishToShow = pfp"
                       >
                         <div class="pfp-image" v-if="pfp.image">
-                          <img :src="pfp.imageUrl" />
+                          <img :src="getImage(pfp)" />
                         </div>
+                        <!-- <b-icon-chevron-right class="more-info-icon" /> -->
                         <p class="pfp-title">{{getTrad(pfp.name)}}</p>
                         <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p>
                         <p class="pfp-ingredients">{{printIngredients(pfp.ingredients)}}</p>
@@ -240,10 +247,38 @@ export default {
     };
   },
   methods: {
+    getImage(pfp) {
+      if (pfp.otherImages && pfp.otherImages.smallThumbnailImage) {
+        return pfp.otherImages.smallThumbnailImage;
+      }
+      return pfp.imageUrl;
+    },
     openGMaps() {
       // window.location.href = marker.url;
       var url = "http://maps.google.com/?q=" + this.address;
       window.open(url, "_blank");
+    },
+    openPhoneCall() {
+      // window.location.href = marker.url;
+      var url = "tel:3484157464";
+      window.open(url, "_blank");
+    },
+    openShare() {
+      if (navigator.share) {
+        // Web Share API is supported
+        navigator
+          .share({
+            title: this.foodService.name,
+            url: window.location.href
+          })
+          .then(() => {
+            console.log("Thanks for sharing!");
+          })
+          .catch(console.error);
+      } else {
+        // Fallback
+        alert("Not supported");
+      }
     },
     handleContentScroll(e) {
       var scrollPos = e.target.scrollTop;
@@ -265,16 +300,16 @@ export default {
       // var ingredientsIds = [];
       var ingredientsString = [];
       for (let ing of ingredients) {
-        if (ing.showInMenu) {
-          // ingredientsString.push(ing.id);
-           ingredientsString.push(this.getTrad(ing.name));
-          /* let response = await this.axios.get(api.GET_INGREDIENT, {
+        // if (ing.showInMenu) {
+        // ingredientsString.push(ing.id);
+        ingredientsString.push(this.getTrad(ing.name));
+        /* let response = await this.axios.get(api.GET_INGREDIENT, {
             params: {
               id: ing.id
             }
           });
           ingredientsString.push(this.getTrad(response.data.name)); */
-        }
+        // }
       }
 
       /* let requests = [];
@@ -607,6 +642,9 @@ export default {
     this.loadFoodService();
   },
   computed: {
+    sharingEnabled() {
+      return navigator.share;
+    },
     openings() {
       var openings = [];
       var fsOpenings = this.foodService.openings;
@@ -1044,6 +1082,7 @@ p.pfp-price {
 
 .pfp-image {
   width: 25vw;
+  max-height: 25vw;
   overflow: hidden;
   position: absolute;
   right: 0;
@@ -1082,4 +1121,12 @@ p.pfp-price {
 .openings-box p {
   margin-bottom: 0;
 }
+
+/* .more-info-icon {
+  position: absolute;
+  right: 0;
+  top: 35%;
+  transform: translateY(-35%);
+  color: #ccc;
+} */
 </style>

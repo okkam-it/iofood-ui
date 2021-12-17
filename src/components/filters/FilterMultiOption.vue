@@ -12,7 +12,7 @@
         <li v-for="option in options.slice(0, this.maxListItems)" :key="option.id || option">
           <template v-if="option.id">
             <span
-              :class="{ active : selectedFilters.find(x => x.id === option.id)}"
+              :class="{ active : selectedFilters.find(x => x.id ? x.id === option.id : x === option.id)}"
               @click="toggleArrayItem(option, selectedFilters)"
             >{{getOptionName(option.name)}}</span>
           </template>
@@ -51,7 +51,7 @@
                 <li v-for="option in filteredOptions" :key="option.id || option">
                   <template v-if="option.id">
                     <span
-                      :class="{ active : selectedFilters.find(x => x.id === option.id)}"
+                      :class="{ active : selectedFilters.find(x => x.id ? x.id === option.id : x === option.id)}"
                       @click="toggleArrayItem(option, selectedFilters)"
                     >{{getOptionName(option.name)}}</span>
                   </template>
@@ -123,11 +123,15 @@ export default {
       return full.slice(0, this.maxListItems <= max ? this.maxListItems : max);
     },
     toggleArrayItem(data, array) {
-      var index = array.findIndex(x => (x.id ? x.id === data.id : x === data));
+      var index = array.findIndex(x => (data.id ? x === data.id : x === data));
       if (index > -1) {
         array.splice(index, 1);
       } else {
-        array.push(data);
+        if (data.id) {
+          array.push(data.id);
+        } else {
+          array.push(data);
+        }
       }
     }
   }

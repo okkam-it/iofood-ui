@@ -1,5 +1,48 @@
 [
   {
+    "id": 135,
+    "name": "Ristorante Ronca",
+    "description": null,
+    "coverImage": "rist_demo_9.jpeg",
+    "logo": null,
+    "coverImageUrl": null,
+    "logoUrl": null,
+    "okkamId": "7iu0pf6-m2irv5v-s90ma1s-cmoai8n",
+    "verified": false,
+    "type": {
+      "id": 1,
+      "name": [
+        {
+          "value": "Ristorante",
+          "language": "it"
+        },
+        {
+          "value": "Restaurant",
+          "language": "en"
+        },
+        {
+          "value": "Restaurant",
+          "language": "de"
+        },
+        {
+          "value": "Restaurant",
+          "language": "fr"
+        }
+      ]
+    },
+    "alternativeUrl": null,
+    "languages": [
+      "it",
+      "en",
+      "de"
+    ],
+    "preferredLanguage": "it",
+    "coords": {
+      "lat": "46.0425577",
+      "lng": "11.11747118"
+    }
+  },
+  {
     "id": 3,
     "name": "Ristorante Pizzeria Alla Torre",
     "description": null,
@@ -45,7 +88,7 @@
   },
   {
     "id": 4,
-    "name": "Altamarea Enoteca Bistrot ",
+    "name": "Altamarea Enoteca Bistrot",
     "description": null,
     "coverImage": "rist_demo_3.jpeg",
     "logo": "altamarea69033285809157211047101307059725087901.png",
@@ -349,50 +392,6 @@
     "coords": {
       "lat": "46.05950767",
       "lng": "11.15175734"
-    }
-  },
-  {
-    "id": 11,
-    "name": "Piripero",
-    "description": null,
-    "coverImage": "rist_demo_9.jpeg",
-    "logo": null,
-    "coverImageUrl": null,
-    "logoUrl": null,
-    "okkamId": "drgr44r-493f8mk-9sa8qod-9fcd7dp",
-    "verified": false,
-    "type": {
-      "id": 1,
-      "name": [
-        {
-          "value": "Ristorante",
-          "language": "it"
-        },
-        {
-          "value": "Restaurant",
-          "language": "en"
-        },
-        {
-          "value": "Restaurant",
-          "language": "de"
-        },
-        {
-          "value": "Restaurant",
-          "language": "fr"
-        }
-      ]
-    },
-    "alternativeUrl": null,
-    "languages": [
-      "it",
-      "en",
-      "de",
-      "fr"
-    ],
-    "preferredLanguage": "it",
-    "coords": {
-      "lat": "46.0425577",
-      "lng": "11.11747118"
     }
   },
   {

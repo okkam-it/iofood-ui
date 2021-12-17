@@ -8,14 +8,29 @@
         <b-icon-search scale=".8" />
         <input
           ref="searchinput"
+          :value="searchString"
+          @input="search"
+          type="text"
+          placeholder="Piatti, ingredienti, ristoranti.."
+        />
+        <!-- <input
+          ref="searchinput"
           v-model="searchString"
           type="text"
-          placeholder="Cerca piatti, ingredienti.."
-        />
+          @input="search()"
+          placeholder="Cerca piatti, ingredienti, ristoranti.."
+        />-->
       </div>
       <hr />
       <div class="content">
-        <template v-if="searchString.length"></template>
+        <template v-if="searchString.length">
+          <ul class="results-box">
+            <li v-for="(res, k ) in results" :key="k" @click="showResult(res)">
+              <b-img v-if="res.id" :src="require('@/assets/food_icons/restaurant.png')" />
+              {{res.name}}
+            </li>
+          </ul>
+        </template>
         <template v-else>
           <p class="section-title mt-4">Suggerimenti</p>
           <div
@@ -38,16 +53,57 @@ export default {
     return {
       showPicker: false,
       searchString: "",
-      suggestions: ["pizza", "sushi"]
+      suggestions: ["pizza", "sushi"],
+      results: [],
+      items: [
+        { name: "Braciola" },
+        { name: "Braciola di maiale" },
+        { name: "Pesce" },
+        { name: "Pizza" },
+        { name: "Fiorentina" },
+        { name: "Tagliata" },
+        { name: "Bistecca" },        
+        { name: "Ristorante La Braciera", id: 12 },
+        { name: "Ristorante Pizzeria Alla Torre", id: 3 },
+        { name: "Altamarea Enoteca Bistrot", id: 4 },
+        { name: "Bar Ristorantino Tecla alle Gru", id: 5 },
+        { name: "Chiosco Skipper", id: 6 },
+        { name: "Ošterija Na Planinci", id: 10 }
+      ]
     };
   },
   methods: {
+    isOpen() {
+      return this.showPicker;
+    },
+    showResult(res) {
+      if (res.id) {
+        this.hide();
+        this.$router.push({
+          name: "FoodServiceResult",
+          params: { id: res.id }
+        });
+      } else {
+        this.addWhat(res.name);
+      }
+    },
+    search(e) {
+      this.searchString = e.target.value;
+      if (this.searchString.length <= 2) {
+        this.results = [];
+      } else {
+        this.results = this.items.filter(val =>
+          val.name.toLowerCase().includes(this.searchString.toLowerCase())
+        );
+      }
+    },
     addWhat(suggestion) {
       this.$emit("addWhat", suggestion);
       this.hide();
     },
     show() {
       this.showPicker = true;
+      this.searchString = "";
       setTimeout(() => {
         this.$refs.searchinput.focus();
       }, 100);
@@ -124,5 +180,21 @@ export default {
 
 .item > .b-icon {
   margin-right: 15px;
+}
+
+ul.results-box {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.results-box li {
+  font-size: 16px;
+  border-bottom: 1px solid #e6e6e6;
+  padding: 12px 10px;
+}
+
+.results-box li img {
+  width: 20px;
+  margin-right: 10px;
 }
 </style>
