@@ -1,7 +1,8 @@
 [
-    "Per la colazione",
-    "Menu del giorno",
-    "Merenda",
-    "Aperitivo",
-    "Fame notturna"
+    "breakfast",
+    "lunch",
+    "snack",
+    "aperitif",
+    "dinner",
+    "nightHunger"
 ]

@@ -76,12 +76,12 @@
           </ul>
         </div>
       </div>
-      <div v-if="foodService.info" class="info-box">
+      <div v-if="activeServices && activeServices.length" class="info-box">
         <label>Servizi</label>
         <div>
           <ul>
-            <template v-for="service in services">
-              <li :key="service" v-if="foodService.info[service]">
+            <template v-for="service in activeServices">
+              <li :key="service">
                 <b-icon-check scale="1.5" />
                 {{service}}
               </li>
@@ -175,6 +175,17 @@ export default {
         return loc.address + ", " + loc.city;
       }
       return null;
+    },
+    activeServices() {
+      var services = [];
+      if (this.foodService.info) {
+        for (let service of this.services) {
+          if (this.foodService.info[service]) {
+            services.push(service);
+          }
+        }
+      }
+      return services;
     },
     openings() {
       return this.foodService.openings;

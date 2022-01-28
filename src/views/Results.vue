@@ -6,7 +6,7 @@
       </div>
       <div class="search-input-box" @click="openSearchPage()">
         <b-icon-search scale=".8" />
-        <input type="text" placeholder="Piatti, ingredienti, ristoranti.." />
+        <input type="text" placeholder="Pesce, milanese, nome ristorante" />
       </div>
       <!-- <p @click="showLocationPicker()">
           <b-icon-geo-alt class="mr-2" />
@@ -27,8 +27,11 @@
             :key="filter.label"
             :class="{ active : filter.alternatives ? selectedFilters[filter.code].length : selectedFilters[filter.code]}"
           >
-            {{filter.label}}
-            <b-icon-caret-down-fill variant="secondary" v-if="filter.alternatives" />
+            <template v-if="filter.alternatives">
+              {{Array.isArray(selectedFilters[filter.code]) ? filter.label : selectedFilters[filter.code] }}
+              <b-icon-caret-down-fill variant="secondary" />
+            </template>
+            <template v-else>{{filter.label}}</template>
           </div>
         </template>
       </div>
@@ -40,6 +43,7 @@
             <b-icon-x />
           </div>
         </template>
+        <span @click="openSearchPage()">Altro?</span>
       </div>
 
       <!-- <div class="selected-filters-box" v-if="userLocation">
@@ -105,7 +109,7 @@
         </l-map>
         <div class="map-actions-box">
           <div class="list-link" v-if="hiddenList" @click="showList()">
-            <b-icon-list />Mostra lista
+            <b-icon-list scale="1.2" />Mostra lista
           </div>
           <transition name="fade">
             <div
@@ -180,6 +184,18 @@
           </template>
           <template v-else>
             <div class="rests-list">
+              <div class="contexts-box">
+                <label>Si tratta di un'occasione particolare?</label>
+                <div>
+                  <div
+                    v-for="context in contexts"
+                    :key="context"
+                    @click="toggleContext(context)"
+                    :class="{ active : selectedFilters.context.includes(context) }"
+                  >{{$t('filters.' + context)}}</div>
+                </div>
+                <!-- <hr /> -->
+              </div>
               <template v-for="foodService in foodServices">
                 <div
                   class="rest-card"
@@ -187,8 +203,8 @@
                   @click="showFoodServicePage(foodService.id)"
                 >
                   <div>
-                    <img :src="getRestImage(foodService)" />
-                    <div class="image-slider">
+                    <img v-if="foodService.id % 2 === 0" :src="getRestImage(foodService)" />
+                    <div class="image-slider" v-else>
                       <template v-for="i in 5">
                         <div :key="i">
                           <img :src="getRestImage(foodService)" />
@@ -232,15 +248,9 @@
       <template #title>{{selectedFilter.label}}</template>
       <template #content>
         <div class="badge-selector-box">
-          <!-- <span
-            @click="toggleAlternative(alternative)"
-            :class="{ selected : selectedFilter && selectedFilter.selectedAlternatives && selectedFilter.selectedAlternatives.includes(alternative) }"
-            v-for="alternative in selectedFilter.alternatives"
-            :key="alternative"
-          >{{alternative}}</span>-->
           <span
-            @click="toggleAlternative(alternative)"
-            :class="{ selected : selectedFilters[selectedFilter.code] && selectedFilters[selectedFilter.code].find(x => x.id ? (alternative.id ? x.id === alternative.id : x.id === alternative) : (alternative.id ? x === alternative.id : x === alternative))/* && selectedFilters[selectedFilter.code].includes(alternative) */ }"
+            @click="toggleAlternative(Array.isArray(selectedFilters[selectedFilter.code]), alternative)"
+            :class="{ selected : Array.isArray(selectedFilters[selectedFilter.code]) ? (selectedFilters[selectedFilter.code] && selectedFilters[selectedFilter.code].find(x => x.id ? (alternative.id ? x.id === alternative.id : x.id === alternative) : (alternative.id ? x === alternative.id : x === alternative))/* && selectedFilters[selectedFilter.code].includes(alternative) */) : (selectedFilters[selectedFilter.code] === alternative) }"
             v-for="alternative in selectedFilter.alternatives"
             :key="alternative"
           >{{alternative}}</span>
@@ -317,6 +327,11 @@ export default {
       showFilters: false,
       quickFilters: [
         {
+          label: "Ordinamento",
+          code: "orderby",
+          alternatives: ["Distanza", "Pertinenza", "Prezzo medio"]
+        },
+        {
           label: "Aperti ora",
           code: "opennow"
         },
@@ -337,19 +352,29 @@ export default {
       selectedFilters: this.initSelectedFilters(),
       selectedFilter: null,
       selectedWhat: [],
-      hidingFsPage: false
+      hidingFsPage: false,
+      contexts: [],
+      prevRoute: null
     };
   },
   beforeRouteLeave(to, from, next) {
     if (this.$refs.searchwhatpicker && this.$refs.searchwhatpicker.isOpen()) {
       this.$refs.searchwhatpicker.hide();
       next(false);
-    } else if (this.$refs.locationpicker && this.$refs.locationpicker.isOpen()) {
+    } else if (
+      this.$refs.locationpicker &&
+      this.$refs.locationpicker.isOpen()
+    ) {
       this.$refs.locationpicker.hide();
       next(false);
     } else {
       next();
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.prevRoute = from;
+    });
   },
   computed: {
     selectedFiltersSize() {
@@ -406,13 +431,23 @@ export default {
           }
         } else if (filter in this.selectedFilters) {
           if (Array.isArray(this.selectedFilters[filter])) {
-            for (let val of filters[filter]) {
+            if (Array.isArray(filters[filter])) {
+              for (let val of filters[filter]) {
+                if (this.isNumeric(val)) {
+                  this.selectedFilters[filter].push(parseInt(val));
+                } else {
+                  this.selectedFilters[filter].push(val);
+                }
+              }
+            } else {
+              let val = filters[filter];
               if (this.isNumeric(val)) {
-                this.selectedFilters[filter].push(parseInt(val));
+                this.selectedFilters[filter] = [parseInt(val)];
               } else {
-                this.selectedFilters[filter].push(val);
+                this.selectedFilters[filter] = [val];
               }
             }
+
             // this.selectedFilters[filter] = filters[filter];
             // this.selectedFilters[filter] = filters[filter].split(",");
             // console.log("is array")
@@ -435,18 +470,30 @@ export default {
     }
     // console.log(filters);
 
-    this.getUserLocation();
+    // this.getUserLocation();
     // this.$refs.myMap.mapObject.invalidateSize();
     setTimeout(() => {
       this.$refs.listview.scrollTop = window.innerHeight / 2.5;
     }, 200);
 
     this.loadFoodServices();
+    this.loadContexts();
 
     this.checkRouteState(this.$route);
     // this.buildMarkers();
   },
   methods: {
+    loadContexts() {
+      this.axios
+        .get("/contexts.json")
+        .then(response => {
+          this.contexts = response.data;
+          // console.log(JSON.stringify(response.data));
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     isNumeric(val) {
       return /^-?\d+$/.test(val);
     },
@@ -525,7 +572,7 @@ export default {
     initSelectedFilters() {
       return {
         opennow: false,
-        orderby: "Distanza",
+        orderby: "Pertinenza",
         delivery: false,
         takeaway: false,
         payments: [],
@@ -548,11 +595,16 @@ export default {
       this.selectedFilters = filters;
       // console.log("change");
     },
-    toggleAlternative(alternative) {
-      this.toggleArrayItem(
-        alternative,
-        this.selectedFilters[this.selectedFilter.code]
-      );
+    toggleAlternative(isArray, alternative) {
+      if (isArray) {
+        this.toggleArrayItem(
+          alternative,
+          this.selectedFilters[this.selectedFilter.code]
+        );
+      } else {
+        this.selectedFilters[this.selectedFilter.code] = alternative;
+      }
+
       /* if (!this.selectedFilter.selectedAlternatives) {
         this.$set(this.selectedFilter, "selectedAlternatives", []);
         this.selectedFilter.selectedAlternatives.push(alternative);
@@ -595,8 +647,8 @@ export default {
     getRestImage(foodService) {
       return require("@/assets/pics-demo/" + foodService.coverImage);
     },
-    loadFoodServices() {
-      this.axios
+    async loadFoodServices() {
+      /* this.axios
         .get("/rests.json")
         .then(response => {
           this.foodServices = response.data;
@@ -606,7 +658,34 @@ export default {
         })
         .catch(error => {
           console.log(error);
+        }); */
+      let filters = {
+        geoDistance: "20",
+        latitude: this.userLocation.latitude,
+        longitude: this.userLocation.longitude,
+        language: "it"
+      };
+      /* for (let filter of this.selectedFilters) {
+        body[filter.type] = filter.value;
+      } */
+      var body = {
+        ...filters,
+        ...JSON.parse(JSON.stringify(this.selectedFilters))
+      };
+
+      try {
+        let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
+          params: {
+            page: 0,
+            size: 5
+          }
         });
+        if (response.data) {
+          this.$set(categoryPreview, "foodServices", response.data);
+        }
+      } catch (e) {
+        console.log(e);
+      }
     },
     mapPositionChange() {
       let newCenter = this.$refs.map.mapObject.getCenter();
@@ -699,7 +778,12 @@ export default {
     hideFoodServicePage() {
       console.log("backk");
       this.hidingFsPage = true;
-      this.$router.go(-1);
+      if (this.prevRoute) {
+        this.$router.go(-1);
+      } else {
+        this.$router.replace({ name: "Explore" });
+      }
+
       // this.foodServiceIdToShow = null;
       // this.$router.go(-1);
       // this.$router.go(-1);
@@ -770,8 +854,17 @@ export default {
       } else if (to.name === "ResultsFilters") {
         this.showFilters = true;
       } else {
+        this.getUserLocation();
         this.foodServiceIdToShow = null;
         this.showFilters = false;
+      }
+    },
+    toggleContext(context) {
+      var index = this.selectedFilters.context.findIndex(x => x === context);
+      if (index > -1) {
+        this.selectedFilters.context.splice(index, 1);
+      } else {
+        this.selectedFilters.context.push(context);
       }
     },
     toggleSelectedFilter(filter) {
@@ -992,7 +1085,8 @@ export default {
 
 .list-view > div.map-link {
   /* height: 40vh; */
-  height: 80vh;
+  /* height: 80vh; */
+  height: 70vh;
 }
 
 .map-view .map-actions-box {
@@ -1011,12 +1105,13 @@ export default {
   padding: 12px 15px;
   border-radius: 10px;
   font-weight: bold;
-  margin-bottom: 2vh;
+  margin-bottom: 6vh;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
 .map-view .list-link > .b-icon {
   margin-right: 5px;
+  color: rgba(255, 102, 51, 0.8);
 }
 
 .filters-box {
@@ -1110,13 +1205,14 @@ export default {
   width: 100%;
   border-radius: 15px;
   overflow: hidden;
-  margin-bottom: 4vh;
+  margin-bottom: 2vh;
 }
 
 .rests-list .rest-card label {
   font-weight: bold;
   font-size: 20px;
-  margin-top: 5px;
+  /* margin-top: 5px; */
+  margin-top: 0;
 }
 
 .rests-list .rest-card p.info {
@@ -1128,8 +1224,10 @@ export default {
 }
 
 .rests-list .rest-card img {
+  /* width: 100%;
+  height: 25vh; */
   width: 100%;
-  height: 25vh;
+  height: 20vh;
   object-fit: cover;
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
@@ -1148,16 +1246,28 @@ export default {
 }
 
 .rests-list .rest-card .image-slider > div {
-  width: 35vw;
-  height: 25vw;
-  padding: 3px;
+  /* width: 35vw;
+  height: 25vw; */
+  width: 43vw;
+  height: 38vw;
+  padding: 1px;
   flex-shrink: 0;
 }
 
 .rests-list .rest-card .image-slider > div img {
   width: 100%;
   height: 100%;
-  border-radius: 15px;
+  /* border-radius: 15px; */
+}
+
+.rests-list .rest-card .image-slider > div:first-child img {
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 5px;
+}
+
+.rests-list .rest-card .image-slider > div:last-child img {
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 5px;
 }
 
 .rests-preview {
@@ -1252,13 +1362,13 @@ div.what-box {
   border: none;
   padding: 0 0;
   margin-top: 5px;
-
+  overflow: auto;
   display: flex;
   -ms-overflow-style: none; /* for Internet Explorer, Edge */
   scrollbar-width: none; /* for Firefox */
 }
 
-.filters-box::-webkit-scrollbar {
+div.what-box::-webkit-scrollbar {
   display: none;
 }
 
@@ -1275,6 +1385,15 @@ div.what-box > div {
   margin-right: 5px;
   margin-bottom: 3px;
   flex-shrink: 0;
+}
+
+div.what-box > span {
+  /* color: var(--primary-color); */
+  color: #a6a6a6;
+  font-weight: bold;
+  margin-top: 6px;
+  padding-left: 5px;
+  font-size: 14px;
 }
 
 .loading-content {
@@ -1361,5 +1480,44 @@ div.what-box > div {
     left: 110%;
     width: 10%;
   }
+}
+
+.contexts-box > label {
+  font-size: 14px;
+  color: #808080;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.contexts-box {
+  margin-bottom: 2.2vh;
+}
+
+.contexts-box > div {
+  font-size: 13px;
+  overflow: auto;
+  display: flex;
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  font-weight: bold;
+  /* color: var(--primary-color); */
+}
+
+.contexts-box > div::-webkit-scrollbar {
+  display: none;
+}
+
+.contexts-box > div > div {
+  border: 1px solid #ccc;
+  flex-shrink: 0;
+  margin-right: 5px;
+  border-radius: 15px;
+  padding: 10px 15px;
+}
+
+.contexts-box > div > div.active {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: var(--light-primary-color);
 }
 </style>

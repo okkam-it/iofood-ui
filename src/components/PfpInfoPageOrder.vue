@@ -45,8 +45,8 @@
       </template>
       <template v-if="pfp.allergens && pfp.allergens.length">
         <label>Allergeni</label>
-        <div>
-          <div v-for="allergen in pfp.allergens" :key="allergen" class="allergen-item">
+        <div class="allergens-box">
+          <div v-for="allergen in pfp.allergens" :key="allergen">
             <img
               class="allergen-icon"
               :key="allergen"
@@ -56,50 +56,21 @@
           </div>
         </div>
       </template>
-      <div class="nut-val-box">
-        <label>Valori nutrizionali</label>
-        <!-- <ul>
-          <li>
-            <label>Kcal</label>
-            <span>900</span>
-            <div>
-              <b-progress :value="80" :max="100" variant="danger"></b-progress>
-            </div>
-          </li>
-          <li>
-            <label>Carboidrati</label>
-            <span>xx</span>
-            <div>
-              <b-progress :value="60" :max="100" variant="warning"></b-progress>
-            </div>
-          </li>
-          <li>
-            <label>Grassi</label>
-            <span>xx</span>
-            <div>
-              <b-progress :value="20" :max="100" variant="success"></b-progress>
-            </div>
-          </li>
-          <li>
-            <label>Proteine</label>
-            <span>xx</span>
-            <div>
-              <b-progress :value="70" :max="100" variant="success"></b-progress>
-            </div>
-          </li>
-        </ul>-->
-        <div>
-          <donut-chart title="Calorie" sub1="500" sub2="di 1500" :value="30" />
+      <div class="add-to-cart-box">
+        <div class="size-spinner">
+          <span @click="removeItem()">
+            <b-icon-dash-circle scale=".8" />
+          </span>
+          <span>{{quantity}}</span>
+          <span @click="addItem()">
+            <b-icon-plus-circle scale=".8" />
+          </span>
         </div>
-        <div>
-          <donut-chart title="Carboidrati" sub1="24.2g" sub2="di 25g" :value="90" />
-        </div>
-        <div>
-          <donut-chart title="Grassi" sub1="164g" sub2="di 150g" :value="65" />
-        </div>
-        <div>
-          <donut-chart title="Proteine" sub1="92g" sub2="di 81g" :value="130" />
-        </div>
+        <button class="primary" @click="addItems()">
+          Aggiungi
+          <b-icon-circle-fill scale=".3" />
+          <span class="price">{{pfp.price*quantity}}€</span>
+        </button>
       </div>
       <!-- <label>Valori nutrizionali</label>
       <div></div>-->
@@ -112,17 +83,16 @@
 <script>
 import api from "@/helpers/api";
 import PfpPrice from "@/components/foodservicemenutable/PfpPrice";
-import DonutChart from "@/components/charts/DonutChart";
 export default {
   name: "PfpInfoPage",
   components: {
-    PfpPrice,
-    DonutChart
+    PfpPrice
   },
   data() {
     return {
       modifiers: [],
-      suggestedBeverage: null
+      suggestedBeverage: null,
+      quantity: 1
     };
   },
   props: {
@@ -134,12 +104,40 @@ export default {
     fsId() {
       return this.$route.params.id;
     }
+    /* quantity() {
+      return this.$store.getters.itemQuantity(this.pfp.id);
+    } */
   },
   mounted() {
     this.loadModifiers();
     this.loadSuggestedBeverage();
   },
   methods: {
+    addItem() {
+      this.quantity++;
+    },
+    addItems() {
+      var item = {
+        id: this.pfp.id,
+        name: this.getTrad(this.pfp.name),
+        desc: this.getTrad(this.pfp.description),
+        price: this.pfp.price
+        // quantity: this.quantity
+      };
+      for (let i = 0; i < this.quantity; i++)  {
+        this.$store.dispatch("addItem", item);
+      }
+
+      this.hide();
+    },
+    removeItem() {
+      this.quantity--;
+      /* var payload = {
+        id: this.pfp.id,
+        index: null
+      };
+      this.$store.dispatch("removeItem", payload); */
+    },
     loadSuggestedBeverage() {
       if (this.pfp.suggestedBeverage) {
         this.axios
@@ -209,7 +207,7 @@ export default {
 
 <style scoped>
 .pfp-box {
-  padding-bottom: 2vh;
+  padding-bottom: calc(2vh + 125px);
 }
 
 .title {
@@ -241,8 +239,25 @@ label {
   margin-bottom: 2px;
 }
 
-.allergen-item {
-  margin-bottom: 5px;
+.allergens-box {
+  overflow: auto;
+  white-space: nowrap;
+
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+}
+
+.allergens-box::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
+}
+
+.allergens-box > div {
+  display: inline-block;
+  margin-right: 5px;
+  border: 1px solid #f2f2f2;
+  padding: 2px 10px;
+  border-radius: 15px;
+  background-color: #f2f2f2;
 }
 
 .allergen-icon {
@@ -281,9 +296,46 @@ label {
 button {
   width: 100%;
   box-shadow: none;
-  background-color: #f2f2f2;
   border-radius: 30px;
-  color: #4d4d4d;
+}
+
+.add-to-cart-box {
+  position: fixed;
+  bottom: -15px;
+  width: 100%;
+  left: 0;
+  background-color: #fff;
+  box-shadow: 0 5px 13px -1px rgba(0, 0, 0, 0.75);
+  padding: 10px 10px;
+}
+
+.add-to-cart-box button {
+  font-weight: bold;
+}
+
+.add-to-cart-box button .b-icon {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.add-to-cart-box button .price {
+  font-weight: bold;
+}
+
+.add-to-cart-box .size-spinner {
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5vh;
+}
+
+.add-to-cart-box .size-spinner > span {
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.add-to-cart-box .size-spinner .b-icon {
+  color: var(--dark-primary-color);
 }
 
 .pfp-modifiers .alternative-box {
@@ -302,28 +354,5 @@ button {
 
 .suggested-beverage > span {
   margin-left: 2px;
-}
-
-.nut-val-box {
-  margin-top: 20px;
-}
-
-.nut-val-box ul {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-.nut-val-box ul li {
-  font-size: 16px;
-  margin-bottom: 1vh;
-}
-
-.nut-val-box ul li > label {
-  font-weight: normal;
-}
-
-.nut-val-box ul li > span {
-  float: right;
-  font-size: 14px;
 }
 </style>

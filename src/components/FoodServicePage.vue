@@ -8,12 +8,11 @@
           </div>
         </div>
         <template v-if="foodService.coverImage">
-            <img :src="foodService.coverImageUrl" />
+          <img :src="foodService.coverImageUrl" />
         </template>
         <template v-else>
-            <img :src="require('@/assets/bg_blank.png')" />
+          <img :src="require('@/assets/bg_blank.png')" />
         </template>
-        
       </div>
       <div class="sticky-header" v-if="showStickyHeader">
         <div class="back-button" @click="hide()">
@@ -132,6 +131,14 @@
                   >{{getTrad(menu.name)}}</span>
                 </div>
                 <div class="menu-content" v-if="selectedMenu">
+                  <div class="gender-selector">
+                    <span>
+                      Valori nutrizionali per
+                      <!-- <b-icon-caret-down-fill class="dd-icon" /> -->
+                      <b-icon-person-fill class="border rounded p-1 active" />
+                      <b-icon-person-fill class="border rounded p-1" />
+                    </span>
+                  </div>
                   <p
                     class="menu-desc"
                     v-if="selectedMenu.description"
@@ -150,8 +157,18 @@
                           <img :src="getImage(pfp)" />
                         </div>
                         <!-- <b-icon-chevron-right class="more-info-icon" /> -->
-                        <p class="pfp-title">{{getTrad(pfp.name)}}</p>
-                        <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p>
+                        <p class="pfp-title">
+                          {{getTrad(pfp.name)}}
+                          <span class="balanced-badge">
+                            <span>
+                              Equilibrato
+                              <!-- <b-icon-hand-thumbs-up /> -->
+                              <b-icon-star-fill scale=".8" />
+                            </span>
+                          </span>
+                        </p>
+                        <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
+                        <pfp-price :pfp="pfp" />
                         <p class="pfp-ingredients">{{printIngredients(pfp.ingredients)}}</p>
                         <p class="pfp-info">
                           <template v-for="allergen in pfp.allergens">
@@ -163,6 +180,68 @@
                             />
                           </template>
                         </p>
+                        <div class="val-nut-box">
+                          <!-- <span>
+                            <span>Kcal</span>
+                            <b-icon-reception4 scale="1.2" class="red" />
+                          </span>
+                          <span>
+                            <span>Carboidrati</span>
+                            <b-icon-reception2 scale="1.2" />
+                          </span>
+                          <span>
+                            <span>Grassi</span>
+                            <b-icon-reception3 scale="1.2" />
+                          </span>
+                          <span>
+                            <span>Proteine</span>
+                            <b-icon-reception3 scale="1.2" />
+                          </span>-->
+                          <!-- <div>
+                            <label>Kcal</label>
+                            <div>
+                              <b-progress :value="20" :max="100" variant="info"></b-progress>
+                            </div>
+                            <span>400</span>
+                          </div>
+                          <div>
+                            <label>Carboidrati</label>
+                            <div>
+                              <b-progress :value="40" :max="100" variant="info"></b-progress>
+                            </div>
+                            <span>10g</span>
+                          </div>
+                          <div>
+                            <label>Grassi</label>
+                            <div>
+                              <b-progress :value="100" :max="100" variant="info"></b-progress>
+                            </div>
+                            <span>150g</span>
+                          </div>
+                          <div>
+                            <label>Proteine</label>
+                            <div>
+                              <b-progress :value="60" :max="100" variant="info"></b-progress>
+                            </div>
+                            <span>40g</span>
+                          </div>-->
+                          <span>
+                            500
+                            <span>Kcal</span>
+                          </span>
+                          <span>
+                            <span>Carb</span>
+                            <b-icon-reception2 scale="1.2" />
+                          </span>
+                          <span>
+                            <span>Grassi</span>
+                            <b-icon-reception3 scale="1.2" />
+                          </span>
+                          <span>
+                            <span>Prot</span>
+                            <b-icon-reception3 scale="1.2" />
+                          </span>
+                        </div>
                       </div>
                       <!-- <hr /> -->
                     </div>
@@ -175,7 +254,15 @@
                 <div>
                   <template v-for="image in foodService.gallery">
                     <div class="box" :key="image.id">
-                      <img class="image" :src="require('@/assets/pics-demo/' + image.imageUrl)" />
+                      <template v-if="image.demo">
+                        <img class="image" :src="require('@/assets/pics-demo/' + image.imageUrl)" />
+                      </template>
+                      <template v-else>
+                        <img
+                          class="image"
+                          :src="image.otherImages && image.otherImages.smallThumbnailImage ? image.otherImages.smallThumbnailImage : image.imageUrl"
+                        />
+                      </template>
                     </div>
                   </template>
                   <!-- <div class="box" style="height:170px;">1</div>
@@ -223,12 +310,14 @@ import api from "@/helpers/api";
 import MobileModal from "@/components/mobile-modal/MobileModal";
 import FoodServiceInfoPage from "@/components/FoodServiceInfoPage";
 import PfpInfoPage from "@/components/PfpInfoPage";
+import PfpPrice from "@/components/foodservicemenutable/PfpPrice";
 export default {
   name: "FoodServicePage",
   components: {
     MobileModal,
     FoodServiceInfoPage,
-    PfpInfoPage
+    PfpInfoPage,
+    PfpPrice
   },
   data() {
     return {
@@ -281,16 +370,18 @@ export default {
       }
     },
     handleContentScroll(e) {
-      var scrollPos = e.target.scrollTop;
-      var innerHeight = window.innerHeight;
-      var limit = innerHeight * 0.17;
-      // console.log(scrollPos);
-      if (scrollPos > limit) {
-        this.showStickyHeader = true;
-        // console.log("true;");
-      } else {
-        this.showStickyHeader = false;
-        // console.log("false;");
+      if (this.foodService) {
+        var scrollPos = e.target.scrollTop;
+        var innerHeight = window.innerHeight;
+        var limit = innerHeight * 0.17;
+        // console.log(scrollPos);
+        if (scrollPos > limit) {
+          this.showStickyHeader = true;
+          // console.log("true;");
+        } else {
+          this.showStickyHeader = false;
+          // console.log("false;");
+        }
       }
     },
     hide() {
@@ -347,40 +438,49 @@ export default {
       this.axios
         .get(api.GET_FOOD_SERVICE_GALLERY_BY_ID.replace("{id}", this.fsId))
         .then(response => {
-          this.$set(this.foodService, "gallery", [
-            {
-              id: 0,
-              imageUrl: "rist_demo_3.jpeg",
-              order: 1
-              // preferred: true
-            },
-            {
-              id: 1,
-              imageUrl: "rist_demo_5.jpeg",
-              order: 2
-              // preferred: true
-            },
-            {
-              id: 2,
-              imageUrl: "rist_demo_7.jpeg",
-              order: 3
-              // preferred: true
-            },
-            {
-              id: 3,
-              imageUrl: "rist_demo_6.jpeg",
-              order: 4
-              // preferred: true
-            },
-            {
-              id: 4,
-              imageUrl: "rist_demo_4.jpeg",
-              order: 5
-              // preferred: true
-            }
-          ]);
+          if (response.data && response.data.length) {
+            this.$set(this.foodService, "gallery", response.data);
+          } else {
+            this.$set(this.foodService, "gallery", [
+              {
+                id: 0,
+                imageUrl: "rist_demo_3.jpeg",
+                order: 1,
+                demo: true
+                // preferred: true
+              },
+              {
+                id: 1,
+                imageUrl: "rist_demo_5.jpeg",
+                order: 2,
+                demo: true
+                // preferred: true
+              },
+              {
+                id: 2,
+                imageUrl: "rist_demo_7.jpeg",
+                order: 3,
+                demo: true
+                // preferred: true
+              },
+              {
+                id: 3,
+                imageUrl: "rist_demo_6.jpeg",
+                order: 4,
+                demo: true
+                // preferred: true
+              },
+              {
+                id: 4,
+                imageUrl: "rist_demo_4.jpeg",
+                order: 5,
+                demo: true
+                // preferred: true
+              }
+            ]);
+          }
           // this.$set(this.foodService, "gallery", response.data);
-          console.log(JSON.stringify(response.data));
+          // console.log(JSON.stringify(response.data));
         })
         .catch(error => {
           console.log(error);
@@ -516,9 +616,9 @@ export default {
           var menus = [];
           for (let menu of response.data) {
             console.log(menu.type);
-            // if (menu.type === "BASE") {
-            menus.push(menu);
-            // }
+            if (!menu.type || menu.type !== "DELIVERY") {
+              menus.push(menu);
+            }
           }
           this.menus = menus;
           if (menus.length) {
@@ -1129,4 +1229,142 @@ p.pfp-price {
   transform: translateY(-35%);
   color: #ccc;
 } */
+
+.val-nut-box {
+  font-size: 15px;
+  text-align: left;
+  margin-top: -1vh;
+  margin-bottom: 2vh;
+  opacity: 0.7;
+}
+
+/* .val-nut-box > span {
+  margin-right: 5px;
+  border-radius: 5px;
+  padding: 2px 3px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+}
+.val-nut-box > span > span {
+  margin-right: 5px;
+}
+
+.val-nut-box > span > .b-icon {
+  color: var(--info-color);
+}
+
+.val-nut-box > span > .b-icon.green {
+  color: #209c05;
+}
+
+.val-nut-box > span > .b-icon.lightgreen {
+  color: #85e62c;
+}
+
+.val-nut-box > span > .b-icon.yellow {
+  color: #f2ce02;
+}
+
+.val-nut-box > span > .b-icon.red {
+  color: #ff0a0a;
+} */
+
+/* .val-nut-box > div {
+  margin: 0 5px;
+  width: calc(25% - 10px);
+  display: inline-block;
+  text-align: center;
+}
+
+.val-nut-box > div .progress {
+  height: 2px;
+}
+
+.val-nut-box > div label {
+  
+}
+
+.val-nut-box > div span {  
+  font-weight: normal;
+  font-size: 12px;
+} */
+
+.val-nut-box > span {
+  background-color: #fff;
+  /* border: 1px solid #ccc;
+  border-radius: 30px; */
+  padding: 2px 5px;
+  font-size: 13px;
+  margin-right: 3px;
+  opacity: 0.8;
+}
+
+.val-nut-box > span:first-child {
+  font-weight: bold;
+  opacity: 1;
+  font-size: 14px;
+  /* border: 1px solid var(--info-color);
+  border-radius: 30px;
+  background-color: var(--info-color);
+  color: #fff; */
+  color: var(--info-color);
+}
+
+.val-nut-box > span > span {
+  margin-right: 5px;
+}
+.val-nut-box > span:first-child > span {
+  margin-left: 2px;
+  margin-right: 0;
+}
+
+.val-nut-box > span > .b-icon {
+  color: #808080;
+}
+
+.balanced-badge {
+  /*  margin-top: -1.5vh;
+  margin-bottom: 1vh; */
+  margin-left: 5px;
+}
+
+.balanced-badge > span {
+  font-size: 12px;
+  padding: 1px 2px;
+  border-radius: 15px;
+  background-color: var(--primary-color);
+  color: #fff;
+  opacity: 0.8;
+  border: 1px solid var(--primary-color);
+}
+
+.balanced-badge > span .b-icon {
+  margin-left: -1px;
+  margin-right: 2px;
+}
+
+.gender-selector {
+  text-align: right;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.gender-selector > span {
+  /* border: 1px solid #ccc; */
+  border-radius: 15px;
+  padding: 8px 15px;
+}
+
+.gender-selector > span .dd-icon {
+  color: #808080;
+}
+
+.gender-selector > span .b-icon {
+  color: #ccc;
+  font-size: 2rem;
+  margin-left: 5px;
+}
+
+.gender-selector > span .b-icon.active {
+  color: var(--info-color);
+}
 </style>

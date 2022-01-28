@@ -107,6 +107,7 @@ export default {
   border-radius: 15px;
   padding: 5px 15px;
   margin: 5px;
+  display: inline-block;
 }
 
 .badge-selector-box > span.selected {

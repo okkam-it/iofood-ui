@@ -32,7 +32,7 @@
         </p>
         <div class="search-input-box" @click="searchClick()">
           <b-icon-search scale=".8" />
-          <input type="text" placeholder="Piatti, ingredienti, ristoranti.." />
+          <input type="text" placeholder="Pesce, milanese, nome ristorante" />
         </div>
       </template>
       <div class="loading-header" v-else>
@@ -43,74 +43,76 @@
       </div>
     </div>
     <div class="content" :class="{ disabled : foodServiceIdToShow }">
-      <transition-group name="fade">
+      <transition name="fade">
         <template v-if="!loadingContent">
-          <install-banner key="banner-loader" />
-          <!-- <div @click="goToResults()">Risultati</div> -->
-          <div class="categories-shortcuts-box" key="shortcuts-loaders">
-            <div @click="goToResults()">
-              <b-img :src="require('@/assets/food_icons/restaurant.png')" />
-              {{$t("explore_shortcuts.allfs")}}
-            </div>
-            <div
-              v-for="categoryShortcut in categoriesShortcuts"
-              :key="categoryShortcut"
-              @click="goToResults([{
+          <div key="content">
+            <install-banner key="banner-loader" />
+            <!-- <div @click="goToResults()">Risultati</div> -->
+            <div class="categories-shortcuts-box" key="shortcuts-loaders">
+              <div @click="goToResults()">
+                <b-img :src="require('@/assets/food_icons/restaurant.png')" />
+                {{$t("explore_shortcuts.allfs")}}
+              </div>
+              <div
+                v-for="categoryShortcut in categoriesShortcuts"
+                :key="categoryShortcut"
+                @click="goToResults([{
                 type: 'what',
                 value: [categoryShortcut]
               }])"
-            >
-              <b-img
-                :src="require('@/assets/food_icons/' + categoryShortcut.toLowerCase() + '.png')"
-              />
-              {{$t("explore_shortcuts." + categoryShortcut)}}
-            </div>
-          </div>
-          <template v-for="category in categoriesPreviews">
-            <div class="rests-category" :key="category.title">
-              <label>
-                {{$t("explore_shortcuts." + category.title)}}
-                <span
-                  class="show-all-button"
-                  @click="goToResults(category.filters)"
-                >
-                  Vedi tutti
-                  <b-icon-arrow-right />
-                </span>
-              </label>
-              <div>
-                <template v-for="foodService in category.foodServices">
-                  <div
-                    class="rest-card"
-                    @click="showFoodServicePage(foodService.id)"
-                    :key="foodService.id"
-                  >
-                    <div>
-                      <img :src="getRestImage(foodService)" />
-                    </div>
-                    <label>{{foodService.name}}</label>
-                    <p class="info">
-                      <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
-                      <b-icon-dot />
-                      <span>Pizza, Italiano</span>
-                      <br />
-                      <span>€€</span>
-                      <b-icon-dot />
-                      <span>1.5 km</span>
-                    </p>
-                  </div>
-                </template>
-                <div class="show-all-card" @click="goToResults(category.filters)">
-                  <p>
-                    <span>
-                      Vedi tutti
-                      <b-icon-arrow-right />
-                    </span>
-                  </p>
-                </div>
+              >
+                <b-img
+                  :src="require('@/assets/food_icons/' + categoryShortcut.toLowerCase() + '.png')"
+                />
+                {{$t("explore_shortcuts." + categoryShortcut)}}
               </div>
             </div>
-          </template>
+            <template v-for="category in categoriesPreviews">
+              <div class="rests-category" :key="category.title">
+                <label>
+                  {{$t("explore_shortcuts." + category.title)}}
+                  <span
+                    class="show-all-button"
+                    @click="goToResults(category.filters)"
+                  >
+                    Vedi tutti
+                    <b-icon-arrow-right />
+                  </span>
+                </label>
+                <div>
+                  <template v-for="foodService in category.foodServices">
+                    <div
+                      class="rest-card"
+                      @click="showFoodServicePage(foodService.id)"
+                      :key="foodService.id"
+                    >
+                      <div>
+                        <img :src="getRestImage(foodService)" />
+                      </div>
+                      <label>{{foodService.name}}</label>
+                      <p class="info">
+                        <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
+                        <b-icon-dot />
+                        <span>Pizza, Italiano</span>
+                        <br />
+                        <span>€€</span>
+                        <b-icon-dot />
+                        <span>1.5 km</span>
+                      </p>
+                    </div>
+                  </template>
+                  <div class="show-all-card" @click="goToResults(category.filters)">
+                    <p>
+                      <span>
+                        Vedi tutti
+                        <b-icon-arrow-right />
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
         </template>
         <template v-else>
           <div key="content-loaders">
@@ -127,7 +129,7 @@
             </div>
           </div>
         </template>
-      </transition-group>
+      </transition>
     </div>
     <!-- </template> -->
     <location-picker ref="locationpicker" @locationChanged="getUserLocation()" />
@@ -141,6 +143,7 @@
 import LocationPicker from "@/components/LocationPicker";
 import InstallBanner from "@/components/InstallBanner";
 import FoodServicePage from "@/components/FoodServicePage";
+import api from "@/helpers/api";
 export default {
   name: "Explore",
   components: { LocationPicker, InstallBanner, FoodServicePage },
@@ -149,22 +152,20 @@ export default {
       userLocation: null,
       // loading: true,
       foodServiceIdToShow: null,
-      categoriesShortcuts: ["pizza", "sushi", "poke", "hamburger"],
+      categoriesShortcuts: ["pizza", "sushi", "salad", "hamburger", "poke"],
       categoriesPreviews: [
-        {
-          title: "traditional_cuisine",
-          foodServices: [],
-          filters: [
-            {
-              type: "cuisine",
-              value: [124]
-            } /* , { type: "cuisine", value: 1 } */
-          ]
-        },
         {
           title: "happy_hour",
           foodServices: [],
-          filters: [{ type: "situations", value: "Aperitivo" }]
+          filters: [{ type: "situations", value: ["aperitif"] }]
+        },
+        {
+          title: "delivery_takeaway",
+          foodServices: [],
+          filters: [
+            { type: "delivery", value: true },
+            { type: "takeaway", value: true }
+          ]
         },
         {
           title: "opennow",
@@ -177,11 +178,13 @@ export default {
           filters: [{ type: "price", value: "€" }]
         },
         {
-          title: "delivery_takeaway",
+          title: "traditional_cuisine",
           foodServices: [],
           filters: [
-            { type: "delivery", value: true },
-            { type: "takeaway", value: true }
+            {
+              type: "cuisine",
+              value: [124]
+            } /* , { type: "cuisine", value: 1 } */
           ]
         }
       ],
@@ -213,8 +216,8 @@ export default {
     }
   },
   methods: {
-    loadFoodServices() {
-      this.axios
+    async loadFoodServices() {
+      /* this.axios
         .get("/rests.json")
         .then(response => {
           this.foodServices = response.data;
@@ -231,7 +234,32 @@ export default {
         })
         .catch(error => {
           console.log(error);
-        });
+        }); */
+
+      for (var categoryPreview of this.categoriesPreviews) {
+        let body = {
+          geoDistance: "20",
+          latitude: this.userLocation.latitude,
+          longitude: this.userLocation.longitude,
+          language: "it"
+        };
+        for (let filter of categoryPreview.filters) {
+          body[filter.type] = filter.value;
+        }
+        try {
+          let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
+            params: {
+              page: 0,
+              size: 5
+            }
+          });
+          if (response.data) {
+            this.$set(categoryPreview, "foodServices", response.data);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
     },
     getRestImage(foodService) {
       return require("@/assets/pics-demo/" + foodService.coverImage);
@@ -386,8 +414,8 @@ export default {
 .categories-shortcuts-box > div {
   display: inline-block;
   border-radius: 30px;
-  padding: 15px 15px;
-  margin: 0 5px;
+  padding: 10px 15px;
+  margin: 0 3px;
   font-weight: bold;
   color: #4d4d4d;
   font-size: 16px;
@@ -400,12 +428,16 @@ export default {
 
 .categories-shortcuts-box > div img {
   height: 20px;
-  margin-right: 5px;
-  margin-bottom: 3px;
+  /* margin-right: 5px;
+  margin-bottom: 3px; */
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 5px;
 }
 
 .rests-category {
-  margin-top: 1vh;
+  /* margin-top: 1vh; */
+  margin-top: 0;
   padding: 1vh 2vw;
   position: relative;
 }

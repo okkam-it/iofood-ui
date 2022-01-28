@@ -34,6 +34,7 @@ export default {
   --dark-primary-color: #4f6d12;
   --warning-color: #FFC107;
   --danger-color: #df4759;
+  --info-color: #17a2b8;
   /* --light-primary-color: rgba(138, 191, 32, 0.6);
   --light1-primary-color: rgba(138, 191, 32, 0.3);
   --ultra-light-primary-color: rgba(138, 191, 32, 0.1);

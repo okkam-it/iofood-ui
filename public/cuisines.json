@@ -458,30 +458,7 @@
     ],
     "order": null,
     "regional": false
-  },
-  {
-    "id": 22,
-    "name": [
-      {
-        "value": "Caffè",
-        "language": "it"
-      },
-      {
-        "value": "Caffè",
-        "language": "en"
-      },
-      {
-        "value": "Caffè",
-        "language": "de"
-      },
-      {
-        "value": "Caffè",
-        "language": "fr"
-      }
-    ],
-    "order": null,
-    "regional": false
-  },
+  },  
   {
     "id": 23,
     "name": [
@@ -711,30 +688,7 @@
     ],
     "order": null,
     "regional": false
-  },
-  {
-    "id": 33,
-    "name": [
-      {
-        "value": "Cibi curativi",
-        "language": "it"
-      },
-      {
-        "value": "Cibi curativi",
-        "language": "en"
-      },
-      {
-        "value": "Cibi curativi",
-        "language": "de"
-      },
-      {
-        "value": "Cibi curativi",
-        "language": "fr"
-      }
-    ],
-    "order": null,
-    "regional": false
-  },
+  },  
   {
     "id": 34,
     "name": [
@@ -1010,30 +964,7 @@
     ],
     "order": null,
     "regional": false
-  },
-  {
-    "id": 46,
-    "name": [
-      {
-        "value": "Diner",
-        "language": "it"
-      },
-      {
-        "value": "Diner",
-        "language": "en"
-      },
-      {
-        "value": "Diner",
-        "language": "de"
-      },
-      {
-        "value": "Diner",
-        "language": "fr"
-      }
-    ],
-    "order": null,
-    "regional": false
-  },
+  },  
   {
     "id": 47,
     "name": [
@@ -2070,29 +2001,6 @@
     "regional": false
   },
   {
-    "id": 92,
-    "name": [
-      {
-        "value": "Pasticceria giapponese",
-        "language": "it"
-      },
-      {
-        "value": "Pasticceria giapponese",
-        "language": "en"
-      },
-      {
-        "value": "Pasticceria giapponese",
-        "language": "de"
-      },
-      {
-        "value": "Pasticceria giapponese",
-        "language": "fr"
-      }
-    ],
-    "order": null,
-    "regional": false
-  },
-  {
     "id": 93,
     "name": [
       {
@@ -2321,30 +2229,7 @@
     ],
     "order": null,
     "regional": false
-  },
-  {
-    "id": 105,
-    "name": [
-      {
-        "value": "Salutistica",
-        "language": "it"
-      },
-      {
-        "value": "Salutistica",
-        "language": "en"
-      },
-      {
-        "value": "Salutistica",
-        "language": "de"
-      },
-      {
-        "value": "Salutistica",
-        "language": "fr"
-      }
-    ],
-    "order": null,
-    "regional": false
-  },
+  },  
   {
     "id": 106,
     "name": [
@@ -2740,19 +2625,19 @@
     "id": 124,
     "name": [
       {
-        "value": "Trentino",
+        "value": "Trentina",
         "language": "it"
       },
       {
-        "value": "Trentino",
+        "value": "Trentina",
         "language": "en"
       },
       {
-        "value": "Trentino",
+        "value": "Trentina",
         "language": "de"
       },
       {
-        "value": "Trentino",
+        "value": "Trentina",
         "language": "fr"
       }
     ],
@@ -2878,19 +2763,19 @@
     "id": 130,
     "name": [
       {
-        "value": "Veneziano",
+        "value": "Veneziana",
         "language": "it"
       },
       {
-        "value": "Veneziano",
+        "value": "Veneziana",
         "language": "en"
       },
       {
-        "value": "Veneziano",
+        "value": "Veneziana",
         "language": "de"
       },
       {
-        "value": "Veneziano",
+        "value": "Veneziana",
         "language": "fr"
       }
     ],

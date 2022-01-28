@@ -24,16 +24,32 @@ let checkGeolocation = async next => {
 };
 
 let checkMobile = async (next, to) => {
+  if (to.query.previewMode && to.query.previewMode === "mobile") {
+    return next();
+  }
+
   var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (isMobile) {
     if (to.name === "Web") {
-      return next({ name: "Explore" });
+      let nextUrl = to.query.nextUrl;
+      if (nextUrl) {
+        return next(nextUrl);
+      } else {
+        return next({ name: "Explore" });
+      }
     } /* else {
       next();
     } */
   } else {
-    if (to.name !== "Web") {
-      return next({ name: "Web" });
+    console.log(to.name);
+    if (to.name !== "Web" && to.name !== "FoodServiceMenuWeb") {
+      // return next({ name: "Web" });
+      return next({
+        name: "Web",
+        query: {
+          nextUrl: to.fullPath
+        }
+      });
     }
   }
   if (to.name === "Root") {
@@ -52,7 +68,9 @@ const routes = [
     name: "Explore",
     component: load("Explore"),
     beforeEnter: (to, from, next) => {
-      checkGeolocation(next);
+      if (to.name !== "FoodServiceResult") {
+        checkGeolocation(next);
+      }
     },
     children: [
       {
@@ -92,9 +110,19 @@ const routes = [
     component: load("FoodServiceMenuTable")
   },
   {
+    path: "restaurant/:id/delivery/:menuid?",
+    name: "FoodServiceMenuDelivery",
+    component: load("FoodServiceMenuDelivery")
+  },
+  {
     path: "web",
     name: "Web",
     component: load("Web")
+  },
+  {
+    path: "restaurant/:id/web",
+    name: "FoodServiceMenuWeb",
+    component: load("FoodServiceMenuWeb")
   }
   /* {
     path: "/restaurant",
@@ -203,7 +231,10 @@ const router = new VueRouter({
 
 import i18n from "@/locales/i18n";
 router.beforeEach((to, from, next) => {
-  console.log(to.name);
+  if (from.name == "Explore" && to.name == "Root") {
+    router.go(-1);
+  }
+
   let locale = localStorage.getItem("locale");
   if (locale) {
     i18n.locale = locale;

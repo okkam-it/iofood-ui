@@ -4,22 +4,32 @@
       <b-icon-x scale="2.2" @click="hide()" />Filtra
     </div>
     <div class="content">
-      <filter-single-option
+      <!-- <filter-single-option
         :selectedFilter.sync="filters.orderby"
         :options="orderBy"
         title="Ordina per"
-      />
+      /> -->
 
-      <filter-multi-option
+      <!-- <filter-multi-option
         :selectedFilters.sync="filters.context"
         :options="contexts"
         title="Occasione"
-      />
+      /> -->
 
       <filter-base-option
         :selectedFilter.sync="filters.opennow"
         :option="'opennow'"
-        title="Aperto ora"
+        title="Orario"
+      />
+
+      <filter-base-option
+        :selectedFilter.sync="filters.takeaway"
+        :option="'takeaway'"
+        title="Asporto/Domicilio"
+      />
+      <filter-base-option
+        :selectedFilter.sync="filters.delivery"
+        :option="'delivery'"
       />
 
       <filter-multi-option :selectedFilters.sync="filters.price" :options="prices" title="Prezzo" />
@@ -28,18 +38,12 @@
         :selectedFilters.sync="filters.cuisine"
         :options="cuisines"
         title="Tipo di cucina"
-      />
-
-      <filter-base-option
-        :selectedFilter.sync="filters.offerVariety"
-        :option="'offerVariety'"
-        title="Varietà dell'offerta"
-      />
+      />      
 
       <filter-multi-option
         :selectedFilters.sync="filters.situations"
         :options="situations"
-        title="Bisogno del momento"
+        title="Momenti della giornata"
       />
 
       <filter-multi-option
@@ -60,22 +64,17 @@
         title="Aspetti nutrizionali"
       />
 
+      <filter-base-option
+        :selectedFilter.sync="filters.offerVariety"
+        :option="'offerVariety'"
+        title="Varietà dell'offerta"
+      />
+
       <filter-multi-option
         :selectedFilters.sync="filters.services"
         :options="services"
         title="Servizi"
-      />
-
-      <filter-base-option
-        :selectedFilter.sync="filters.takeaway"
-        :option="'takeaway'"
-        title="Asporto"
-      />
-      <filter-base-option
-        :selectedFilter.sync="filters.delivery"
-        :option="'delivery'"
-        title="Delivery"
-      />
+      />      
 
       <filter-slider-option
         :selectedFilter.sync="filters.distance"
@@ -85,11 +84,11 @@
         step="5"
       />
 
-      <filter-multi-option
+      <!-- <filter-multi-option
         :selectedFilters.sync="filters.pois"
         :options="pois"
         title="Vicinanza a punti di interesse"
-      />
+      /> -->
 
       <filter-multi-option
         :selectedFilters.sync="filters.fsType"
@@ -108,6 +107,12 @@
         :options="mealVouchers"
         title="Buoni pasto"
       />
+
+      <filter-multi-option
+        :selectedFilters.sync="filters.context"
+        :options="contexts"
+        title="Occasione"
+      />
     </div>
     <div class="footer">
       <div>
@@ -124,7 +129,7 @@
 // import MobileModal from "@/components/mobile-modal/MobileModal";
 import FilterMultiOption from "@/components/filters/FilterMultiOption";
 import FilterBaseOption from "@/components/filters/FilterBaseOption";
-import FilterSingleOption from "@/components/filters/FilterSingleOption";
+// import FilterSingleOption from "@/components/filters/FilterSingleOption";
 import FilterSliderOption from "@/components/filters/FilterSliderOption";
 export default {
   name: "FiltersContent",
@@ -132,7 +137,7 @@ export default {
     // MobileModal,
     FilterMultiOption,
     FilterBaseOption,
-    FilterSingleOption,
+    // FilterSingleOption,
     FilterSliderOption
   },
   data() {
@@ -142,7 +147,7 @@ export default {
       cuisines: [],
       payments: [],
       prices: ["€", "€€", "€€€"],
-      orderBy: ["Distanza", "Rilevanza", "Prezzo medio"],
+      orderBy: ["Distanza", "Pertinenza", "Prezzo medio"],
       foodServiceTypes: [],
       mealVouchers: [],
       foodRestrictions: [],
@@ -376,6 +381,7 @@ export default {
   width: 100%;
   background-color: #fff;
   border-bottom: 1px solid #ccc;
+  z-index: 5;
 }
 
 .header .b-icon {
