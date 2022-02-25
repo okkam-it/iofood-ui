@@ -25,12 +25,18 @@
           <h1 class="rest-name">{{foodService.name}}</h1>
           <div class="info mb-2">
             <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
+            <template v-if="foodService.cuisine && foodService.cuisine.length">
             <b-icon-dot />
-            <span>Pizza, Italiano</span>
+            <span>
+              {{foodService.cuisine.map(function(elem){
+              return this.getTrad(elem.name);
+              }).join(",")}}
+            </span>
+            </template>
             <br />
             <span>€€</span>
-            <b-icon-dot />
-            <span>1.5 km</span>
+            <!-- <b-icon-dot />
+            <span>1.5 km</span>-->
             <label v-if="closedNow" @click="showMoreInfo = true" class="closed-now">
               <b-icon-clock-fill />Chiuso ora
               <span v-if="openAt">
@@ -63,6 +69,7 @@
                 </template>
               </ul>
             </div>
+            <br />
             <label class="more-info" @click="showMoreInfo = true">
               Clicca qui per visualizzare orari, indirizzo e altre
               <span>
@@ -135,8 +142,16 @@
                     <span>
                       Valori nutrizionali per
                       <!-- <b-icon-caret-down-fill class="dd-icon" /> -->
-                      <b-icon-person-fill class="border rounded p-1 active" />
-                      <b-icon-person-fill class="border rounded p-1" />
+                      <!-- <b-icon-person-fill class="border rounded p-1 active" />
+                      <b-icon-person-fill class="border rounded p-1" />-->
+                      <template v-if="gender === 0">
+                        <img :src="gen_m_active" class="active" />
+                        <img :src="gen_f" @click="$store.dispatch('userModule/setGenderFemale');" />
+                      </template>
+                      <template v-else>
+                        <img :src="gen_m" @click="$store.dispatch('userModule/setGenderMale');" />
+                        <img :src="gen_f_active" class="active" />
+                      </template>
                     </span>
                   </div>
                   <p
@@ -159,13 +174,12 @@
                         <!-- <b-icon-chevron-right class="more-info-icon" /> -->
                         <p class="pfp-title">
                           {{getTrad(pfp.name)}}
-                          <span class="balanced-badge">
+                          <!-- <span class="balanced-badge">
                             <span>
-                              Equilibrato
-                              <!-- <b-icon-hand-thumbs-up /> -->
+                              Equilibrato                              
                               <b-icon-star-fill scale=".8" />
                             </span>
-                          </span>
+                          </span>-->
                         </p>
                         <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
                         <pfp-price :pfp="pfp" />
@@ -174,57 +188,13 @@
                           <template v-for="allergen in pfp.allergens">
                             <img
                               class="allergen-icon"
-                              @click.stop="allergensToShow = pfp.allergens"
                               :key="allergen"
                               :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
                             />
                           </template>
                         </p>
-                        <div class="val-nut-box">
-                          <!-- <span>
-                            <span>Kcal</span>
-                            <b-icon-reception4 scale="1.2" class="red" />
-                          </span>
-                          <span>
-                            <span>Carboidrati</span>
-                            <b-icon-reception2 scale="1.2" />
-                          </span>
-                          <span>
-                            <span>Grassi</span>
-                            <b-icon-reception3 scale="1.2" />
-                          </span>
-                          <span>
-                            <span>Proteine</span>
-                            <b-icon-reception3 scale="1.2" />
-                          </span>-->
-                          <!-- <div>
-                            <label>Kcal</label>
-                            <div>
-                              <b-progress :value="20" :max="100" variant="info"></b-progress>
-                            </div>
-                            <span>400</span>
-                          </div>
-                          <div>
-                            <label>Carboidrati</label>
-                            <div>
-                              <b-progress :value="40" :max="100" variant="info"></b-progress>
-                            </div>
-                            <span>10g</span>
-                          </div>
-                          <div>
-                            <label>Grassi</label>
-                            <div>
-                              <b-progress :value="100" :max="100" variant="info"></b-progress>
-                            </div>
-                            <span>150g</span>
-                          </div>
-                          <div>
-                            <label>Proteine</label>
-                            <div>
-                              <b-progress :value="60" :max="100" variant="info"></b-progress>
-                            </div>
-                            <span>40g</span>
-                          </div>-->
+                        <pfp-nutritional-values-preview :pfpId="String(pfp.id)" :gender="gender" />
+                        <!-- <div class="val-nut-box">                          
                           <span>
                             500
                             <span>Kcal</span>
@@ -241,7 +211,7 @@
                             <span>Prot</span>
                             <b-icon-reception3 scale="1.2" />
                           </span>
-                        </div>
+                        </div>-->
                       </div>
                       <!-- <hr /> -->
                     </div>
@@ -311,13 +281,16 @@ import MobileModal from "@/components/mobile-modal/MobileModal";
 import FoodServiceInfoPage from "@/components/FoodServiceInfoPage";
 import PfpInfoPage from "@/components/PfpInfoPage";
 import PfpPrice from "@/components/foodservicemenutable/PfpPrice";
+import PfpNutritionalValuesPreview from "@/components/PfpNutritionalValuesPreview";
+
 export default {
   name: "FoodServicePage",
   components: {
     MobileModal,
     FoodServiceInfoPage,
     PfpInfoPage,
-    PfpPrice
+    PfpPrice,
+    PfpNutritionalValuesPreview
   },
   data() {
     return {
@@ -332,7 +305,11 @@ export default {
       dishToShow: null,
       dateOptions: { day: "numeric", month: "long", year: "numeric" },
       closedNow: false,
-      openAt: null
+      openAt: null,
+      gen_m: require("@/assets/gen_m.png"),
+      gen_f: require("@/assets/gen_f.png"),
+      gen_m_active: require("@/assets/gen_m_active.png"),
+      gen_f_active: require("@/assets/gen_f_active.png")
     };
   },
   methods: {
@@ -429,6 +406,17 @@ export default {
           this.loadFsLocation();
           this.loadMenus();
           this.loadGallery();
+          this.loadCuisine();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    loadCuisine() {
+      this.axios
+        .get(api.GET_FOOD_SERVICE_CUISINE_BY_ID.replace("{id}", this.fsId))
+        .then(response => {
+          this.$set(this.foodService, "cuisine", response.data);
         })
         .catch(error => {
           console.log(error);
@@ -742,6 +730,9 @@ export default {
     this.loadFoodService();
   },
   computed: {
+    gender() {
+      return this.$store.getters["userModule/gender"];
+    },
     sharingEnabled() {
       return navigator.share;
     },
@@ -1230,97 +1221,6 @@ p.pfp-price {
   color: #ccc;
 } */
 
-.val-nut-box {
-  font-size: 15px;
-  text-align: left;
-  margin-top: -1vh;
-  margin-bottom: 2vh;
-  opacity: 0.7;
-}
-
-/* .val-nut-box > span {
-  margin-right: 5px;
-  border-radius: 5px;
-  padding: 2px 3px;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
-}
-.val-nut-box > span > span {
-  margin-right: 5px;
-}
-
-.val-nut-box > span > .b-icon {
-  color: var(--info-color);
-}
-
-.val-nut-box > span > .b-icon.green {
-  color: #209c05;
-}
-
-.val-nut-box > span > .b-icon.lightgreen {
-  color: #85e62c;
-}
-
-.val-nut-box > span > .b-icon.yellow {
-  color: #f2ce02;
-}
-
-.val-nut-box > span > .b-icon.red {
-  color: #ff0a0a;
-} */
-
-/* .val-nut-box > div {
-  margin: 0 5px;
-  width: calc(25% - 10px);
-  display: inline-block;
-  text-align: center;
-}
-
-.val-nut-box > div .progress {
-  height: 2px;
-}
-
-.val-nut-box > div label {
-  
-}
-
-.val-nut-box > div span {  
-  font-weight: normal;
-  font-size: 12px;
-} */
-
-.val-nut-box > span {
-  background-color: #fff;
-  /* border: 1px solid #ccc;
-  border-radius: 30px; */
-  padding: 2px 5px;
-  font-size: 13px;
-  margin-right: 3px;
-  opacity: 0.8;
-}
-
-.val-nut-box > span:first-child {
-  font-weight: bold;
-  opacity: 1;
-  font-size: 14px;
-  /* border: 1px solid var(--info-color);
-  border-radius: 30px;
-  background-color: var(--info-color);
-  color: #fff; */
-  color: var(--info-color);
-}
-
-.val-nut-box > span > span {
-  margin-right: 5px;
-}
-.val-nut-box > span:first-child > span {
-  margin-left: 2px;
-  margin-right: 0;
-}
-
-.val-nut-box > span > .b-icon {
-  color: #808080;
-}
-
 .balanced-badge {
   /*  margin-top: -1.5vh;
   margin-bottom: 1vh; */
@@ -1366,5 +1266,18 @@ p.pfp-price {
 
 .gender-selector > span .b-icon.active {
   color: var(--info-color);
+}
+
+.gender-selector img {
+  display: inline-block;
+  height: 35px;
+  margin-left: 5px;
+  border: 2px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 5px;
+}
+
+.gender-selector img.active {
+  border-color: var(--info-color);
 }
 </style>

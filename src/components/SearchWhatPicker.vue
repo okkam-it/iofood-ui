@@ -29,6 +29,10 @@
               <b-img v-if="res.id" :src="require('@/assets/food_icons/restaurant.png')" />
               {{res.name}}
             </li>
+            <li @click="showResult(searchString)">
+              <b-icon-search />Cerca risultati per
+              <strong>"{{searchString}}"</strong>
+            </li>
           </ul>
         </template>
         <template v-else>
@@ -72,7 +76,7 @@ export default {
         { name: "Pizza" },
         { name: "Fiorentina" },
         { name: "Tagliata" },
-        { name: "Bistecca" },        
+        { name: "Bistecca" },
         { name: "Ristorante La Braciera", id: 12 },
         { name: "Ristorante Pizzeria Alla Torre", id: 3 },
         { name: "Altamarea Enoteca Bistrot", id: 4 },
@@ -219,6 +223,11 @@ ul.results-box {
 }
 
 .tips-content > div .b-icon {
+  margin-right: 10px;
+  color: #ccc;
+}
+
+.results-box .b-icon {
   margin-right: 10px;
   color: #ccc;
 }

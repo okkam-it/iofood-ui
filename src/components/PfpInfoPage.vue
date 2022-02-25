@@ -52,43 +52,28 @@
               :key="allergen"
               :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
             />
-            {{allergen}}
+            {{$t('allergen.' + allergen)}}
           </div>
         </div>
       </template>
-      <div class="nut-val-box">
-        <label>Valori nutrizionali</label>
-        <!-- <ul>
-          <li>
-            <label>Kcal</label>
-            <span>900</span>
-            <div>
-              <b-progress :value="80" :max="100" variant="danger"></b-progress>
-            </div>
-          </li>
-          <li>
-            <label>Carboidrati</label>
-            <span>xx</span>
-            <div>
-              <b-progress :value="60" :max="100" variant="warning"></b-progress>
-            </div>
-          </li>
-          <li>
-            <label>Grassi</label>
-            <span>xx</span>
-            <div>
-              <b-progress :value="20" :max="100" variant="success"></b-progress>
-            </div>
-          </li>
-          <li>
-            <label>Proteine</label>
-            <span>xx</span>
-            <div>
-              <b-progress :value="70" :max="100" variant="success"></b-progress>
-            </div>
-          </li>
-        </ul>-->
-        <div>
+      <div class="nut-val-box" v-if="nutritionalValues" :key="'gender_' + gender">
+        <label>
+          Valori nutrizionali
+          <span>(Su base giornaliera)</span>
+        </label>
+        <div class="gender-selector">
+          <span>
+            <template v-if="gender === 0">
+              <img :src="gen_m_active" class="active" />
+              <img :src="gen_f" @click="$store.dispatch('userModule/setGenderFemale');" />
+            </template>
+            <template v-else>
+              <img :src="gen_m" @click="$store.dispatch('userModule/setGenderMale');" />
+              <img :src="gen_f_active" class="active" />
+            </template>
+          </span>
+        </div>
+        <!-- <div>
           <donut-chart title="Calorie" sub1="500" sub2="di 1500" :value="30" />
         </div>
         <div>
@@ -99,10 +84,75 @@
         </div>
         <div>
           <donut-chart title="Proteine" sub1="92g" sub2="di 81g" :value="130" />
+        </div>-->
+        <div v-if="nutritionalValues.energyKcal || nutritionalValues.energyKcal == 0">
+          <donut-chart
+            title="Calorie"
+            :sub1="String(nutritionalValues.energyKcal.toFixed(2))"
+            :sub2="'di ' + String(kcalDaily)"
+            :value="calcDailyPercent(nutritionalValues.energyKcal, kcalDaily)"
+          />
+        </div>
+        <div v-if="nutritionalValues.carbohydrate || nutritionalValues.carbohydrate == 0">
+          <donut-chart
+            title="Carboidrati"
+            :sub1="String(nutritionalValues.carbohydrate.toFixed(2) + 'g')"
+            :sub2="'di ' + String(carbDaily)+ 'g'"
+            :value="calcDailyPercent(nutritionalValues.carbohydrate, carbDaily)"
+          />
+        </div>
+        <div v-if="nutritionalValues.fat || nutritionalValues.fat == 0">
+          <donut-chart
+            title="Grassi"
+            :sub1="String(nutritionalValues.fat.toFixed(2) + 'g')"
+            :sub2="'di ' + String(fatDaily)+ 'g'"
+            :value="calcDailyPercent(nutritionalValues.fat, fatDaily)"
+          />
+        </div>
+        <div v-if="nutritionalValues.proteins || nutritionalValues.proteins == 0">
+          <donut-chart
+            title="Proteine"
+            :sub1="String(nutritionalValues.proteins.toFixed(2) + 'g')"
+            :sub2="'di ' + String(protDaily)+ 'g'"
+            :value="calcDailyPercent(nutritionalValues.proteins, protDaily)"
+          />
         </div>
       </div>
-      <!-- <label>Valori nutrizionali</label>
-      <div></div>-->
+
+      <div class="balanced-meal-box">
+        <label>Combinazioni per un pasto equilibrato</label>
+        <div class="gender-selector">
+          <span>
+            <template v-if="gender === 0">
+              <img :src="gen_m_active" class="active" />
+              <img :src="gen_f" @click="$store.dispatch('userModule/setGenderFemale');" />
+            </template>
+            <template v-else>
+              <img :src="gen_m" @click="$store.dispatch('userModule/setGenderMale');" />
+              <img :src="gen_f_active" class="active" />
+            </template>
+          </span>
+        </div>
+        <div class="combination" v-for="(pfps, k) in dietary" :key="k">
+          <!-- <p>{{getTrad(pfp.name)}}</p> -->
+          <p>{{k}}</p>
+          <p v-for="pfp in pfps" :key="pfp">
+            <b-icon-arrow90deg-down rotate="-90" shift-v="3" />{{pfp}}
+          </p>
+        </div>
+        <!-- <div class="combination">
+          <p>{{getTrad(pfp.name)}}</p>
+          <p>
+            <b-icon-arrow90deg-down rotate="-90" shift-v="4" />Nome piatto
+          </p>
+        </div>
+        <div class="combination">
+          <p>{{getTrad(pfp.name)}}</p>
+          <p>
+            <b-icon-arrow90deg-down rotate="-90" shift-v="4" />Nome piatto 2
+          </p>
+        </div> -->
+      </div>
 
       <!-- <button @click="hide()">Chiudi</button> -->
     </div>
@@ -122,7 +172,17 @@ export default {
   data() {
     return {
       modifiers: [],
-      suggestedBeverage: null
+      suggestedBeverage: null,
+      dietary: null,
+      nutritionalValues: null,
+      kcalDaily: 0,
+      carbDaily: 0,
+      fatDaily: 0,
+      protDaily: 0,
+      gen_m: require("@/assets/gen_m.png"),
+      gen_f: require("@/assets/gen_f.png"),
+      gen_m_active: require("@/assets/gen_m_active.png"),
+      gen_f_active: require("@/assets/gen_f_active.png")
     };
   },
   props: {
@@ -133,13 +193,74 @@ export default {
   computed: {
     fsId() {
       return this.$route.params.id;
+    },
+    gender() {
+      return this.$store.getters["userModule/gender"];
+    }
+  },
+  watch: {
+    gender() {
+      this.setNutritionalDailyLimits();
     }
   },
   mounted() {
     this.loadModifiers();
     this.loadSuggestedBeverage();
+    this.loadDietary();
+    this.loadNutritionalValues();
   },
   methods: {
+    calcDailyPercent(val, limit) {
+      return (val * 100) / limit;
+    },
+    loadDietary() {
+      this.axios
+        .get(api.GET_PFP_DIETARY.replace("{id}", this.pfp.id))
+        .then(response => {
+          if (response.data) {
+            var dietary = {};
+             for (let key in response.data) {
+               let val = response.data[key];
+              if (Array.isArray(val) && val.length) {
+               dietary[key] = val;
+              }
+            } 
+            this.dietary = dietary;
+            // console.log(JSON.stringify(this.dietary));
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    loadNutritionalValues() {
+      // load nutritional daily limits
+      this.setNutritionalDailyLimits();
+      console.log(this.carbDaily);
+
+      this.axios
+        .get(api.GET_PFP_NUTRITIONAL_VALUES.replace("{id}", this.pfp.id))
+        .then(response => {
+          if (response.data) {
+            var nutritionalValues = response.data;
+            if (
+              (nutritionalValues.energyKcal ||
+                nutritionalValues.energyKcal == 0) &&
+              (nutritionalValues.carbohydrate ||
+                nutritionalValues.carbohydrate == 0) &&
+              (nutritionalValues.fat || nutritionalValues.fat == 0) &&
+              (nutritionalValues.proteins || nutritionalValues.proteins == 0)
+            ) {
+              this.nutritionalValues = nutritionalValues;
+            }
+
+            // console.log(JSON.stringify(this.dietary));
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     loadSuggestedBeverage() {
       if (this.pfp.suggestedBeverage) {
         this.axios
@@ -306,6 +427,14 @@ button {
 
 .nut-val-box {
   margin-top: 20px;
+  height: 350px;
+}
+
+.nut-val-box > label > span {
+  font-size: 13px;
+  font-weight: normal;
+  margin-left: 5px;
+  color: #808080;
 }
 
 .nut-val-box ul {
@@ -325,5 +454,70 @@ button {
 .nut-val-box ul li > span {
   float: right;
   font-size: 14px;
+}
+
+.balanced-meal-box > div.combination {
+  border: 1px solid var(--info-color);
+  margin-top: 5px;
+  padding: 5px 5px;
+  border-radius: 10px;
+  background-color: #e8fafc;
+}
+
+.balanced-meal-box p {
+  color: #4d4d4d;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.balanced-meal-box p:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.balanced-meal-box p:last-child {
+  color: #4d4d4d;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.gender-selector {
+  text-align: right;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.gender-selector > span {
+  /* border: 1px solid #ccc; */
+  border-radius: 15px;
+  padding: 8px 15px;
+}
+
+.gender-selector > span .dd-icon {
+  color: #808080;
+}
+
+.gender-selector > span .b-icon {
+  color: #ccc;
+  font-size: 2rem;
+  margin-left: 5px;
+}
+
+.gender-selector > span .b-icon.active {
+  color: var(--info-color);
+}
+
+.gender-selector img {
+  display: inline-block;
+  height: 30px;
+  margin-left: 5px;
+  border: 2px solid #ccc;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+.gender-selector img.active {
+  border-color: var(--info-color);
 }
 </style>

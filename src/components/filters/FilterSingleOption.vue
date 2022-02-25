@@ -3,12 +3,18 @@
     <label>{{title}}</label>
     <div>
       <ul>
-        <li v-for="option in options" :key="option.id || option">
+        <li v-for="option in options" :key="option.id || option.label || option">
           <template v-if="option.id">
             <span
               :class="{ active : selectedFilter === option}"
               @click="toggleArrayItem(option)"
             >{{getOptionName(option.name)}}</span>
+          </template>
+          <template v-if="option.label">
+            <span
+              :class="{ active : String(selectedFilter) === String(option.value)}"
+              @click="toggleArrayItem(String(option.value))"
+            >{{getOptionName(option.label)}}</span>
           </template>
           <template v-else>
             <span
@@ -50,7 +56,11 @@ export default {
     },
     title: {
       type: String
+    },
+    optional: {
+      type: Boolean
     }
+
   },
   methods: {
     getOptionName(name) {
@@ -67,7 +77,16 @@ export default {
       return full.slice(0, this.maxListItems <= max ? this.maxListItems : max);
     },
     toggleArrayItem(data) {
-      this.$emit("update:selectedFilter", data);
+      if (this.optional) {
+        if (this.selectedFilter === data) {
+          this.$emit("update:selectedFilter", null);
+        } else {
+          this.$emit("update:selectedFilter", data);
+        }
+      } else {
+        this.$emit("update:selectedFilter", data);
+      }
+      
       /* var index = array.findIndex(x => (x.id ? x.id === data.id : x === data));
       if (index > -1) {
         array.splice(index, 1);

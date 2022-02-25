@@ -11,6 +11,21 @@ export default {
         return trad.value;
       }
       return data[0] ? data[0].value : "";
+    },
+    setNutritionalDailyLimits() {
+      this.kcalDaily = this.gender === 0 ? 2250 : 1800;
+      this.carbDaily = this.gender === 0 ? 300 : 250;
+      this.fatDaily = this.gender === 0 ? 70 : 55;
+      this.protDaily = this.gender === 0 ? 80 : 68;
+    },
+    getPriceRangeIcon(range) {
+      if (range < 0.3) {
+        return "€";
+      } else if (range < 0.6) {
+        return "€€";
+      } else {
+        return "€€€";
+      }
     }
   }
 };

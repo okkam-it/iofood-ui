@@ -12,14 +12,14 @@
           type="text"
           placeholder="Dove vuoi cercare?"
           @input="debounceInput"
-        /> -->
+        />-->
         <input
-            ref="searchinput"
-            :value="searchString"
-            @input="search"
-            type="text"
-            placeholder="Dove vuoi cercare?"
-          />
+          ref="searchinput"
+          :value="searchString"
+          @input="search"
+          type="text"
+          placeholder="Dove vuoi cercare?"
+        />
       </div>
       <hr />
       <div class="content">
@@ -28,7 +28,7 @@
             class="item"
             v-for="(pred, k) in predictions"
             :key="'pred-' + k"
-            @click="findCoordinates(pred.description)"
+            @click="findCoordinates(pred)"
           >
             <b-icon-geo-alt class="mr-2" />
             {{pred.description}}
@@ -89,9 +89,10 @@ export default {
     };
   },
   watch: {
-    /* searchString() {
+    searchString() {
+      // console.log("wee");
       this.autocompleteLocation();
-    } */
+    }
   },
   methods: {
     isOpen() {
@@ -125,7 +126,39 @@ export default {
           console.log(error);
         });
     },
-    findCoordinates(address) {
+    findCoordinates(locData) {
+      this.axios
+        .get(api.GET_PLACE_COORDS, {
+          params: {
+            placeId: locData.place_id
+          }
+        })
+        .then(response => {
+          if (response.data) {
+            // console.log(JSON.stringify(locData));
+
+            var location = {
+              latitude: response.data.lat,
+              longitude: response.data.lng,
+              name:
+                locData.terms && locData.terms.length
+                  ? locData.terms[0].value
+                  : locData.structured_formatting.main_text
+            };
+
+            this.$store.dispatch("geolocationModule/setUserLocation", location);
+            this.$emit("locationChanged");
+            this.searchString = "";
+            this.hide();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      // console.log(JSON.stringify(address));
+      // console.log(location.place_id);
+    },
+    /* findCoordinates(address) {
       console.log(address);
       this.axios
         .get(
@@ -143,16 +176,24 @@ export default {
           this.$store.dispatch("geolocationModule/setUserLocation", location);
           this.$emit("locationChanged");
           this.searchString = "";
-          this.hide();
-          // console.log(JSON.stringify(response.data));
-          // ctx.$store.dispatch("geolocationModule/setUserLocationNominatim", coords);
+          this.hide();          
         })
         .catch(error => {
           console.log(error);
         });
-    },
+    }, */
     setLocation(city) {
-      var latitude = city.latitude;
+      var location = {
+        latitude: city.latitude,
+        longitude: city.longitude,
+        name: city.name
+      };
+
+      this.$store.dispatch("geolocationModule/setUserLocation", location);
+      this.$emit("locationChanged");
+      this.searchString = "";
+      this.hide();
+      /* var latitude = city.latitude;
       var longitude = city.longitude;
       this.axios
         .get(
@@ -166,7 +207,7 @@ export default {
           var location = {
             latitude: latitude,
             longitude: longitude,
-            address: response.data.address
+            name: response.data.address.name
           };
           this.$store.dispatch("geolocationModule/setUserLocation", location);
           this.$emit("locationChanged");
@@ -176,7 +217,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-        });
+        }); */
     },
     async setCurrentLocation() {
       try {

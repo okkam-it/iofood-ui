@@ -36,7 +36,7 @@ export default {
                 var location = {
                   latitude: latitude,
                   longitude: longitude,
-                  address: response.data.address
+                  name: response.data.address.city
                 };
                 ctx.$store.dispatch(
                   "geolocationModule/setUserLocation",

@@ -90,6 +90,12 @@
                     :class="{ active : selectedFilters.includes(option)}"
                     @click="toggleArrayItem(option, selectedFilters)"
                   >{{$t("filters." + option)}}</span>
+                  <!-- <template v-if="option === 'balanced'">
+                    <span class="gender-selector">
+                      <b-icon-person-fill class="border rounded p-1 active" />
+                      <b-icon-person-fill class="border rounded p-1" />
+                    </span>
+                  </template> -->
                 </template>
               </li>
             </ul>
@@ -151,17 +157,17 @@ export default {
       if (this.isNumeric(option)) {
         var opt = this.options.find(x => option === x.id);
         if (!opt) {
-          return this.$t('filters.' + opt);
+          return this.$t("filters." + opt);
         }
         if (typeof opt === "string" || opt instanceof String) {
-          return this.$t('filters.' + opt);
+          return this.$t("filters." + opt);
         }
         if (Array.isArray(opt.name)) {
           return this.getTrad(opt.name);
         }
         return opt.name;
       } else {
-        return this.$t('filters.' + option);
+        return this.$t("filters." + option);
       }
     },
     filterElements(filtered, full) {

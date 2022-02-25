@@ -4,21 +4,17 @@
       <b-icon-x scale="2.2" @click="hide()" />Filtra
     </div>
     <div class="content">
+      <!-- HIDDEN -->
       <!-- <filter-single-option
         :selectedFilter.sync="filters.orderby"
         :options="orderBy"
         title="Ordina per"
-      /> -->
-
-      <!-- <filter-multi-option
-        :selectedFilters.sync="filters.context"
-        :options="contexts"
-        title="Occasione"
-      /> -->
+      />-->
+      <!-- END HIDDEN -->
 
       <filter-base-option
-        :selectedFilter.sync="filters.opennow"
-        :option="'opennow'"
+        :selectedFilter.sync="filters.openNow"
+        :option="'openNow'"
         title="Orario"
       />
 
@@ -27,21 +23,35 @@
         :option="'takeaway'"
         title="Asporto/Domicilio"
       />
-      <filter-base-option
-        :selectedFilter.sync="filters.delivery"
-        :option="'delivery'"
+      <filter-base-option :selectedFilter.sync="filters.delivery" :option="'delivery'" />
+
+      <!-- <filter-multi-option
+        :selectedFilters.sync="filters.price"
+        :options="prices"
+        title="Prezzo"
+      />-->
+
+      <filter-single-option
+        :selectedFilter.sync="filters.priceRange"
+        :options="prices"
+        title="Prezzo"
+        optional
       />
 
-      <filter-multi-option :selectedFilters.sync="filters.price" :options="prices" title="Prezzo" />
+      <!-- <filter-multi-option
+        :selectedFilters.sync="filters.price"
+        :options="prices"
+        title="Prezzo"
+      />-->
 
       <filter-multi-option
-        :selectedFilters.sync="filters.cuisine"
+        :selectedFilters.sync="filters.cuisines"
         :options="cuisines"
         title="Tipo di cucina"
-      />      
+      />
 
       <filter-multi-option
-        :selectedFilters.sync="filters.situations"
+        :selectedFilters.sync="filters.moments"
         :options="situations"
         title="Momenti della giornata"
       />
@@ -59,45 +69,39 @@
       />
 
       <filter-multi-option
-        :selectedFilters.sync="filters.nutritionalFacts"
+        :selectedFilters.sync="filters.nutritionalAspects"
         :options="nutritionalFacts"
         title="Aspetti nutrizionali"
       />
 
       <filter-base-option
-        :selectedFilter.sync="filters.offerVariety"
+        :selectedFilter.sync="filters.variety"
         :option="'offerVariety'"
         title="Varietà dell'offerta"
       />
 
       <filter-multi-option
-        :selectedFilters.sync="filters.services"
-        :options="services"
+        :selectedFilters.sync="filters.facilities"
+        :options="facilities"
         title="Servizi"
-      />      
-
-      <filter-slider-option
-        :selectedFilter.sync="filters.distance"
-        title="Distance"
-        min="1"
-        max="50"
-        step="5"
       />
 
-      <!-- <filter-multi-option
-        :selectedFilters.sync="filters.pois"
-        :options="pois"
-        title="Vicinanza a punti di interesse"
-      /> -->
+      <filter-slider-option
+        :selectedFilter.sync="filters.geoDistance"
+        title="Distance"
+        min="1000"
+        max="20000"
+        step="1000"
+      />
 
       <filter-multi-option
-        :selectedFilters.sync="filters.fsType"
+        :selectedFilters.sync="filters.type"
         :options="foodServiceTypes"
         title="Tipo di locale"
       />
 
       <filter-multi-option
-        :selectedFilters.sync="filters.payments"
+        :selectedFilters.sync="filters.digitalPayments"
         :options="payments"
         title="Pagamenti digitali"
       />
@@ -109,7 +113,7 @@
       />
 
       <filter-multi-option
-        :selectedFilters.sync="filters.context"
+        :selectedFilters.sync="filters.occasions"
         :options="contexts"
         title="Occasione"
       />
@@ -129,25 +133,30 @@
 // import MobileModal from "@/components/mobile-modal/MobileModal";
 import FilterMultiOption from "@/components/filters/FilterMultiOption";
 import FilterBaseOption from "@/components/filters/FilterBaseOption";
-// import FilterSingleOption from "@/components/filters/FilterSingleOption";
+import FilterSingleOption from "@/components/filters/FilterSingleOption";
 import FilterSliderOption from "@/components/filters/FilterSliderOption";
+import api from "@/helpers/api";
 export default {
   name: "FiltersContent",
   components: {
     // MobileModal,
     FilterMultiOption,
     FilterBaseOption,
-    // FilterSingleOption,
+    FilterSingleOption,
     FilterSliderOption
   },
   data() {
     return {
       contexts: [],
-      services: [],
+      facilities: [],
       cuisines: [],
       payments: [],
-      prices: ["€", "€€", "€€€"],
-      orderBy: ["Distanza", "Pertinenza", "Prezzo medio"],
+      prices: [
+        { label: "€", value: "0.3" },
+        { label: "€€", value: "0.7" },
+        { label: "€€€", value: "1" }
+      ],
+      orderBy: ["DISTANCE", "RELEVANCE", "PRICE"],
       foodServiceTypes: [],
       mealVouchers: [],
       foodRestrictions: [],
@@ -230,8 +239,17 @@ export default {
   },
   methods: {
     loadSituations() {
-      this.axios
+      /* this.axios
         .get("/situations.json")
+        .then(response => {
+          this.situations = response.data;
+          // console.log(JSON.stringify(response.data));
+        })
+        .catch(error => {
+          console.log(error);
+        }); */
+      this.axios
+        .get(api.GET_FILTERS_SITUATION)
         .then(response => {
           this.situations = response.data;
           // console.log(JSON.stringify(response.data));
@@ -241,7 +259,7 @@ export default {
         });
     },
     loadPois() {
-      this.axios
+      /* this.axios
         .get("/pois.json")
         .then(response => {
           this.pois = response.data;
@@ -249,11 +267,20 @@ export default {
         })
         .catch(error => {
           console.log(error);
-        });
+        }); */
     },
     loadNutritionalFacts() {
-      this.axios
+      /* this.axios
         .get("/nutritional_facts.json")
+        .then(response => {
+          this.nutritionalFacts = response.data;
+          // console.log(JSON.stringify(response.data));
+        })
+        .catch(error => {
+          console.log(error);
+        }); */
+      this.axios
+        .get(api.GET_FILTERS_NUTRITIONAL_ASPECTS)
         .then(response => {
           this.nutritionalFacts = response.data;
           // console.log(JSON.stringify(response.data));
@@ -281,8 +308,17 @@ export default {
       this.$emit("hide");
     },
     loadAllergens() {
-      this.axios
+      /* this.axios
         .get("/allergens.json")
+        .then(response => {
+          this.allergens = response.data;
+          // console.log(JSON.stringify(response.data));
+        })
+        .catch(error => {
+          console.log(error);
+        }); */
+      this.axios
+        .get(api.GET_FILTERS_ALLERGENS)
         .then(response => {
           this.allergens = response.data;
           // console.log(JSON.stringify(response.data));
@@ -293,7 +329,7 @@ export default {
     },
     loadContexts() {
       this.axios
-        .get("/contexts.json")
+        .get(api.GET_FILTERS_OCCASIONS)
         .then(response => {
           this.contexts = response.data;
           // console.log(JSON.stringify(response.data));
@@ -304,7 +340,7 @@ export default {
     },
     loadFoodRestrictions() {
       this.axios
-        .get("/food_restrictions.json")
+        .get(api.GET_FILTERS_FOOD_RESTRICTIONS)
         .then(response => {
           this.foodRestrictions = response.data;
           // console.log(JSON.stringify(response.data));
@@ -315,9 +351,9 @@ export default {
     },
     loadServices() {
       this.axios
-        .get("/services.json")
+        .get(api.GET_FILTERS_FACILITIES)
         .then(response => {
-          this.services = response.data;
+          this.facilities = response.data;
           // console.log(JSON.stringify(response.data));
         })
         .catch(error => {
@@ -326,7 +362,7 @@ export default {
     },
     loadCuisines() {
       this.axios
-        .get("/cuisines.json")
+        .get(api.GET_FILTERS_CUISINES)
         .then(response => {
           this.cuisines = response.data;
           // console.log(JSON.stringify(response.data));
@@ -337,7 +373,7 @@ export default {
     },
     loadMealVouchers() {
       this.axios
-        .get("/meal_vouchers.json")
+        .get(api.GET_FILTERS_MEAL_VOUCHERS)
         .then(response => {
           this.mealVouchers = response.data;
           // console.log(JSON.stringify(response.data));
@@ -348,7 +384,7 @@ export default {
     },
     loadFoodServiceTypes() {
       this.axios
-        .get("/foodservice_types.json")
+        .get(api.GET_FILTERS_FS_TYPES)
         .then(response => {
           this.foodServiceTypes = response.data;
           // console.log(JSON.stringify(response.data));
@@ -359,7 +395,7 @@ export default {
     },
     loadPayments() {
       this.axios
-        .get("/payments.json")
+        .get(api.GET_FILTERS_PAYMENTS)
         .then(response => {
           this.payments = response.data;
           // console.log(JSON.stringify(response.data));

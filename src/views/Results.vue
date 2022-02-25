@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ noclick : loadingContent }">
     <div class="header">
       <div class="back-button" @click="goBack()">
         <b-icon-chevron-left scale="1.3" shift-h="-5" />
@@ -25,10 +25,13 @@
           <div
             @click="toggleSelectedFilter(filter)"
             :key="filter.label"
-            :class="{ active : filter.alternatives ? selectedFilters[filter.code].length : selectedFilters[filter.code]}"
+            :class="{ active : filter.alternatives && selectedFilters[filter.code] ? selectedFilters[filter.code].length : selectedFilters[filter.code]}"
           >
             <template v-if="filter.alternatives">
-              {{Array.isArray(selectedFilters[filter.code]) ? filter.label : selectedFilters[filter.code] }}
+              <template
+                v-if="selectedFilters[filter.code]"
+              >{{Array.isArray(selectedFilters[filter.code]) ? filter.label : $t('filters.' + selectedFilters[filter.code]) }}</template>
+              <template v-else>{{filter.label}}</template>
               <b-icon-caret-down-fill variant="secondary" />
             </template>
             <template v-else>{{filter.label}}</template>
@@ -57,11 +60,11 @@
         <div class="subline inc"></div>
         <div class="subline dec"></div>
       </div>
-      <div class="new-position-banner" v-if="showNewPositionBanner && hiddenList">Cerca qui</div>
+      <div class="new-position-banner" v-if="showNewPositionBanner && hiddenList && false">Cerca qui</div>
     </div>
-    <location-picker ref="locationpicker" @locationChanged="getUserLocation()" />
+    <location-picker ref="locationpicker" @locationChanged="refreshUserPosition()" />
     <search-what-picker ref="searchwhatpicker" @addWhat="addWhat" />
-    <div class="content" v-if="!loading">
+    <div class="content" v-if="!loadingUserLoc">
       <div class="map-view">
         <l-map
           ref="map"
@@ -128,18 +131,51 @@
                 :data-restid="selectedFoodService.id"
               >
                 <div>
-                  <img :src="getRestImage(selectedFoodService)" />
+                  <img
+                    v-if="!selectedFoodService.foodProducts"
+                    :src="getRestImage(foodService)"
+                    @error="fsImageUrlAlt"
+                  />
+                  <div class="image-slider" v-else>
+                    <template v-for="foodProduct in selectedFoodService.foodProducts">
+                      <div :key="foodProduct.id" v-if="foodProduct.imageUrl">
+                        <img :src="foodProduct.imageUrl" @error="fsImageUrlAlt" />
+                      </div>
+                    </template>
+                    <div>
+                      <img :src="getRestImage(selectedFoodService)" @error="fsImageUrlAlt" />
+                    </div>
+                  </div>
                 </div>
                 <label>{{selectedFoodService.name}}</label>
                 <p class="info">
                   <span v-if="selectedFoodService.type">{{getTrad(selectedFoodService.type.name)}}</span>
+                  <template
+                    v-if="selectedFoodService.cuisines && selectedFoodService.cuisines.length"
+                  >
+                    <b-icon-dot />
+                    <span>
+                      {{selectedFoodService.cuisines.map(function(elem){
+                      return this.getTrad(elem.name);
+                      }).join(",")}}
+                    </span>
+                    <br />
+                  </template>
                   <b-icon-dot />
-                  <span>Pizza, Italiano</span>
-                  <br />
-                  <span>€€</span>
-                  <b-icon-dot />
-                  <span>1.5 km</span>
+                  <span
+                    v-if="selectedFoodService.priceRange"
+                  >{{getPriceRangeIcon(selectedFoodService.priceRange)}}</span>
+                  <template v-if="selectedFoodService.distance">
+                    <b-icon-dot />
+                    <span>{{(selectedFoodService.distance / 1000).toFixed(1)}} km</span>
+                  </template>
                 </p>
+                <div class="pfp-list" v-if="selectedFoodService.foodProducts.length">
+                  <template v-for="foodProduct in selectedFoodService.foodProducts.slice(0, 3)">
+                    <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
+                  </template>
+                  <span>Vedi altro..</span>
+                </div>
               </div>
               <template v-for="foodService in foodServices">
                 <div
@@ -150,25 +186,61 @@
                   :data-restid="foodService.id"
                 >
                   <div>
-                    <img :src="getRestImage(foodService)" />
+                    <img
+                      v-if="!foodService.foodProducts"
+                      :src="getRestImage(foodService)"
+                      @error="fsImageUrlAlt"
+                    />
+                    <div class="image-slider" v-else>
+                      <template v-for="foodProduct in foodService.foodProducts">
+                        <div :key="foodProduct.id" v-if="foodProduct.imageUrl">
+                          <img :src="foodProduct.imageUrl" @error="fsImageUrlAlt" />
+                        </div>
+                      </template>
+                      <div>
+                        <img :src="getRestImage(foodService)" @error="fsImageUrlAlt" />
+                      </div>
+                    </div>
                   </div>
                   <label>{{foodService.name}}</label>
                   <p class="info">
                     <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
+                    <template v-if="foodService.cuisines && foodService.cuisines.length">
+                      <b-icon-dot />
+                      <span>
+                        {{foodService.cuisines.map(function(elem){
+                        return this.getTrad(elem.name);
+                        }).join(",")}}
+                      </span>
+                      <br />
+                    </template>
                     <b-icon-dot />
-                    <span>Pizza, Italiano</span>
-                    <br />
-                    <span>€€</span>
-                    <b-icon-dot />
-                    <span>1.5 km</span>
+                    <span
+                      v-if="foodService.priceRange"
+                    >{{getPriceRangeIcon(foodService.priceRange)}}</span>
+                    <template v-if="foodService.distance">
+                      <b-icon-dot />
+                      <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
+                    </template>
                   </p>
+                  <div class="pfp-list" v-if="foodService.foodProducts.length">
+                    <template v-for="foodProduct in foodService.foodProducts.slice(0, 3)">
+                      <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
+                    </template>
+                    <span>Vedi altro..</span>
+                  </div>
                 </div>
               </template>
             </div>
           </transition>
         </div>
       </div>
-      <div class="list-view" :class="{ hidden : hiddenList }" ref="listview">
+      <div
+        class="list-view"
+        :class="{ hidden : hiddenList }"
+        ref="listview"
+        @scroll="handleScrollRestsList"
+      >
         <div class="map-link" @touchstart="hideList()" @mousedown="hideList()"></div>
         <div class="list">
           <div class="list-handler">
@@ -191,37 +263,71 @@
                     v-for="context in contexts"
                     :key="context"
                     @click="toggleContext(context)"
-                    :class="{ active : selectedFilters.context.includes(context) }"
+                    :class="{ active : selectedFilters.moments.includes(context) }"
                   >{{$t('filters.' + context)}}</div>
                 </div>
                 <!-- <hr /> -->
               </div>
-              <template v-for="foodService in foodServices">
-                <div
-                  class="rest-card"
-                  :key="foodService.id"
-                  @click="showFoodServicePage(foodService.id)"
-                >
-                  <div>
-                    <img v-if="foodService.id % 2 === 0" :src="getRestImage(foodService)" />
-                    <div class="image-slider" v-else>
-                      <template v-for="i in 5">
-                        <div :key="i">
-                          <img :src="getRestImage(foodService)" />
+              <template v-if="foodServices.length">
+                <template v-for="foodService in foodServices">
+                  <div
+                    class="rest-card"
+                    :key="foodService.id"
+                    @click="showFoodServicePage(foodService.id)"
+                  >
+                    <div>
+                      <img
+                        v-if="!foodService.foodProducts"
+                        :src="getRestImage(foodService)"
+                        @error="fsImageUrlAlt"
+                      />
+                      <div class="image-slider" v-else>
+                        <template v-for="foodProduct in foodService.foodProducts">
+                          <div :key="foodProduct.id" v-if="foodProduct.imageUrl">
+                            <img :src="foodProduct.imageUrl" @error="fsImageUrlAlt" />
+                          </div>
+                        </template>
+                        <div>
+                          <img :src="getRestImage(foodService)" @error="fsImageUrlAlt" />
                         </div>
+                      </div>
+                    </div>
+                    <label>{{foodService.name}}</label>
+                    <p class="info">
+                      <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
+                      <template v-if="foodService.cuisines && foodService.cuisines.length">
+                        <b-icon-dot />
+                        <span>
+                          {{foodService.cuisines.map(function(elem){
+                          return this.getTrad(elem.name);
+                          }).join(",")}}
+                        </span>
+                        <br />
                       </template>
+                      <b-icon-dot />
+                      <span
+                        v-if="foodService.priceRange"
+                      >{{getPriceRangeIcon(foodService.priceRange)}}</span>
+                      <template v-if="foodService.distance">
+                        <b-icon-dot />
+                        <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
+                      </template>
+                    </p>
+                    <div class="pfp-list" v-if="foodService.foodProducts.length">
+                      <template v-for="foodProduct in foodService.foodProducts.slice(0, 5)">
+                        <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
+                      </template>
+                      <span>Vedi altro..</span>
                     </div>
                   </div>
-                  <label>{{foodService.name}}</label>
-                  <p class="info">
-                    <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
-                    <b-icon-dot />
-                    <span>Pizza, Italiano</span>
-                    <br />
-                    <span>€€</span>
-                    <b-icon-dot />
-                    <span>1.5 km</span>
+                </template>
+              </template>
+              <template v-else>
+                <div class="no-results-box">
+                  <p>
+                    <strong>Nessun ristorante trovato</strong>
                   </p>
+                  <p>Prova a cambiare i filtri</p>
                 </div>
               </template>
             </div>
@@ -253,7 +359,7 @@
             :class="{ selected : Array.isArray(selectedFilters[selectedFilter.code]) ? (selectedFilters[selectedFilter.code] && selectedFilters[selectedFilter.code].find(x => x.id ? (alternative.id ? x.id === alternative.id : x.id === alternative) : (alternative.id ? x === alternative.id : x === alternative))/* && selectedFilters[selectedFilter.code].includes(alternative) */) : (selectedFilters[selectedFilter.code] === alternative) }"
             v-for="alternative in selectedFilter.alternatives"
             :key="alternative"
-          >{{alternative}}</span>
+          >{{$t('filters.' + alternative)}}</span>
         </div>
       </template>
     </mobile-modal>
@@ -268,6 +374,7 @@ import { LMap, LTileLayer, LMarker, /* LTooltip,*/ LIcon } from "vue2-leaflet";
 import FoodServicePage from "@/components/FoodServicePage";
 import FiltersContent from "@/components/FiltersContent";
 import MobileModal from "@/components/mobile-modal/MobileModal";
+import api from "@/helpers/api";
 // import restsData from '../assets/rests.json';
 import "leaflet/dist/leaflet.css";
 export default {
@@ -300,8 +407,9 @@ export default {
       showMap: true,
       hiddenList: false,
       userLocation: null,
-      loading: true,
+      loading: false,
       loadingContent: true,
+      loadingUserLoc: true,
       markers: [],
       markerIcon: icon({
         iconRetinaUrl: require("@/assets/icons/marker.png"),
@@ -329,15 +437,15 @@ export default {
         {
           label: "Ordinamento",
           code: "orderby",
-          alternatives: ["Distanza", "Pertinenza", "Prezzo medio"]
+          alternatives: ["DISTANCE", "RELEVANCE", "PRICE"]
         },
         {
           label: "Aperti ora",
-          code: "opennow"
+          code: "openNow"
         },
         {
           label: "Prezzo",
-          code: "price",
+          code: "priceRange",
           alternatives: ["€", "€€", "€€€"]
         },
         {
@@ -354,7 +462,9 @@ export default {
       selectedWhat: [],
       hidingFsPage: false,
       contexts: [],
-      prevRoute: null
+      prevRoute: null,
+      scrollingPage: 0,
+      pageSize: 100
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -381,7 +491,6 @@ export default {
       var size = 0;
       if (this.selectedFilters) {
         Object.values(this.selectedFilters).forEach(value => {
-          // console.log(value);
           if (Array.isArray(value)) {
             // variable is a boolean
             size += value.length;
@@ -391,7 +500,9 @@ export default {
                 size++;
               }
             } else {
-              size++;
+              if (value) {
+                size++;
+              }
             }
           }
           /* if (typeof value == "boolean") {
@@ -483,9 +594,22 @@ export default {
     // this.buildMarkers();
   },
   methods: {
+    refreshUserPosition() {
+      this.getUserLocation();
+      this.reloadFoodServices();
+    },
     loadContexts() {
-      this.axios
+      /* this.axios
         .get("/contexts.json")
+        .then(response => {
+          this.contexts = response.data;
+          // console.log(JSON.stringify(response.data));
+        })
+        .catch(error => {
+          console.log(error);
+        }); */
+      this.axios
+        .get(api.GET_FILTERS_OCCASIONS)
         .then(response => {
           this.contexts = response.data;
           // console.log(JSON.stringify(response.data));
@@ -536,10 +660,7 @@ export default {
       if (!this.userLocation) {
         return "";
       }
-      var stringLoc =
-        this.userLocation.address.village ||
-        this.userLocation.address.city ||
-        this.userLocation.address.town;
+      var stringLoc = this.userLocation.name;
 
       return this.truncate(stringLoc, 8);
     },
@@ -571,12 +692,33 @@ export default {
     },
     initSelectedFilters() {
       return {
-        opennow: false,
+        cuisines: [],
+        delivery: false,
+        digitalPayments: [],
+        // foodChoices: [],
+        geoDistance: 10000,
+        mealVouchers: [],
+        moments: [],
+        // name: "string",
+        nutritionalAspects: [],
+        occasions: [],
+        priceRange: /* [] */ null,
+        facilities: [],
+        takeaway: false,
+        type: [],
+        variety: false,
+        /*OLD*/
+        openNow: false,
+        allergens: [],
+        orderby: "RELEVANCE",
+        foodRestrictions: []
+
+        /* opennow: false,
         orderby: "Pertinenza",
         delivery: false,
         takeaway: false,
         payments: [],
-        distance: 5,
+        geoDistance: 2000,
         price: [],
         context: [],
         allergens: [],
@@ -588,7 +730,7 @@ export default {
         situations: [],
         foodRestrictions: [],
         nutritionalFacts: [],
-        pois: []
+        pois: [] */
       };
     },
     onChangeSelectedFilters(filters) {
@@ -622,6 +764,11 @@ export default {
     showFiltersBox() {
       this.$router.push({ name: "ResultsFilters" });
     },
+    handleScrollRestsList(e) {
+      if (e.target.scrollTop + e.target.clientHeight >= e.target.scrollHeight) {
+        this.loadFoodServices();
+      }
+    },
     handleScrollRestsPreview(e) {
       var scrollPos = e.target.scrollLeft;
       var scrollWidth = e.target.scrollWidth - e.target.clientWidth;
@@ -645,47 +792,104 @@ export default {
       // console.log(child ? child.dataset.restid : "null");
     },
     getRestImage(foodService) {
-      return require("@/assets/pics-demo/" + foodService.coverImage);
+      return (
+        foodService.coverImageUrl ||
+        foodService.logoUrl ||
+        require("@/assets/rest-placeholder_lg.png")
+      );
+      // return require("@/assets/pics-demo/" + foodService.coverImage);
+    },
+    fsImageUrlAlt(event) {
+      event.target.src = require("@/assets/rest-placeholder_lg.png");
+    },
+    reloadFoodServices() {
+      this.scrollingPage = 0;
+      // this.loading = true;
+      this.foodServices = [];
+      this.loadFoodServices();
     },
     async loadFoodServices() {
-      /* this.axios
-        .get("/rests.json")
-        .then(response => {
-          this.foodServices = response.data;
-          this.buildMarkers();
-          this.loadingContent = false;
-          // console.log(JSON.stringify(response.data));
-        })
-        .catch(error => {
-          console.log(error);
-        }); */
+      if (this.loading) {
+        return;
+      }
+      this.loading = true;
+      var userLocation = this.$store.getters[
+        "geolocationModule/lastUserLocation"
+      ];
       let filters = {
-        geoDistance: "20",
-        latitude: this.userLocation.latitude,
-        longitude: this.userLocation.longitude,
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
         language: "it"
       };
-      /* for (let filter of this.selectedFilters) {
-        body[filter.type] = filter.value;
+      var selectedFilters = JSON.parse(JSON.stringify(this.selectedFilters));
+      /* if (selectedFilters.price) {
+        if (selectedFilters.price === '€') {
+          selectedFilters.price = 0.30;
+        } else if (selectedFilters.price === '€€') {
+          selectedFilters.price = 0.65;
+        } else if (selectedFilters.price === '€€€') {
+          selectedFilters.price = 1;
+        } 
       } */
+      // delete selectedFilters.price;
+      // delete selectedFilters.type;
+      var sort = selectedFilters.orderby;
+      delete selectedFilters.orderby;
+      // delete selectedFilters.moment;
+      // delete selectedFilters.foodRestrictions;
+      // delete selectedFilters.allergens;
+      // delete selectedFilters.mealVouchers;
+
+      for (const [key, value] of Object.entries(selectedFilters)) {
+        if (Array.isArray(value) && !value.length) {
+          delete selectedFilters[key];
+        } else {
+          if (!value) {
+            delete selectedFilters[key];
+          }
+        }
+      }
+
+      // console.log(JSON.stringify(this.selectedWhat));
+      var pfpFilter = {
+        allergens: selectedFilters.allergens,
+        // category: [],
+        name: this.selectedWhat.length ? this.selectedWhat[0] : null,
+        nutritionalAspects: selectedFilters.nutritionalAspects,
+        unverified: false
+      };
+
       var body = {
         ...filters,
-        ...JSON.parse(JSON.stringify(this.selectedFilters))
+        ...selectedFilters,
+        pfpFilter
       };
 
       try {
         let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
           params: {
-            page: 0,
-            size: 5
+            page: this.scrollingPage,
+            size: this.pageSize,
+            sort: sort
           }
         });
+        this.scrollingPage++;
         if (response.data) {
-          this.$set(categoryPreview, "foodServices", response.data);
+          if (this.scrollingPage <= 1) {
+            this.foodServices = response.data;
+          } else {
+            this.foodServices = this.foodServices.concat(response.data);
+          }
+          // this.foodServices = response.data;
+          // this.$set(categoryPreview, "foodServices", response.data);
         }
       } catch (e) {
         console.log(e);
       }
+
+      this.buildMarkers();
+      this.loadingContent = false;
+      this.loading = false;
     },
     mapPositionChange() {
       let newCenter = this.$refs.map.mapObject.getCenter();
@@ -753,7 +957,7 @@ export default {
         markers.push({
           name: foodService.name,
           foodServiceId: foodService.id,
-          coords: latLng(foodService.coords.lat, foodService.coords.lng)
+          coords: latLng(foodService.latitude, foodService.longitude)
         });
       }
       this.markers = markers;
@@ -823,7 +1027,8 @@ export default {
         this.userLocation.latitude,
         this.userLocation.longitude
       );
-      this.loading = false;
+      this.loadingUserLoc = false;
+      // this.reloadFoodServices();
       // console.log(JSON.stringify(userLocation));
       /* this.userLocation = this.$store.getters[
         "geolocationModule/lastUserLocation"
@@ -859,12 +1064,12 @@ export default {
         this.showFilters = false;
       }
     },
-    toggleContext(context) {
-      var index = this.selectedFilters.context.findIndex(x => x === context);
+    toggleContext(moment) {
+      var index = this.selectedFilters.moments.findIndex(x => x === moment);
       if (index > -1) {
-        this.selectedFilters.context.splice(index, 1);
+        this.selectedFilters.moments.splice(index, 1);
       } else {
-        this.selectedFilters.context.push(context);
+        this.selectedFilters.moments.push(moment);
       }
     },
     toggleSelectedFilter(filter) {
@@ -945,6 +1150,8 @@ export default {
     },
     selectedWhat() {
       this.updateQueryParams();
+      this.loadingContent = true;
+      this.reloadFoodServices();
     },
     selectedFilters: {
       handler: function() {
@@ -959,7 +1166,8 @@ export default {
         setTimeout(() => {
           this.$nextTick(() => {
             this.updateQueryParams();
-            this.loadFoodServices();
+            this.reloadFoodServices();
+            // this.loadFoodServices();
           });
         }, 100);
       },
@@ -994,6 +1202,10 @@ export default {
   background-color: #fff;
   width: 100%;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+}
+
+.noclick {
+  pointer-events: none;
 }
 
 .header p {
@@ -1270,6 +1482,40 @@ export default {
   border-bottom-right-radius: 5px;
 }
 
+.rests-list .rest-card .image-slider > div:only-child {
+  width: 100%;
+  height: 20vh;
+  object-fit: cover;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.pfp-list {
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  white-space: normal;
+}
+
+.pfp-list > span {
+  font-size: 13px;
+  text-transform: capitalize;
+  display: inline-block;
+  background-color: #f9f9f9;
+  padding: 2px 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  color: #4d4d4d;
+  margin: 0 2px;
+  margin-bottom: -4px;
+}
+
+.pfp-list > span:last-child {
+  background-color: transparent;
+}
+
 .rests-preview {
   overflow: auto;
   white-space: nowrap;
@@ -1519,5 +1765,19 @@ div.what-box > span {
   border-color: var(--primary-color);
   color: var(--primary-color);
   background-color: var(--light-primary-color);
+}
+
+.no-results-box {
+  font-size: 15px;
+  text-align: center;
+  margin-top: 10vh;
+}
+
+.no-results-box p {
+  color: #808080;
+}
+
+.no-results-box strong {
+  font-size: 18px;
 }
 </style>

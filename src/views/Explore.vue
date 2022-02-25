@@ -28,7 +28,8 @@
       <template v-if="!loadingHeader">
         <p v-if="userLocation" @click="showLocationPicker()">
           <b-icon-geo-alt-fill scale="1.3" class="geo-icon" />
-          {{userLocation.address.village || userLocation.address.city || userLocation.address.town}}
+          <!-- {{userLocation.address.village || userLocation.address.city || userLocation.address.town}} -->
+          {{userLocation.name }}
         </p>
         <div class="search-input-box" @click="searchClick()">
           <b-icon-search scale=".8" />
@@ -68,7 +69,7 @@
               </div>
             </div>
             <template v-for="category in categoriesPreviews">
-              <div class="rests-category" :key="category.title">
+              <div class="rests-category" :key="category.title" v-if="category.foodServices.length">
                 <label>
                   {{$t("explore_shortcuts." + category.title)}}
                   <span
@@ -87,17 +88,28 @@
                       :key="foodService.id"
                     >
                       <div>
-                        <img :src="getRestImage(foodService)" />
+                        <img :src="getRestImage(foodService)" @error="fsImageUrlAlt" />
                       </div>
                       <label>{{foodService.name}}</label>
                       <p class="info">
                         <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
+                        <template v-if="foodService.cuisines && foodService.cuisines.length">
+                          <b-icon-dot />
+                          <span>
+                            {{foodService.cuisines.map(function(elem){
+                            return this.getTrad(elem.name);
+                            }).join(",")}}
+                          </span>
+                          <br />
+                        </template>
                         <b-icon-dot />
-                        <span>Pizza, Italiano</span>
-                        <br />
-                        <span>€€</span>
-                        <b-icon-dot />
-                        <span>1.5 km</span>
+                        <span
+                          v-if="foodService.priceRange"
+                        >{{getPriceRangeIcon(foodService.priceRange)}}</span>
+                        <template v-if="foodService.distance">
+                          <b-icon-dot />
+                          <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
+                        </template>
                       </p>
                     </div>
                   </template>
@@ -157,7 +169,7 @@ export default {
         {
           title: "happy_hour",
           foodServices: [],
-          filters: [{ type: "situations", value: ["aperitif"] }]
+          filters: [{ type: "moments", value: ["APERITIF"] }]
         },
         {
           title: "delivery_takeaway",
@@ -168,14 +180,14 @@ export default {
           ]
         },
         {
-          title: "opennow",
+          title: "openNow",
           foodServices: [],
-          filters: [{ type: "opennow", value: true }]
+          filters: [{ type: "openNow", value: true }]
         },
         {
           title: "cheap_fs",
           foodServices: [],
-          filters: [{ type: "price", value: "€" }]
+          filters: [{ type: "priceRange", value: "0.3" }]
         },
         {
           title: "traditional_cuisine",
@@ -216,6 +228,9 @@ export default {
     }
   },
   methods: {
+    fsImageUrlAlt(event) {
+      event.target.src = require("@/assets/rest-placeholder_lg.png");
+    },
     async loadFoodServices() {
       /* this.axios
         .get("/rests.json")
@@ -238,10 +253,11 @@ export default {
 
       for (var categoryPreview of this.categoriesPreviews) {
         let body = {
-          geoDistance: "20",
+          geoDistance: "5000",
           latitude: this.userLocation.latitude,
           longitude: this.userLocation.longitude,
-          language: "it"
+          language: "it",
+          unverified: false
         };
         for (let filter of categoryPreview.filters) {
           body[filter.type] = filter.value;
@@ -260,9 +276,22 @@ export default {
           console.log(e);
         }
       }
+      this.loadingContent = false;
     },
     getRestImage(foodService) {
-      return require("@/assets/pics-demo/" + foodService.coverImage);
+      return (
+        foodService.coverImageUrl ||
+        foodService.logoUrl ||
+        require("@/assets/rest-placeholder_lg.png")
+      );
+      /* if (foodService.coverImageUrl) {
+        return coverImageUrl;
+      }
+      if (foodService.logo) {
+        return coverImageUrl;
+      } */
+
+      // return require("@/assets/pics-demo/" + foodService.coverImage);
     },
     showFoodServicePage(fsId) {
       this.$router.push({ name: "FoodServiceExplore", params: { id: fsId } });
@@ -331,9 +360,9 @@ export default {
           alert("Location error");
         }
       }
-      console.log(JSON.stringify(loc));
       this.userLocation = loc;
       this.loadingHeader = false;
+      this.loadFoodServices();
     },
     checkRouteState(to) {
       // console.log(to.name);
@@ -347,7 +376,7 @@ export default {
   mounted() {
     this.getUserLocation();
     this.checkRouteState(this.$route);
-    this.loadFoodServices();
+    // this.loadFoodServices();
   }
 };
 </script>
@@ -515,6 +544,7 @@ export default {
 }
 
 .rests-category > div .rest-card p.info span {
+  white-space: nowrap;
 }
 
 .rests-category > div .rest-card > div img {
