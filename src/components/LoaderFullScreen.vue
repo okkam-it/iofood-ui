@@ -1,10 +1,15 @@
 <template>
   <div class="myfoodloader-container">
-    <div class="boxloader" v-if="shadow" :style="box_size">
-      <img :src="loader_base_s" />
-      <img class="spinner" :src="loader_spinner_s" :style="speedValue" />
+    <div v-if="text">
+      <div class="boxloader-text" v-if="text">
+        <div>
+          <img :src="loader_base" />
+          <img class="spinner" :src="loader_spinner" :style="speedValue" />
+        </div>
+        <b-img class="text-img" :src="require('@/assets/myfood-logo-text-dark.png')" />
+      </div>
     </div>
-    <div class="boxloader" v-else :style="box_size">
+    <div class="boxloader" :style="box_size" v-else>
       <img :src="loader_base" />
       <img class="spinner" :src="loader_spinner" :style="speedValue" />
     </div>
@@ -30,13 +35,13 @@ export default {
       type: Number,
       default: 120
     },
-    shadow: {
-      type: Boolean,
-      default: false
-    },
     speed: {
       type: Number,
       default: 2
+    },
+    text: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -82,11 +87,11 @@ export default {
   right: 0;*/
   left: 50%;
   top: 48%;
-  -webkit-transform: translate(-48%, -50%);
-  transform: translate(-48%, -50%);
+  -webkit-transform: translate(-50%, -48%);
+  transform: translate(-50%, -48%);
 }
 
-div img {
+div.boxloader img {
   position: absolute;
   width: 100%;
 }
@@ -102,5 +107,37 @@ div img {
   to {
     -webkit-transform: rotate(360deg);
   }
+}
+
+.boxloader-text {
+  width: max-content;
+  height: auto;
+  position: absolute;
+  margin: auto;
+  left: 50%;
+  top: 45%;
+  -webkit-transform: translate(-50%, -45%);
+  transform: translate(-50%, -45%);
+}
+
+.boxloader-text > img {
+  width: 40vw;
+  margin-left: 10px;
+}
+
+.boxloader-text > * {
+  display: inline-block;
+}
+
+.boxloader-text > div {
+  position: relative;
+  width: 20vw;
+}
+
+.boxloader-text > div img {
+  position: absolute;
+  width: 100%;
+  top: -40px;
+  left: 0;
 }
 </style>

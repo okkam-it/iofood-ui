@@ -8,12 +8,11 @@
           </div>
         </div>
         <template v-if="foodService.coverImage">
-            <img :src="foodService.coverImageUrl" />
+          <img :src="foodService.coverImageUrl" />
         </template>
         <template v-else>
-            <img :src="require('@/assets/bg_blank.png')" />
+          <img :src="require('@/assets/bg_blank.png')" />
         </template>
-        
       </div>
       <div class="sticky-header" v-if="showStickyHeader">
         <div class="back-button" @click="hide()">
@@ -26,12 +25,18 @@
           <h1 class="rest-name">{{foodService.name}}</h1>
           <div class="info mb-2">
             <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
+            <template v-if="foodService.cuisine && foodService.cuisine.length">
             <b-icon-dot />
-            <span>Pizza, Italiano</span>
+            <span>
+              {{foodService.cuisine.map(function(elem){
+              return this.getTrad(elem.name);
+              }).join(",")}}
+            </span>
+            </template>
             <br />
             <span>€€</span>
-            <b-icon-dot />
-            <span>1.5 km</span>
+            <!-- <b-icon-dot />
+            <span>1.5 km</span>-->
             <label v-if="closedNow" @click="showMoreInfo = true" class="closed-now">
               <b-icon-clock-fill />Chiuso ora
               <span v-if="openAt">
@@ -64,6 +69,7 @@
                 </template>
               </ul>
             </div>
+            <br />
             <label class="more-info" @click="showMoreInfo = true">
               Clicca qui per visualizzare orari, indirizzo e altre
               <span>
@@ -132,6 +138,22 @@
                   >{{getTrad(menu.name)}}</span>
                 </div>
                 <div class="menu-content" v-if="selectedMenu">
+                  <div class="gender-selector">
+                    <span>
+                      Valori nutrizionali per
+                      <!-- <b-icon-caret-down-fill class="dd-icon" /> -->
+                      <!-- <b-icon-person-fill class="border rounded p-1 active" />
+                      <b-icon-person-fill class="border rounded p-1" />-->
+                      <template v-if="gender === 0">
+                        <img :src="gen_m_active" class="active" />
+                        <img :src="gen_f" @click="$store.dispatch('userModule/setGenderFemale');" />
+                      </template>
+                      <template v-else>
+                        <img :src="gen_m" @click="$store.dispatch('userModule/setGenderMale');" />
+                        <img :src="gen_f_active" class="active" />
+                      </template>
+                    </span>
+                  </div>
                   <p
                     class="menu-desc"
                     v-if="selectedMenu.description"
@@ -150,19 +172,46 @@
                           <img :src="getImage(pfp)" />
                         </div>
                         <!-- <b-icon-chevron-right class="more-info-icon" /> -->
-                        <p class="pfp-title">{{getTrad(pfp.name)}}</p>
-                        <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p>
+                        <p class="pfp-title">
+                          {{getTrad(pfp.name)}}
+                          <!-- <span class="balanced-badge">
+                            <span>
+                              Equilibrato                              
+                              <b-icon-star-fill scale=".8" />
+                            </span>
+                          </span>-->
+                        </p>
+                        <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
+                        <pfp-price :pfp="pfp" />
                         <p class="pfp-ingredients">{{printIngredients(pfp.ingredients)}}</p>
                         <p class="pfp-info">
                           <template v-for="allergen in pfp.allergens">
                             <img
                               class="allergen-icon"
-                              @click.stop="allergensToShow = pfp.allergens"
                               :key="allergen"
                               :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
                             />
                           </template>
                         </p>
+                        <pfp-nutritional-values-preview :pfpId="String(pfp.id)" :gender="gender" />
+                        <!-- <div class="val-nut-box">                          
+                          <span>
+                            500
+                            <span>Kcal</span>
+                          </span>
+                          <span>
+                            <span>Carb</span>
+                            <b-icon-reception2 scale="1.2" />
+                          </span>
+                          <span>
+                            <span>Grassi</span>
+                            <b-icon-reception3 scale="1.2" />
+                          </span>
+                          <span>
+                            <span>Prot</span>
+                            <b-icon-reception3 scale="1.2" />
+                          </span>
+                        </div>-->
                       </div>
                       <!-- <hr /> -->
                     </div>
@@ -175,7 +224,15 @@
                 <div>
                   <template v-for="image in foodService.gallery">
                     <div class="box" :key="image.id">
-                      <img class="image" :src="require('@/assets/pics-demo/' + image.imageUrl)" />
+                      <template v-if="image.demo">
+                        <img class="image" :src="require('@/assets/pics-demo/' + image.imageUrl)" />
+                      </template>
+                      <template v-else>
+                        <img
+                          class="image"
+                          :src="image.otherImages && image.otherImages.smallThumbnailImage ? image.otherImages.smallThumbnailImage : image.imageUrl"
+                        />
+                      </template>
                     </div>
                   </template>
                   <!-- <div class="box" style="height:170px;">1</div>
@@ -223,12 +280,17 @@ import api from "@/helpers/api";
 import MobileModal from "@/components/mobile-modal/MobileModal";
 import FoodServiceInfoPage from "@/components/FoodServiceInfoPage";
 import PfpInfoPage from "@/components/PfpInfoPage";
+import PfpPrice from "@/components/foodservicemenutable/PfpPrice";
+import PfpNutritionalValuesPreview from "@/components/PfpNutritionalValuesPreview";
+
 export default {
   name: "FoodServicePage",
   components: {
     MobileModal,
     FoodServiceInfoPage,
-    PfpInfoPage
+    PfpInfoPage,
+    PfpPrice,
+    PfpNutritionalValuesPreview
   },
   data() {
     return {
@@ -243,7 +305,11 @@ export default {
       dishToShow: null,
       dateOptions: { day: "numeric", month: "long", year: "numeric" },
       closedNow: false,
-      openAt: null
+      openAt: null,
+      gen_m: require("@/assets/gen_m.png"),
+      gen_f: require("@/assets/gen_f.png"),
+      gen_m_active: require("@/assets/gen_m_active.png"),
+      gen_f_active: require("@/assets/gen_f_active.png")
     };
   },
   methods: {
@@ -281,16 +347,18 @@ export default {
       }
     },
     handleContentScroll(e) {
-      var scrollPos = e.target.scrollTop;
-      var innerHeight = window.innerHeight;
-      var limit = innerHeight * 0.17;
-      // console.log(scrollPos);
-      if (scrollPos > limit) {
-        this.showStickyHeader = true;
-        // console.log("true;");
-      } else {
-        this.showStickyHeader = false;
-        // console.log("false;");
+      if (this.foodService) {
+        var scrollPos = e.target.scrollTop;
+        var innerHeight = window.innerHeight;
+        var limit = innerHeight * 0.17;
+        // console.log(scrollPos);
+        if (scrollPos > limit) {
+          this.showStickyHeader = true;
+          // console.log("true;");
+        } else {
+          this.showStickyHeader = false;
+          // console.log("false;");
+        }
       }
     },
     hide() {
@@ -338,6 +406,17 @@ export default {
           this.loadFsLocation();
           this.loadMenus();
           this.loadGallery();
+          this.loadCuisine();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    loadCuisine() {
+      this.axios
+        .get(api.GET_FOOD_SERVICE_CUISINE_BY_ID.replace("{id}", this.fsId))
+        .then(response => {
+          this.$set(this.foodService, "cuisine", response.data);
         })
         .catch(error => {
           console.log(error);
@@ -347,40 +426,49 @@ export default {
       this.axios
         .get(api.GET_FOOD_SERVICE_GALLERY_BY_ID.replace("{id}", this.fsId))
         .then(response => {
-          this.$set(this.foodService, "gallery", [
-            {
-              id: 0,
-              imageUrl: "rist_demo_3.jpeg",
-              order: 1
-              // preferred: true
-            },
-            {
-              id: 1,
-              imageUrl: "rist_demo_5.jpeg",
-              order: 2
-              // preferred: true
-            },
-            {
-              id: 2,
-              imageUrl: "rist_demo_7.jpeg",
-              order: 3
-              // preferred: true
-            },
-            {
-              id: 3,
-              imageUrl: "rist_demo_6.jpeg",
-              order: 4
-              // preferred: true
-            },
-            {
-              id: 4,
-              imageUrl: "rist_demo_4.jpeg",
-              order: 5
-              // preferred: true
-            }
-          ]);
+          if (response.data && response.data.length) {
+            this.$set(this.foodService, "gallery", response.data);
+          } else {
+            this.$set(this.foodService, "gallery", [
+              {
+                id: 0,
+                imageUrl: "rist_demo_3.jpeg",
+                order: 1,
+                demo: true
+                // preferred: true
+              },
+              {
+                id: 1,
+                imageUrl: "rist_demo_5.jpeg",
+                order: 2,
+                demo: true
+                // preferred: true
+              },
+              {
+                id: 2,
+                imageUrl: "rist_demo_7.jpeg",
+                order: 3,
+                demo: true
+                // preferred: true
+              },
+              {
+                id: 3,
+                imageUrl: "rist_demo_6.jpeg",
+                order: 4,
+                demo: true
+                // preferred: true
+              },
+              {
+                id: 4,
+                imageUrl: "rist_demo_4.jpeg",
+                order: 5,
+                demo: true
+                // preferred: true
+              }
+            ]);
+          }
           // this.$set(this.foodService, "gallery", response.data);
-          console.log(JSON.stringify(response.data));
+          // console.log(JSON.stringify(response.data));
         })
         .catch(error => {
           console.log(error);
@@ -516,9 +604,9 @@ export default {
           var menus = [];
           for (let menu of response.data) {
             console.log(menu.type);
-            // if (menu.type === "BASE") {
-            menus.push(menu);
-            // }
+            if (!menu.type || menu.type !== "DELIVERY") {
+              menus.push(menu);
+            }
           }
           this.menus = menus;
           if (menus.length) {
@@ -642,6 +730,9 @@ export default {
     this.loadFoodService();
   },
   computed: {
+    gender() {
+      return this.$store.getters["userModule/gender"];
+    },
     sharingEnabled() {
       return navigator.share;
     },
@@ -1129,4 +1220,64 @@ p.pfp-price {
   transform: translateY(-35%);
   color: #ccc;
 } */
+
+.balanced-badge {
+  /*  margin-top: -1.5vh;
+  margin-bottom: 1vh; */
+  margin-left: 5px;
+}
+
+.balanced-badge > span {
+  font-size: 12px;
+  padding: 1px 2px;
+  border-radius: 15px;
+  background-color: var(--primary-color);
+  color: #fff;
+  opacity: 0.8;
+  border: 1px solid var(--primary-color);
+}
+
+.balanced-badge > span .b-icon {
+  margin-left: -1px;
+  margin-right: 2px;
+}
+
+.gender-selector {
+  text-align: right;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.gender-selector > span {
+  /* border: 1px solid #ccc; */
+  border-radius: 15px;
+  padding: 8px 15px;
+}
+
+.gender-selector > span .dd-icon {
+  color: #808080;
+}
+
+.gender-selector > span .b-icon {
+  color: #ccc;
+  font-size: 2rem;
+  margin-left: 5px;
+}
+
+.gender-selector > span .b-icon.active {
+  color: var(--info-color);
+}
+
+.gender-selector img {
+  display: inline-block;
+  height: 35px;
+  margin-left: 5px;
+  border: 2px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 5px;
+}
+
+.gender-selector img.active {
+  border-color: var(--info-color);
+}
 </style>

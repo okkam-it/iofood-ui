@@ -1,7 +1,7 @@
 [
-    "Per vegetariani",
-    "Dieta latto-vegetariana",
-    "Dieta ovo-vegetariana",
-    "Dieta pesco-vegetariana",
-    "Opzioni vegane"
+    "vegetarian",
+    "milkVegetarian",
+    "eggVegetarian",
+    "fishVegetarian",
+    "vegan"
 ]

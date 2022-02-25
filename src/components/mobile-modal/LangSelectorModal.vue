@@ -31,9 +31,9 @@ export default {
       this.showModal = true;
     },
     hide() {
-      if (this.$route.hash && this.$route.hash === "#mobilemodal") {
+      /* if (this.$route.hash && this.$route.hash === "#mobilemodal") {
         this.$router.go(-1);
-      }
+      } */
       this.showModal = false;
     },
     selectLang(locale) {
@@ -47,7 +47,12 @@ export default {
           params: routeParams
         }); */
       }
-      this.hide();
+      this.showModal = false;
+      this.$nextTick(() => {
+        if (this.$route.hash && this.$route.hash === "#mobilemodal") {
+          this.$router.back();
+        }
+      });
 
       // this.$router.go(-1);
     }

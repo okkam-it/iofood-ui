@@ -11,7 +11,7 @@
           :value="searchString"
           @input="search"
           type="text"
-          placeholder="Piatti, ingredienti, ristoranti.."
+          placeholder="Pesce, milanese, nome ristorante"
         />
         <!-- <input
           ref="searchinput"
@@ -29,16 +29,22 @@
               <b-img v-if="res.id" :src="require('@/assets/food_icons/restaurant.png')" />
               {{res.name}}
             </li>
+            <li @click="showResult(searchString)">
+              <b-icon-search />Cerca risultati per
+              <strong>"{{searchString}}"</strong>
+            </li>
           </ul>
         </template>
         <template v-else>
-          <p class="section-title mt-4">Suggerimenti</p>
-          <div
-            class="item"
-            v-for="suggestion in suggestions"
-            :key="suggestion"
-            @click="addWhat(suggestion)"
-          >{{suggestion}}</div>
+          <p class="section-title">Suggerimenti</p>
+          <div class="tips-content">
+            <div v-for="tip in tips" :key="tip.name">
+              <div @click="showResult(tip)">
+                <b-icon-search />
+                {{tip.name}}
+              </div>
+            </div>
+          </div>
         </template>
       </div>
     </div>
@@ -53,7 +59,15 @@ export default {
     return {
       showPicker: false,
       searchString: "",
-      suggestions: ["pizza", "sushi"],
+      tips: [
+        { name: "Pesce" },
+        { name: "Pizza" },
+        { name: "Braciola" },
+        { name: "Braciola di maiale" },
+        { name: "Fiorentina" },
+        { name: "Tagliata" },
+        { name: "Bistecca" }
+      ],
       results: [],
       items: [
         { name: "Braciola" },
@@ -62,7 +76,7 @@ export default {
         { name: "Pizza" },
         { name: "Fiorentina" },
         { name: "Tagliata" },
-        { name: "Bistecca" },        
+        { name: "Bistecca" },
         { name: "Ristorante La Braciera", id: 12 },
         { name: "Ristorante Pizzeria Alla Torre", id: 3 },
         { name: "Altamarea Enoteca Bistrot", id: 4 },
@@ -196,5 +210,25 @@ ul.results-box {
 .results-box li img {
   width: 20px;
   margin-right: 10px;
+}
+
+.tips-content {
+  padding: 2vh 5vw;
+  font-size: 16px;
+}
+
+.tips-content > div {
+  padding: 15px 5vw;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.tips-content > div .b-icon {
+  margin-right: 10px;
+  color: #ccc;
+}
+
+.results-box .b-icon {
+  margin-right: 10px;
+  color: #ccc;
 }
 </style>

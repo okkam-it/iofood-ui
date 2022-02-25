@@ -5,11 +5,11 @@
     </div>
     <p class="title">
       Scannerizza questo qrcode con il tuo smartphone
-      <br />per cercare su myfood!
+      <br />per usare myfood!
     </p>
     <div class="images-box">
       <div class="qr-code">
-        <img :src="qrcode" />
+        <img :src="qrcode" v-if="qrcode" />
       </div>
       <div class="arrow">
         <b-icon-arrow-right scale="6" />
@@ -24,17 +24,42 @@
 </template>
 
 <script>
+import api from "@/helpers/api";
 export default {
   name: "Web",
   components: {},
   data() {
     return {
-      qrcode: require("@/assets/qrcode-web.png"),
+      // qrcode: require("@/assets/qrcode-web.png"),
+      qrcode: null,
       logo: require("@/assets/myfood-logo-large-dark.png"),
       demo: require("@/assets/demo.png")
     };
   },
-  methods: {}
+  mounted() {
+    this.generateQrCode();
+    // console.log(window.location.origin + this.$route.query.nextUrl);
+  },
+  methods: {
+    generateQrCode() {
+      var nextUrl = this.$route.query.nextUrl;
+      if (!nextUrl) {
+        nextUrl = window.location.origin;
+      } else {
+        nextUrl = window.location.origin + nextUrl;
+      }
+
+      this.axios
+        .get(api.GET_QRCODE, { params: { url: nextUrl } })
+        .then(response => {
+          this.qrcode = "data:image/png;base64," + response.data.imageBytes;
+          // console.log(JSON.stringify(response.data));
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }
 };
 </script>
 
@@ -83,6 +108,7 @@ export default {
   height: 30vh;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
   border-radius: 15px;
+  padding: 8px;
 }
 
 .demo {

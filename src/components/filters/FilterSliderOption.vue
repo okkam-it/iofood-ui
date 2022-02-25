@@ -10,7 +10,7 @@
         :step="step"
         @input="updateValue"
       />
-      <span class="active">{{selectedFilter}}km</span>
+      <span class="active">{{selectedFilter/1000}}km</span>
     </div>
   </div>
 </template>

@@ -1,9 +1,9 @@
 <template>
-  <div class="filter-box">
-    <label>{{title}}</label>
+  <div class="filter-box" :class="{ sub : !title }">
+    <label v-if="title">{{title}}</label>
 
     <div>
-      <span :class="{ active : selectedFilter }" @click="updateValue()">{{option}}</span>
+      <span :class="{ active : selectedFilter }" @click="updateValue()">{{$t("filters." + option)}}</span>
     </div>
   </div>
 </template>
@@ -55,6 +55,11 @@ export default {
   padding: 1vh 5vw;
   border-bottom: 1px solid #e6e6e6;
   padding-bottom: 2vh;
+  background-color: #fff;
+}
+
+.filter-box.sub {
+  margin-top: calc(-2vh - 5px);
 }
 
 .filter-box label {

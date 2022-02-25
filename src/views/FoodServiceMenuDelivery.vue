@@ -169,9 +169,18 @@
           </template>
         </div>
         <div>
-          <div class="footer">
-            Powered by
-            <img class="logo" :src="logo" />
+          <div class="footer-cart">
+            <div v-if="disabled">Non disponibile</div>
+            <template v-else>
+              <div>
+                <b-icon-cart scale="1.3" />
+                <p class="cart-size">{{cartSize}}</p>
+                <span class="price">{{cartTotalPrice}}€</span>
+              </div>
+              <div>
+                <span class="btn-cart" @click="showCartDelivery()">Completa ordine</span>
+              </div>
+            </template>
           </div>
           <mobile-modal v-if="showMenuSelector" @hide="hideMenuSelector()">
             <template #content>
@@ -209,11 +218,14 @@
               </div>
             </template>
           </mobile-modal>
-          <mobile-modal v-if="dishToShow" @hide="dishToShow = false" showclosebutton>
+          <mobile-modal v-if="dishToShow" @hide="dishToShow = false">
             <template #content>
-              <pfp-info-page :pfp="dishToShow" @hide="dishToShow = null" />
+              <pfp-info-page-order :pfp="dishToShow" @hide="dishToShow = null" />
             </template>
           </mobile-modal>
+
+          <cart-delivery ref="cartdelivery" v-if="!disabled" />
+
           <lang-selector-modal ref="langselectormodal" />
         </div>
       </div>
@@ -224,9 +236,10 @@
 <script>
 import api from "@/helpers/api";
 import MobileModal from "@/components/mobile-modal/MobileModal";
-import PfpInfoPage from "@/components/PfpInfoPage";
+import PfpInfoPageOrder from "@/components/PfpInfoPageOrder";
 import PfpModifiers from "@/components/foodservicemenutable/PfpModifiers";
 import PfpPrice from "@/components/foodservicemenutable/PfpPrice";
+import CartDelivery from "@/components/cart/CartDelivery";
 import LoaderFullScreen from "@/components/LoaderFullScreen";
 import LangSelectorModal from "@/components/mobile-modal/LangSelectorModal";
 export default {
@@ -234,10 +247,11 @@ export default {
   components: {
     MobileModal,
     LoaderFullScreen,
-    PfpInfoPage,
+    PfpInfoPageOrder,
     PfpModifiers,
     PfpPrice,
-    LangSelectorModal
+    LangSelectorModal,
+    CartDelivery
   },
   data() {
     return {
@@ -251,10 +265,14 @@ export default {
       showMenuSelector: false,
       logo: require("@/assets/myfood-logo-large-dark.png"),
       activeSection: null,
-      sectionsPosition: null
+      sectionsPosition: null,
+      disabled: false
     };
   },
   methods: {
+    showCartDelivery() {
+      this.$refs.cartdelivery.show();
+    },
     showLangSelector() {
       this.$refs.langselectormodal.show();
     },
@@ -376,6 +394,48 @@ export default {
           console.log(error);
         });
     },
+    loadFsTimetables() {
+      // TODO check openings
+      this.axios
+        .get(api.GET_FOOD_SERVICE_TIMETABLES_BY_ID.replace("{id}", this.fsId))
+        .then(response => {
+          var timetables = response.data;
+          var d = new Date();
+          var dayName = days[d.getDay()];
+          var timetablesToday = timetables.filter(
+            x => x.day === dayName.toUpperCase()
+          );
+
+          if (timetablesToday && timetablesToday.length) {
+            var currentDate = new Date();
+            currentDate.setMinutes(currentDate.getMinutes() + 30);
+            for (let timetable of timetablesToday) {
+              var fromDate = new Date();
+              fromDate.setHours(
+                timetable.fromHour.split(":")[0],
+                timetable.fromHour.split(":")[1],
+                0
+              );
+              var toDate = new Date();
+              toDate.setHours(
+                timetable.toHour.split(":")[0],
+                timetable.toHour.split(":")[1],
+                0
+              );
+              if (currentDate > fromDate && currentDate < toDate) {
+                this.disabled = false;
+                return;
+              }
+            }
+            this.disabled = true;
+          } else {
+            this.disabled = true;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     loadMenus() {
       this.axios
         .get(api.GET_ALL_RESTAURANT_MENUS, {
@@ -409,7 +469,7 @@ export default {
                 console.log(this.menuId); */
 
                 this.$router.replace({
-                  name: "FoodServiceMenuTable",
+                  name: "FoodServiceMenuDelivery",
                   params: { menuid: menu.id }
                 });
               }
@@ -421,7 +481,7 @@ export default {
             if (menus.length === 1) {
               this.selectedMenu = menus[0];
               this.$router.replace({
-                name: "FoodServiceMenuTable",
+                name: "FoodServiceMenuDelivery",
                 params: { menuid: menus[0].id }
               });
               this.showMenuSelector = false;
@@ -466,7 +526,7 @@ export default {
           parseInt(this.selectedMenu.id) !== parseInt(this.menuId)
         ) {
           this.$router.replace({
-            name: "FoodServiceMenuTable",
+            name: "FoodServiceMenuDelivery",
             params: { menuid: this.selectedMenu.id }
           });
         }
@@ -491,6 +551,7 @@ export default {
     }
     // console.log(this.menuId);
     this.loadFs();
+    this.loadFsTimetables();
     this.loadMenus();
   },
   computed: {
@@ -502,6 +563,12 @@ export default {
     },
     lang() {
       return this.$i18n.locale;
+    },
+    cartTotalPrice() {
+      return this.$store.getters.cartTotalPrice.toFixed(2);
+    },
+    cartSize() {
+      return this.$store.getters.cartSize;
     }
   }
 };
@@ -810,6 +877,7 @@ div.menu-sections > span.active {
   border: 1px solid var(--primary-color);
   background-color: var(--primary-color);
   color: #fff;
+  opacity: 0.8;
 }
 
 ul {
@@ -838,7 +906,7 @@ ul {
   /* background-color: #f66969; */
 }
 
-.footer {
+.footer-cart {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -846,15 +914,57 @@ ul {
   background-color: #fff;
   text-align: center;
   padding: 6px 10px;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
-  border-top-right-radius: 30px;
-  border-top-left-radius: 30px;
+  box-shadow: 0 5px 13px -1px rgba(0, 0, 0, 0.75);
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  color: var(--dark-primary-color);
+  padding: 3vh 5vw;
+  font-weight: bold;
+  font-size: 16px;
 }
 
-.footer .logo {
+.footer-cart > div {
+  display: inline-block;
+  width: 50%;
+  text-align: left;
+}
+
+.footer-cart > div span.price {
+  margin-left: 25px;
+  font-size: 18px;
+}
+
+.footer-cart > div:last-child {
+  text-align: end;
+}
+
+.footer-cart span.btn-cart {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 12px 15px;
+  border-radius: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.footer-cart p.cart-size {
+  float: unset;
+  position: absolute;
+  background-color: var(--dark-primary-color);
+  border-radius: 50%;
+  padding: 0 7px;
+  color: #fff;
+  font-size: 14px;
+  top: 15px;
+  left: 30px;
+  margin-bottom: 0;
+}
+
+/* .footer .logo {
   width: 110px;
   margin-left: 15px;
-}
+} */
 
 .section-box {
   position: relative;

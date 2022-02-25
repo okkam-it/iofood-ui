@@ -22,49 +22,68 @@
             :value="searchString"
             @input="search"
             type="text"
-            placeholder="Pesce, milanese, nome ristorante"
+            placeholder="Pizza, pesce, nome ristorante"
           />
         </div>
+        <!-- <p @click="showLocationPicker()">
+          <b-icon-geo-alt class="mr-2" />
+          {{userLocation.address.village || userLocation.address.city || userLocation.address.town}}
+        </p>-->
       </div>
       <div class="content">
         <template v-if="searchString.length > 1">
           <ul class="results-box">
-            <li v-for="(res, k) in results" :key="k" @click="showResult(res)">
+            <li v-for="(res, k ) in results" :key="k" @click="showResult(res)">
               <b-img v-if="res.id" :src="require('@/assets/food_icons/restaurant.png')" />
               {{res.name}}
             </li>
           </ul>
         </template>
         <template v-else>
-          <p class="section-title">Suggerimenti</p>
-          <div class="tips-content">
-            <div v-for="tip in tips" :key="tip.name">
-              <div @click="showResult(tip)">
-                <b-icon-search />
-                {{tip.name}}
+          <div class="what-box" v-if="selectedWhats.length">
+            <template v-for="what in selectedWhats">
+              <div :key="what" @click="removeWhat(what)">
+                <!-- {{$t("explore_shortcuts." + what)}} -->
+                {{what}}
+                <b-icon-x />
               </div>
+            </template>
+          </div>
+          <div class="selected-filters-box">
+            <div @click="showLocationPicker()">
+              <b-icon-geo-alt class="mr-2" />
+              {{userLocation.address.village || userLocation.address.city || userLocation.address.town}}
+            </div>
+          </div>
+          <p class="section-title">Occasione</p>
+          <div class="contexts-box">
+            <div v-for="context in contexts" :key="context">
+              <div
+                @click="selectContext(context)"
+                :class="{active : selectedContext.includes(context)}"
+              >{{context}}</div>
             </div>
           </div>
         </template>
       </div>
-      <!-- <div class="footer" @click="goToResults()">Cerca</div> -->
+      <div class="footer" @click="goToResults()">Cerca</div>
     </template>
-    <!-- <location-picker ref="locationpicker" @locationChanged="getUserLocation()" /> -->
+    <location-picker ref="locationpicker" @locationChanged="getUserLocation()" />
   </div>
 </template>
 
 <script>
-// import LocationPicker from "@/components/LocationPicker";
+import LocationPicker from "@/components/LocationPicker";
 export default {
   name: "Explore",
   components: {
-    // LocationPicker
+    LocationPicker
   },
   data() {
     return {
       userLocation: null,
       searchString: "",
-      /* contexts: [
+      contexts: [
         "Uscita in coppia",
         "Uscita in gruppo",
         "In pausa pranzo",
@@ -78,19 +97,10 @@ export default {
         "In famiglia con bambini",
         "Per studenti",
         "Partita di calcio"
-      ], */
+      ],
       selectedContext: [],
       selectedWhats: [],
       results: [],
-      tips: [
-        { name: "Pesce" },
-        { name: "Pizza" },
-        // { name: "Braciola" },
-        { name: "Braciola di maiale" },
-        { name: "Fiorentina" },
-        { name: "Tagliata" },
-        // { name: "Bistecca" }
-      ],
       items: [
         { name: "Braciola" },
         { name: "Braciola di maiale" },
@@ -98,7 +108,7 @@ export default {
         { name: "Pizza" },
         { name: "Fiorentina" },
         { name: "Tagliata" },
-        { name: "Bistecca" },
+        { name: "Bistecca" },        
         { name: "Ristorante La Braciera", id: 12 },
         { name: "Ristorante Pizzeria Alla Torre", id: 3 },
         { name: "Altamarea Enoteca Bistrot", id: 4 },
@@ -116,19 +126,9 @@ export default {
           params: { id: res.id }
         });
       } else {
-        var query = {};
-
-        // if (this.selectedWhats.length) {
-        query["what"] = [res.name];
-        // }
-
-        this.$router.replace({
-          name: "Results",
-          query
-        });
-        /* if (!this.selectedWhats.includes(res.name)) {
+        if (!this.selectedWhats.includes(res.name)) {
           this.selectedWhats.push(res.name);
-        } */
+        }
         this.searchString = "";
       }
     },
@@ -275,9 +275,7 @@ export default {
 .section-title {
   font-size: 15px;
   color: #808080;
-  margin-bottom: 0;
-  margin-left: 10px;
-  margin-top: 5px;
+  margin-bottom: 4px;
 }
 
 .contexts-box {
@@ -371,20 +369,5 @@ div.what-box > div {
   margin-right: 5px;
   margin-bottom: 3px;
   flex-shrink: 0;
-}
-
-.tips-content {
-  padding: 2vh 5vw;
-  font-size: 16px;
-}
-
-.tips-content > div {
-  padding: 15px 5vw;
-  border-bottom: 1px solid #e6e6e6;
-}
-
-.tips-content > div .b-icon {
-  margin-right: 10px;
-  color: #ccc;
 }
 </style>

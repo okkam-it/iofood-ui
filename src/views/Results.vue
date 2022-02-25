@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div :class="{ noclick : loadingContent }">
     <div class="header">
       <div class="back-button" @click="goBack()">
         <b-icon-chevron-left scale="1.3" shift-h="-5" />
       </div>
       <div class="search-input-box" @click="openSearchPage()">
         <b-icon-search scale=".8" />
-        <input type="text" placeholder="Piatti, ingredienti, ristoranti.." />
+        <input type="text" placeholder="Pesce, milanese, nome ristorante" />
       </div>
       <!-- <p @click="showLocationPicker()">
           <b-icon-geo-alt class="mr-2" />
@@ -25,10 +25,16 @@
           <div
             @click="toggleSelectedFilter(filter)"
             :key="filter.label"
-            :class="{ active : filter.alternatives ? selectedFilters[filter.code].length : selectedFilters[filter.code]}"
+            :class="{ active : filter.alternatives && selectedFilters[filter.code] ? selectedFilters[filter.code].length : selectedFilters[filter.code]}"
           >
-            {{filter.label}}
-            <b-icon-caret-down-fill variant="secondary" v-if="filter.alternatives" />
+            <template v-if="filter.alternatives">
+              <template
+                v-if="selectedFilters[filter.code]"
+              >{{Array.isArray(selectedFilters[filter.code]) ? filter.label : $t('filters.' + selectedFilters[filter.code]) }}</template>
+              <template v-else>{{filter.label}}</template>
+              <b-icon-caret-down-fill variant="secondary" />
+            </template>
+            <template v-else>{{filter.label}}</template>
           </div>
         </template>
       </div>
@@ -40,6 +46,7 @@
             <b-icon-x />
           </div>
         </template>
+        <span @click="openSearchPage()">Altro?</span>
       </div>
 
       <!-- <div class="selected-filters-box" v-if="userLocation">
@@ -53,11 +60,11 @@
         <div class="subline inc"></div>
         <div class="subline dec"></div>
       </div>
-      <div class="new-position-banner" v-if="showNewPositionBanner && hiddenList">Cerca qui</div>
+      <div class="new-position-banner" v-if="showNewPositionBanner && hiddenList && false">Cerca qui</div>
     </div>
-    <location-picker ref="locationpicker" @locationChanged="getUserLocation()" />
+    <location-picker ref="locationpicker" @locationChanged="refreshUserPosition()" />
     <search-what-picker ref="searchwhatpicker" @addWhat="addWhat" />
-    <div class="content" v-if="!loading">
+    <div class="content" v-if="!loadingUserLoc">
       <div class="map-view">
         <l-map
           ref="map"
@@ -105,7 +112,7 @@
         </l-map>
         <div class="map-actions-box">
           <div class="list-link" v-if="hiddenList" @click="showList()">
-            <b-icon-list />Mostra lista
+            <b-icon-list scale="1.2" />Mostra lista
           </div>
           <transition name="fade">
             <div
@@ -124,18 +131,51 @@
                 :data-restid="selectedFoodService.id"
               >
                 <div>
-                  <img :src="getRestImage(selectedFoodService)" />
+                  <img
+                    v-if="!selectedFoodService.foodProducts"
+                    :src="getRestImage(foodService)"
+                    @error="fsImageUrlAlt"
+                  />
+                  <div class="image-slider" v-else>
+                    <template v-for="foodProduct in selectedFoodService.foodProducts">
+                      <div :key="foodProduct.id" v-if="foodProduct.imageUrl">
+                        <img :src="foodProduct.imageUrl" @error="fsImageUrlAlt" />
+                      </div>
+                    </template>
+                    <div>
+                      <img :src="getRestImage(selectedFoodService)" @error="fsImageUrlAlt" />
+                    </div>
+                  </div>
                 </div>
                 <label>{{selectedFoodService.name}}</label>
                 <p class="info">
                   <span v-if="selectedFoodService.type">{{getTrad(selectedFoodService.type.name)}}</span>
+                  <template
+                    v-if="selectedFoodService.cuisines && selectedFoodService.cuisines.length"
+                  >
+                    <b-icon-dot />
+                    <span>
+                      {{selectedFoodService.cuisines.map(function(elem){
+                      return this.getTrad(elem.name);
+                      }).join(",")}}
+                    </span>
+                    <br />
+                  </template>
                   <b-icon-dot />
-                  <span>Pizza, Italiano</span>
-                  <br />
-                  <span>€€</span>
-                  <b-icon-dot />
-                  <span>1.5 km</span>
+                  <span
+                    v-if="selectedFoodService.priceRange"
+                  >{{getPriceRangeIcon(selectedFoodService.priceRange)}}</span>
+                  <template v-if="selectedFoodService.distance">
+                    <b-icon-dot />
+                    <span>{{(selectedFoodService.distance / 1000).toFixed(1)}} km</span>
+                  </template>
                 </p>
+                <div class="pfp-list" v-if="selectedFoodService.foodProducts.length">
+                  <template v-for="foodProduct in selectedFoodService.foodProducts.slice(0, 3)">
+                    <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
+                  </template>
+                  <span>Vedi altro..</span>
+                </div>
               </div>
               <template v-for="foodService in foodServices">
                 <div
@@ -146,25 +186,61 @@
                   :data-restid="foodService.id"
                 >
                   <div>
-                    <img :src="getRestImage(foodService)" />
+                    <img
+                      v-if="!foodService.foodProducts"
+                      :src="getRestImage(foodService)"
+                      @error="fsImageUrlAlt"
+                    />
+                    <div class="image-slider" v-else>
+                      <template v-for="foodProduct in foodService.foodProducts">
+                        <div :key="foodProduct.id" v-if="foodProduct.imageUrl">
+                          <img :src="foodProduct.imageUrl" @error="fsImageUrlAlt" />
+                        </div>
+                      </template>
+                      <div>
+                        <img :src="getRestImage(foodService)" @error="fsImageUrlAlt" />
+                      </div>
+                    </div>
                   </div>
                   <label>{{foodService.name}}</label>
                   <p class="info">
                     <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
+                    <template v-if="foodService.cuisines && foodService.cuisines.length">
+                      <b-icon-dot />
+                      <span>
+                        {{foodService.cuisines.map(function(elem){
+                        return this.getTrad(elem.name);
+                        }).join(",")}}
+                      </span>
+                      <br />
+                    </template>
                     <b-icon-dot />
-                    <span>Pizza, Italiano</span>
-                    <br />
-                    <span>€€</span>
-                    <b-icon-dot />
-                    <span>1.5 km</span>
+                    <span
+                      v-if="foodService.priceRange"
+                    >{{getPriceRangeIcon(foodService.priceRange)}}</span>
+                    <template v-if="foodService.distance">
+                      <b-icon-dot />
+                      <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
+                    </template>
                   </p>
+                  <div class="pfp-list" v-if="foodService.foodProducts.length">
+                    <template v-for="foodProduct in foodService.foodProducts.slice(0, 3)">
+                      <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
+                    </template>
+                    <span>Vedi altro..</span>
+                  </div>
                 </div>
               </template>
             </div>
           </transition>
         </div>
       </div>
-      <div class="list-view" :class="{ hidden : hiddenList }" ref="listview">
+      <div
+        class="list-view"
+        :class="{ hidden : hiddenList }"
+        ref="listview"
+        @scroll="handleScrollRestsList"
+      >
         <div class="map-link" @touchstart="hideList()" @mousedown="hideList()"></div>
         <div class="list">
           <div class="list-handler">
@@ -180,32 +256,78 @@
           </template>
           <template v-else>
             <div class="rests-list">
-              <template v-for="foodService in foodServices">
-                <div
-                  class="rest-card"
-                  :key="foodService.id"
-                  @click="showFoodServicePage(foodService.id)"
-                >
-                  <div>
-                    <img :src="getRestImage(foodService)" />
-                    <div class="image-slider">
-                      <template v-for="i in 5">
-                        <div :key="i">
-                          <img :src="getRestImage(foodService)" />
+              <div class="contexts-box">
+                <label>Si tratta di un'occasione particolare?</label>
+                <div>
+                  <div
+                    v-for="context in contexts"
+                    :key="context"
+                    @click="toggleContext(context)"
+                    :class="{ active : selectedFilters.moments.includes(context) }"
+                  >{{$t('filters.' + context)}}</div>
+                </div>
+                <!-- <hr /> -->
+              </div>
+              <template v-if="foodServices.length">
+                <template v-for="foodService in foodServices">
+                  <div
+                    class="rest-card"
+                    :key="foodService.id"
+                    @click="showFoodServicePage(foodService.id)"
+                  >
+                    <div>
+                      <img
+                        v-if="!foodService.foodProducts"
+                        :src="getRestImage(foodService)"
+                        @error="fsImageUrlAlt"
+                      />
+                      <div class="image-slider" v-else>
+                        <template v-for="foodProduct in foodService.foodProducts">
+                          <div :key="foodProduct.id" v-if="foodProduct.imageUrl">
+                            <img :src="foodProduct.imageUrl" @error="fsImageUrlAlt" />
+                          </div>
+                        </template>
+                        <div>
+                          <img :src="getRestImage(foodService)" @error="fsImageUrlAlt" />
                         </div>
+                      </div>
+                    </div>
+                    <label>{{foodService.name}}</label>
+                    <p class="info">
+                      <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
+                      <template v-if="foodService.cuisines && foodService.cuisines.length">
+                        <b-icon-dot />
+                        <span>
+                          {{foodService.cuisines.map(function(elem){
+                          return this.getTrad(elem.name);
+                          }).join(",")}}
+                        </span>
+                        <br />
                       </template>
+                      <b-icon-dot />
+                      <span
+                        v-if="foodService.priceRange"
+                      >{{getPriceRangeIcon(foodService.priceRange)}}</span>
+                      <template v-if="foodService.distance">
+                        <b-icon-dot />
+                        <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
+                      </template>
+                    </p>
+                    <div class="pfp-list" v-if="foodService.foodProducts.length">
+                      <template v-for="foodProduct in foodService.foodProducts.slice(0, 5)">
+                        <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
+                      </template>
+                      <span>Vedi altro..</span>
                     </div>
                   </div>
-                  <label>{{foodService.name}}</label>
-                  <p class="info">
-                    <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
-                    <b-icon-dot />
-                    <span>Pizza, Italiano</span>
-                    <br />
-                    <span>€€</span>
-                    <b-icon-dot />
-                    <span>1.5 km</span>
+                </template>
+              </template>
+              <template v-else>
+                <div class="no-results-box">
+                  <p>
+                    <strong>Nessun ristorante trovato</strong>
                   </p>
+                  <p>Prova a cambiare i filtri</p>
                 </div>
               </template>
             </div>
@@ -232,18 +354,12 @@
       <template #title>{{selectedFilter.label}}</template>
       <template #content>
         <div class="badge-selector-box">
-          <!-- <span
-            @click="toggleAlternative(alternative)"
-            :class="{ selected : selectedFilter && selectedFilter.selectedAlternatives && selectedFilter.selectedAlternatives.includes(alternative) }"
-            v-for="alternative in selectedFilter.alternatives"
-            :key="alternative"
-          >{{alternative}}</span>-->
           <span
-            @click="toggleAlternative(alternative)"
-            :class="{ selected : selectedFilters[selectedFilter.code] && selectedFilters[selectedFilter.code].find(x => x.id ? (alternative.id ? x.id === alternative.id : x.id === alternative) : (alternative.id ? x === alternative.id : x === alternative))/* && selectedFilters[selectedFilter.code].includes(alternative) */ }"
+            @click="toggleAlternative(Array.isArray(selectedFilters[selectedFilter.code]), alternative)"
+            :class="{ selected : Array.isArray(selectedFilters[selectedFilter.code]) ? (selectedFilters[selectedFilter.code] && selectedFilters[selectedFilter.code].find(x => x.id ? (alternative.id ? x.id === alternative.id : x.id === alternative) : (alternative.id ? x === alternative.id : x === alternative))/* && selectedFilters[selectedFilter.code].includes(alternative) */) : (selectedFilters[selectedFilter.code] === alternative) }"
             v-for="alternative in selectedFilter.alternatives"
             :key="alternative"
-          >{{alternative}}</span>
+          >{{$t('filters.' + alternative)}}</span>
         </div>
       </template>
     </mobile-modal>
@@ -258,6 +374,7 @@ import { LMap, LTileLayer, LMarker, /* LTooltip,*/ LIcon } from "vue2-leaflet";
 import FoodServicePage from "@/components/FoodServicePage";
 import FiltersContent from "@/components/FiltersContent";
 import MobileModal from "@/components/mobile-modal/MobileModal";
+import api from "@/helpers/api";
 // import restsData from '../assets/rests.json';
 import "leaflet/dist/leaflet.css";
 export default {
@@ -290,8 +407,9 @@ export default {
       showMap: true,
       hiddenList: false,
       userLocation: null,
-      loading: true,
+      loading: false,
       loadingContent: true,
+      loadingUserLoc: true,
       markers: [],
       markerIcon: icon({
         iconRetinaUrl: require("@/assets/icons/marker.png"),
@@ -317,12 +435,17 @@ export default {
       showFilters: false,
       quickFilters: [
         {
+          label: "Ordinamento",
+          code: "orderby",
+          alternatives: ["DISTANCE", "RELEVANCE", "PRICE"]
+        },
+        {
           label: "Aperti ora",
-          code: "opennow"
+          code: "openNow"
         },
         {
           label: "Prezzo",
-          code: "price",
+          code: "priceRange",
           alternatives: ["€", "€€", "€€€"]
         },
         {
@@ -337,26 +460,37 @@ export default {
       selectedFilters: this.initSelectedFilters(),
       selectedFilter: null,
       selectedWhat: [],
-      hidingFsPage: false
+      hidingFsPage: false,
+      contexts: [],
+      prevRoute: null,
+      scrollingPage: 0,
+      pageSize: 100
     };
   },
   beforeRouteLeave(to, from, next) {
     if (this.$refs.searchwhatpicker && this.$refs.searchwhatpicker.isOpen()) {
       this.$refs.searchwhatpicker.hide();
       next(false);
-    } else if (this.$refs.locationpicker && this.$refs.locationpicker.isOpen()) {
+    } else if (
+      this.$refs.locationpicker &&
+      this.$refs.locationpicker.isOpen()
+    ) {
       this.$refs.locationpicker.hide();
       next(false);
     } else {
       next();
     }
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.prevRoute = from;
+    });
+  },
   computed: {
     selectedFiltersSize() {
       var size = 0;
       if (this.selectedFilters) {
         Object.values(this.selectedFilters).forEach(value => {
-          // console.log(value);
           if (Array.isArray(value)) {
             // variable is a boolean
             size += value.length;
@@ -366,7 +500,9 @@ export default {
                 size++;
               }
             } else {
-              size++;
+              if (value) {
+                size++;
+              }
             }
           }
           /* if (typeof value == "boolean") {
@@ -406,13 +542,23 @@ export default {
           }
         } else if (filter in this.selectedFilters) {
           if (Array.isArray(this.selectedFilters[filter])) {
-            for (let val of filters[filter]) {
+            if (Array.isArray(filters[filter])) {
+              for (let val of filters[filter]) {
+                if (this.isNumeric(val)) {
+                  this.selectedFilters[filter].push(parseInt(val));
+                } else {
+                  this.selectedFilters[filter].push(val);
+                }
+              }
+            } else {
+              let val = filters[filter];
               if (this.isNumeric(val)) {
-                this.selectedFilters[filter].push(parseInt(val));
+                this.selectedFilters[filter] = [parseInt(val)];
               } else {
-                this.selectedFilters[filter].push(val);
+                this.selectedFilters[filter] = [val];
               }
             }
+
             // this.selectedFilters[filter] = filters[filter];
             // this.selectedFilters[filter] = filters[filter].split(",");
             // console.log("is array")
@@ -435,18 +581,43 @@ export default {
     }
     // console.log(filters);
 
-    this.getUserLocation();
+    // this.getUserLocation();
     // this.$refs.myMap.mapObject.invalidateSize();
     setTimeout(() => {
       this.$refs.listview.scrollTop = window.innerHeight / 2.5;
     }, 200);
 
     this.loadFoodServices();
+    this.loadContexts();
 
     this.checkRouteState(this.$route);
     // this.buildMarkers();
   },
   methods: {
+    refreshUserPosition() {
+      this.getUserLocation();
+      this.reloadFoodServices();
+    },
+    loadContexts() {
+      /* this.axios
+        .get("/contexts.json")
+        .then(response => {
+          this.contexts = response.data;
+          // console.log(JSON.stringify(response.data));
+        })
+        .catch(error => {
+          console.log(error);
+        }); */
+      this.axios
+        .get(api.GET_FILTERS_OCCASIONS)
+        .then(response => {
+          this.contexts = response.data;
+          // console.log(JSON.stringify(response.data));
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     isNumeric(val) {
       return /^-?\d+$/.test(val);
     },
@@ -489,10 +660,7 @@ export default {
       if (!this.userLocation) {
         return "";
       }
-      var stringLoc =
-        this.userLocation.address.village ||
-        this.userLocation.address.city ||
-        this.userLocation.address.town;
+      var stringLoc = this.userLocation.name;
 
       return this.truncate(stringLoc, 8);
     },
@@ -524,12 +692,33 @@ export default {
     },
     initSelectedFilters() {
       return {
-        opennow: false,
-        orderby: "Distanza",
+        cuisines: [],
+        delivery: false,
+        digitalPayments: [],
+        // foodChoices: [],
+        geoDistance: 10000,
+        mealVouchers: [],
+        moments: [],
+        // name: "string",
+        nutritionalAspects: [],
+        occasions: [],
+        priceRange: /* [] */ null,
+        facilities: [],
+        takeaway: false,
+        type: [],
+        variety: false,
+        /*OLD*/
+        openNow: false,
+        allergens: [],
+        orderby: "RELEVANCE",
+        foodRestrictions: []
+
+        /* opennow: false,
+        orderby: "Pertinenza",
         delivery: false,
         takeaway: false,
         payments: [],
-        distance: 5,
+        geoDistance: 2000,
         price: [],
         context: [],
         allergens: [],
@@ -541,18 +730,23 @@ export default {
         situations: [],
         foodRestrictions: [],
         nutritionalFacts: [],
-        pois: []
+        pois: [] */
       };
     },
     onChangeSelectedFilters(filters) {
       this.selectedFilters = filters;
       // console.log("change");
     },
-    toggleAlternative(alternative) {
-      this.toggleArrayItem(
-        alternative,
-        this.selectedFilters[this.selectedFilter.code]
-      );
+    toggleAlternative(isArray, alternative) {
+      if (isArray) {
+        this.toggleArrayItem(
+          alternative,
+          this.selectedFilters[this.selectedFilter.code]
+        );
+      } else {
+        this.selectedFilters[this.selectedFilter.code] = alternative;
+      }
+
       /* if (!this.selectedFilter.selectedAlternatives) {
         this.$set(this.selectedFilter, "selectedAlternatives", []);
         this.selectedFilter.selectedAlternatives.push(alternative);
@@ -569,6 +763,11 @@ export default {
     },
     showFiltersBox() {
       this.$router.push({ name: "ResultsFilters" });
+    },
+    handleScrollRestsList(e) {
+      if (e.target.scrollTop + e.target.clientHeight >= e.target.scrollHeight) {
+        this.loadFoodServices();
+      }
     },
     handleScrollRestsPreview(e) {
       var scrollPos = e.target.scrollLeft;
@@ -593,20 +792,104 @@ export default {
       // console.log(child ? child.dataset.restid : "null");
     },
     getRestImage(foodService) {
-      return require("@/assets/pics-demo/" + foodService.coverImage);
+      return (
+        foodService.coverImageUrl ||
+        foodService.logoUrl ||
+        require("@/assets/rest-placeholder_lg.png")
+      );
+      // return require("@/assets/pics-demo/" + foodService.coverImage);
     },
-    loadFoodServices() {
-      this.axios
-        .get("/rests.json")
-        .then(response => {
-          this.foodServices = response.data;
-          this.buildMarkers();
-          this.loadingContent = false;
-          // console.log(JSON.stringify(response.data));
-        })
-        .catch(error => {
-          console.log(error);
+    fsImageUrlAlt(event) {
+      event.target.src = require("@/assets/rest-placeholder_lg.png");
+    },
+    reloadFoodServices() {
+      this.scrollingPage = 0;
+      // this.loading = true;
+      this.foodServices = [];
+      this.loadFoodServices();
+    },
+    async loadFoodServices() {
+      if (this.loading) {
+        return;
+      }
+      this.loading = true;
+      var userLocation = this.$store.getters[
+        "geolocationModule/lastUserLocation"
+      ];
+      let filters = {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        language: "it"
+      };
+      var selectedFilters = JSON.parse(JSON.stringify(this.selectedFilters));
+      /* if (selectedFilters.price) {
+        if (selectedFilters.price === '€') {
+          selectedFilters.price = 0.30;
+        } else if (selectedFilters.price === '€€') {
+          selectedFilters.price = 0.65;
+        } else if (selectedFilters.price === '€€€') {
+          selectedFilters.price = 1;
+        } 
+      } */
+      // delete selectedFilters.price;
+      // delete selectedFilters.type;
+      var sort = selectedFilters.orderby;
+      delete selectedFilters.orderby;
+      // delete selectedFilters.moment;
+      // delete selectedFilters.foodRestrictions;
+      // delete selectedFilters.allergens;
+      // delete selectedFilters.mealVouchers;
+
+      for (const [key, value] of Object.entries(selectedFilters)) {
+        if (Array.isArray(value) && !value.length) {
+          delete selectedFilters[key];
+        } else {
+          if (!value) {
+            delete selectedFilters[key];
+          }
+        }
+      }
+
+      // console.log(JSON.stringify(this.selectedWhat));
+      var pfpFilter = {
+        allergens: selectedFilters.allergens,
+        // category: [],
+        name: this.selectedWhat.length ? this.selectedWhat[0] : null,
+        nutritionalAspects: selectedFilters.nutritionalAspects,
+        unverified: false
+      };
+
+      var body = {
+        ...filters,
+        ...selectedFilters,
+        pfpFilter
+      };
+
+      try {
+        let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
+          params: {
+            page: this.scrollingPage,
+            size: this.pageSize,
+            sort: sort
+          }
         });
+        this.scrollingPage++;
+        if (response.data) {
+          if (this.scrollingPage <= 1) {
+            this.foodServices = response.data;
+          } else {
+            this.foodServices = this.foodServices.concat(response.data);
+          }
+          // this.foodServices = response.data;
+          // this.$set(categoryPreview, "foodServices", response.data);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
+      this.buildMarkers();
+      this.loadingContent = false;
+      this.loading = false;
     },
     mapPositionChange() {
       let newCenter = this.$refs.map.mapObject.getCenter();
@@ -674,7 +957,7 @@ export default {
         markers.push({
           name: foodService.name,
           foodServiceId: foodService.id,
-          coords: latLng(foodService.coords.lat, foodService.coords.lng)
+          coords: latLng(foodService.latitude, foodService.longitude)
         });
       }
       this.markers = markers;
@@ -699,7 +982,12 @@ export default {
     hideFoodServicePage() {
       console.log("backk");
       this.hidingFsPage = true;
-      this.$router.go(-1);
+      if (this.prevRoute) {
+        this.$router.go(-1);
+      } else {
+        this.$router.replace({ name: "Explore" });
+      }
+
       // this.foodServiceIdToShow = null;
       // this.$router.go(-1);
       // this.$router.go(-1);
@@ -739,7 +1027,8 @@ export default {
         this.userLocation.latitude,
         this.userLocation.longitude
       );
-      this.loading = false;
+      this.loadingUserLoc = false;
+      // this.reloadFoodServices();
       // console.log(JSON.stringify(userLocation));
       /* this.userLocation = this.$store.getters[
         "geolocationModule/lastUserLocation"
@@ -770,8 +1059,17 @@ export default {
       } else if (to.name === "ResultsFilters") {
         this.showFilters = true;
       } else {
+        this.getUserLocation();
         this.foodServiceIdToShow = null;
         this.showFilters = false;
+      }
+    },
+    toggleContext(moment) {
+      var index = this.selectedFilters.moments.findIndex(x => x === moment);
+      if (index > -1) {
+        this.selectedFilters.moments.splice(index, 1);
+      } else {
+        this.selectedFilters.moments.push(moment);
       }
     },
     toggleSelectedFilter(filter) {
@@ -852,6 +1150,8 @@ export default {
     },
     selectedWhat() {
       this.updateQueryParams();
+      this.loadingContent = true;
+      this.reloadFoodServices();
     },
     selectedFilters: {
       handler: function() {
@@ -866,7 +1166,8 @@ export default {
         setTimeout(() => {
           this.$nextTick(() => {
             this.updateQueryParams();
-            this.loadFoodServices();
+            this.reloadFoodServices();
+            // this.loadFoodServices();
           });
         }, 100);
       },
@@ -901,6 +1202,10 @@ export default {
   background-color: #fff;
   width: 100%;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+}
+
+.noclick {
+  pointer-events: none;
 }
 
 .header p {
@@ -992,7 +1297,8 @@ export default {
 
 .list-view > div.map-link {
   /* height: 40vh; */
-  height: 80vh;
+  /* height: 80vh; */
+  height: 70vh;
 }
 
 .map-view .map-actions-box {
@@ -1011,12 +1317,13 @@ export default {
   padding: 12px 15px;
   border-radius: 10px;
   font-weight: bold;
-  margin-bottom: 2vh;
+  margin-bottom: 6vh;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
 .map-view .list-link > .b-icon {
   margin-right: 5px;
+  color: rgba(255, 102, 51, 0.8);
 }
 
 .filters-box {
@@ -1110,13 +1417,14 @@ export default {
   width: 100%;
   border-radius: 15px;
   overflow: hidden;
-  margin-bottom: 4vh;
+  margin-bottom: 2vh;
 }
 
 .rests-list .rest-card label {
   font-weight: bold;
   font-size: 20px;
-  margin-top: 5px;
+  /* margin-top: 5px; */
+  margin-top: 0;
 }
 
 .rests-list .rest-card p.info {
@@ -1128,8 +1436,10 @@ export default {
 }
 
 .rests-list .rest-card img {
+  /* width: 100%;
+  height: 25vh; */
   width: 100%;
-  height: 25vh;
+  height: 20vh;
   object-fit: cover;
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
@@ -1148,16 +1458,62 @@ export default {
 }
 
 .rests-list .rest-card .image-slider > div {
-  width: 35vw;
-  height: 25vw;
-  padding: 3px;
+  /* width: 35vw;
+  height: 25vw; */
+  width: 43vw;
+  height: 38vw;
+  padding: 1px;
   flex-shrink: 0;
 }
 
 .rests-list .rest-card .image-slider > div img {
   width: 100%;
   height: 100%;
-  border-radius: 15px;
+  /* border-radius: 15px; */
+}
+
+.rests-list .rest-card .image-slider > div:first-child img {
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 5px;
+}
+
+.rests-list .rest-card .image-slider > div:last-child img {
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 5px;
+}
+
+.rests-list .rest-card .image-slider > div:only-child {
+  width: 100%;
+  height: 20vh;
+  object-fit: cover;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.pfp-list {
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  white-space: normal;
+}
+
+.pfp-list > span {
+  font-size: 13px;
+  text-transform: capitalize;
+  display: inline-block;
+  background-color: #f9f9f9;
+  padding: 2px 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  color: #4d4d4d;
+  margin: 0 2px;
+  margin-bottom: -4px;
+}
+
+.pfp-list > span:last-child {
+  background-color: transparent;
 }
 
 .rests-preview {
@@ -1252,13 +1608,13 @@ div.what-box {
   border: none;
   padding: 0 0;
   margin-top: 5px;
-
+  overflow: auto;
   display: flex;
   -ms-overflow-style: none; /* for Internet Explorer, Edge */
   scrollbar-width: none; /* for Firefox */
 }
 
-.filters-box::-webkit-scrollbar {
+div.what-box::-webkit-scrollbar {
   display: none;
 }
 
@@ -1275,6 +1631,15 @@ div.what-box > div {
   margin-right: 5px;
   margin-bottom: 3px;
   flex-shrink: 0;
+}
+
+div.what-box > span {
+  /* color: var(--primary-color); */
+  color: #a6a6a6;
+  font-weight: bold;
+  margin-top: 6px;
+  padding-left: 5px;
+  font-size: 14px;
 }
 
 .loading-content {
@@ -1361,5 +1726,58 @@ div.what-box > div {
     left: 110%;
     width: 10%;
   }
+}
+
+.contexts-box > label {
+  font-size: 14px;
+  color: #808080;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.contexts-box {
+  margin-bottom: 2.2vh;
+}
+
+.contexts-box > div {
+  font-size: 13px;
+  overflow: auto;
+  display: flex;
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  font-weight: bold;
+  /* color: var(--primary-color); */
+}
+
+.contexts-box > div::-webkit-scrollbar {
+  display: none;
+}
+
+.contexts-box > div > div {
+  border: 1px solid #ccc;
+  flex-shrink: 0;
+  margin-right: 5px;
+  border-radius: 15px;
+  padding: 10px 15px;
+}
+
+.contexts-box > div > div.active {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: var(--light-primary-color);
+}
+
+.no-results-box {
+  font-size: 15px;
+  text-align: center;
+  margin-top: 10vh;
+}
+
+.no-results-box p {
+  color: #808080;
+}
+
+.no-results-box strong {
+  font-size: 18px;
 }
 </style>

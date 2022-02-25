@@ -1,15 +1,15 @@
 <template>
-  <div class="filter-box">
+  <div class="filter-box" @click="options.length > maxListItems ? showMore = true : null">
     <label>
       {{title}}
-      <span
+      <!-- <span
         class="selected-badge"
         v-if="selectedFilters && selectedFilters.length > 0"
-      >{{selectedFilters.length}}</span>
+      >{{selectedFilters.length}}</span>-->
     </label>
-    <div>
+    <div v-if="options.length <= maxListItems">
       <ul>
-        <li v-for="option in options.slice(0, this.maxListItems)" :key="option.id || option">
+        <li v-for="option in options.slice(0, maxListItems)" :key="option.id || option">
           <template v-if="option.id">
             <span
               :class="{ active : selectedFilters.find(x => x.id ? x.id === option.id : x === option.id)}"
@@ -20,54 +20,89 @@
             <span
               :class="{ active : selectedFilters.includes(option)}"
               @click="toggleArrayItem(option, selectedFilters)"
-            >{{option}}</span>
+            >{{$t("filters." + option)}}</span>
           </template>
         </li>
       </ul>
-      <p
+
+      <!-- <p
         class="expand-collapse-button"
         @click="showMore = true"
         v-if="options.length > maxListItems"
       >
         Mostra di più
         <b-icon-caret-down-fill />
-      </p>
-      <template v-if="options.length > maxListItems">
-        <mobile-modal v-if="showMore" @hide="showMore = false">
-          <template #title>
-            {{title}}
-            <div class="close-modal" @click="showMore = false">
-              <b-icon-x scale="2.2" />
-            </div>
-            <!-- <div v-if="options.length > 10">
+      </p>-->
+    </div>
+    <template v-else>
+      <ul v-if="selectedFilters.length">
+        <li v-for="option in selectedFilters" :key="option.id || option">
+          <span
+            :class="{ active : selectedFilters.includes(option)}"
+            @click.stop="toggleArrayItem(option, selectedFilters)"
+          >{{getSelectedFilterName(option)}}</span>
+        </li>
+        <!-- <li v-for="option in selectedFilters" :key="option.id || option">
+          <template v-if="option.id">
+            <span
+              :class="{ active : selectedFilters.find(x => x.id ? x.id === option.id : x === option.id)}"
+              @click.stop="toggleArrayItem(option, selectedFilters)"
+            >{{getOptionName(option.name)}}</span>
+          </template>
+          <template v-else>
+            <span
+              :class="{ active : selectedFilters.includes(option)}"
+              @click.stop="toggleArrayItem(option, selectedFilters)"
+            >{{$t("filters." + option)}}</span>
+          </template>
+        </li>-->
+      </ul>
+      <div class="show-more-icon">
+        <b-icon-chevron-right shift-v="-2" />
+      </div>
+    </template>
+
+    <template v-if="options.length > maxListItems">
+      <mobile-modal v-if="showMore" @hide="showMore = false">
+        <template #title>
+          {{title}}
+          <div class="close-modal" @click="showMore = false">
+            <b-icon-x scale="2.2" />
+          </div>
+          <!-- <div v-if="options.length > 10">
               <div class="search-input-box">
                 <input v-model="searchString" type="text" placeholder="Cerca.." />
               </div>
-            </div>-->
-          </template>
-          <template #content>
-            <div>
-              <ul>
-                <li v-for="option in filteredOptions" :key="option.id || option">
-                  <template v-if="option.id">
-                    <span
-                      :class="{ active : selectedFilters.find(x => x.id ? x.id === option.id : x === option.id)}"
-                      @click="toggleArrayItem(option, selectedFilters)"
-                    >{{getOptionName(option.name)}}</span>
-                  </template>
-                  <template v-else>
-                    <span
-                      :class="{ active : selectedFilters.includes(option)}"
-                      @click="toggleArrayItem(option, selectedFilters)"
-                    >{{option}}</span>
-                  </template>
-                </li>
-              </ul>
-            </div>
-          </template>
-        </mobile-modal>
-      </template>
-    </div>
+          </div>-->
+        </template>
+        <template #content>
+          <div>
+            <ul>
+              <li v-for="option in filteredOptions" :key="option.id || option">
+                <template v-if="option.id">
+                  <span
+                    :class="{ active : selectedFilters.find(x => x.id ? x.id === option.id : x === option.id)}"
+                    @click="toggleArrayItem(option, selectedFilters)"
+                  >{{getOptionName(option.name)}}</span>
+                </template>
+                <template v-else>
+                  <span
+                    :class="{ active : selectedFilters.includes(option)}"
+                    @click="toggleArrayItem(option, selectedFilters)"
+                  >{{$t("filters." + option)}}</span>
+                  <!-- <template v-if="option === 'balanced'">
+                    <span class="gender-selector">
+                      <b-icon-person-fill class="border rounded p-1 active" />
+                      <b-icon-person-fill class="border rounded p-1" />
+                    </span>
+                  </template> -->
+                </template>
+              </li>
+            </ul>
+          </div>
+        </template>
+      </mobile-modal>
+    </template>
   </div>
 </template>
 
@@ -115,6 +150,26 @@ export default {
       }
       return this.getTrad(name);
     },
+    isNumeric(val) {
+      return /^-?\d+$/.test(val);
+    },
+    getSelectedFilterName(option) {
+      if (this.isNumeric(option)) {
+        var opt = this.options.find(x => option === x.id);
+        if (!opt) {
+          return this.$t("filters." + opt);
+        }
+        if (typeof opt === "string" || opt instanceof String) {
+          return this.$t("filters." + opt);
+        }
+        if (Array.isArray(opt.name)) {
+          return this.getTrad(opt.name);
+        }
+        return opt.name;
+      } else {
+        return this.$t("filters." + option);
+      }
+    },
     filterElements(filtered, full) {
       if (filtered && filtered.length > 0 && filtered.length < full.length) {
         return full;
@@ -140,15 +195,16 @@ export default {
 
 <style scoped>
 .filter-box {
-  padding: 1vh 5vw;
+  padding: 1.8vh 5vw;
   border-bottom: 1px solid #e6e6e6;
-  padding-bottom: 2vh;
+  /* padding-bottom: 2vh; */
+  position: relative;
 }
 
 .filter-box label {
   font-weight: bold;
   font-size: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .filter-box > div {
@@ -232,5 +288,13 @@ span.selected-badge {
 .close-modal {
   float: right;
   margin-right: 10px;
+}
+
+.show-more-icon {
+  /* float: right;
+  margin-top: -4px; */
+  position: absolute;
+  top: 0.9vh;
+  right: 5vw;
 }
 </style>
