@@ -26,7 +26,7 @@
       <b-icon-reception4 scale="1.2" v-else />
     </span>
     <div class="badges">
-      <span v-for="badge of badges" :key="badge">{{badge}}</span>
+      <span v-for="badge of badges" :key="badge">{{$t("dietary." + badge)}}</span>
     </div>
   </div>
 </template>
@@ -43,7 +43,42 @@ export default {
       kcalDaily: 0,
       carbDaily: 0,
       fatDaily: 0,
-      protDaily: 0
+      protDaily: 0,
+      badgeToShow: [
+        "vegetarian",
+        "milkEggVegetarian",
+        "milkVegetarian",
+        "fishVegetarian",
+        "eggVegetarian",
+        "vegan",
+        "glutenFree",
+        "lactoseFree",
+        "healthy",
+        "lowFats",
+        "hypocaloric",
+        "integral",
+        "sugarFree",
+        "healthyForLunch",
+        "healthyForDinner"
+      ],
+      adaptFor: {
+        adaptForEquilibratedDinner: {
+          male: "adaptForMaleEquilibratedDinner",
+          female: "adaptForFemaleEquilibratedDinner"
+        },
+        adaptForEquilibratedLunch: {
+          male: "adaptForMaleEquilibratedLunch",
+          female: "adaptForFemaleEquilibratedLunch"
+        },
+        adaptForHypocaloricDinner: {
+          male: "adaptForMaleHypocaloricDinner",
+          female: "adaptForFemaleHypocaloricDinner"
+        },
+        adaptForHypocaloricLunch: {
+          male: "adaptForMaleHypocaloricLunch",
+          female: "adaptForFemaleHypocaloricLunch"
+        }
+      }
     };
   },
   props: {
@@ -57,6 +92,7 @@ export default {
   watch: {
     gender() {
       this.setNutritionalDailyLimits();
+      this.loadDietary();
     }
   },
   computed: {
@@ -86,12 +122,25 @@ export default {
         .then(response => {
           if (response.data) {
             var badges = [];
-            for (let key in response.data) {
-              let val = response.data[key];
-              if (!Array.isArray(val) && val) {
-                badges.push(key);
+            for (let badge of this.badgeToShow) {
+              let val = response.data[badge];
+              if (val) {
+                badges.push(badge);
               }
             }
+
+            for (let key in this.adaptFor) {
+              let gender = this.gender ? "female" : "male";
+              let genderKey = this.adaptFor[key][gender];
+              let val = response.data[genderKey];
+              if (!val) {
+                val = response.data[key];
+                if (val) badges.push(key);
+              } else {
+                if (val) badges.push(genderKey);
+              }
+            }
+
             this.badges = badges;
             // console.log(JSON.stringify(this.dietary));
           }
@@ -242,5 +291,6 @@ export default {
   border-radius: 5px;
   color: #fff;
   opacity: 0.7;
+  white-space: nowrap;
 }
 </style>

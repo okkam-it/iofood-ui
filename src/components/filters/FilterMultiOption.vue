@@ -12,14 +12,14 @@
         <li v-for="option in options.slice(0, maxListItems)" :key="option.id || option">
           <template v-if="option.id">
             <span
-              :class="{ active : selectedFilters.find(x => x.id ? x.id === option.id : x === option.id)}"
-              @click="toggleArrayItem(option, selectedFilters)"
+              :class="{ active : isActive(option)}"
+              @click="toggleArrayItem(option)"
             >{{getOptionName(option.name)}}</span>
           </template>
           <template v-else>
             <span
               :class="{ active : selectedFilters.includes(option)}"
-              @click="toggleArrayItem(option, selectedFilters)"
+              @click="toggleArrayItem(option)"
             >{{$t("filters." + option)}}</span>
           </template>
         </li>
@@ -39,7 +39,7 @@
         <li v-for="option in selectedFilters" :key="option.id || option">
           <span
             :class="{ active : selectedFilters.includes(option)}"
-            @click.stop="toggleArrayItem(option, selectedFilters)"
+            @click.stop="toggleArrayItem(option)"
           >{{getSelectedFilterName(option)}}</span>
         </li>
         <!-- <li v-for="option in selectedFilters" :key="option.id || option">
@@ -81,21 +81,21 @@
               <li v-for="option in filteredOptions" :key="option.id || option">
                 <template v-if="option.id">
                   <span
-                    :class="{ active : selectedFilters.find(x => x.id ? x.id === option.id : x === option.id)}"
-                    @click="toggleArrayItem(option, selectedFilters)"
+                    :class="{ active : isActive(option)}"
+                    @click="toggleArrayItem(option)"
                   >{{getOptionName(option.name)}}</span>
                 </template>
                 <template v-else>
                   <span
                     :class="{ active : selectedFilters.includes(option)}"
-                    @click="toggleArrayItem(option, selectedFilters)"
+                    @click="toggleArrayItem(option)"
                   >{{$t("filters." + option)}}</span>
                   <!-- <template v-if="option === 'balanced'">
                     <span class="gender-selector">
                       <b-icon-person-fill class="border rounded p-1 active" />
                       <b-icon-person-fill class="border rounded p-1" />
                     </span>
-                  </template> -->
+                  </template>-->
                 </template>
               </li>
             </ul>
@@ -177,15 +177,22 @@ export default {
       var max = full.length;
       return full.slice(0, this.maxListItems <= max ? this.maxListItems : max);
     },
-    toggleArrayItem(data, array) {
-      var index = array.findIndex(x => (data.id ? x === data.id : x === data));
+    isActive(option) {
+      var id = option.code || option.id || option;
+      return this.selectedFilters.find(x => (x.id ? x.id === id : x === id));
+    },
+    toggleArrayItem(data) {
+      var id = data.code || data.id || data;
+      var index = this.selectedFilters.findIndex(x => x === id);
       if (index > -1) {
-        array.splice(index, 1);
+        this.selectedFilters.splice(index, 1);
       } else {
-        if (data.id) {
-          array.push(data.id);
+        if (data.code) {
+          this.selectedFilters.push(data.code);
+        } else if (data.id) {
+          this.selectedFilters.push(data.id);
         } else {
-          array.push(data);
+          this.selectedFilters.push(data);
         }
       }
     }
