@@ -95,11 +95,7 @@
                         <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
                         <template v-if="foodService.cuisines && foodService.cuisines.length">
                           <b-icon-dot />
-                          <span>
-                            {{foodService.cuisines.map(function(elem){
-                            return this.getTrad(elem.name);
-                            }).join(",")}}
-                          </span>
+                          <span>{{printCuisines(foodService.cuisines)}}</span>
                           <br />
                         </template>
                         <b-icon-dot />
@@ -187,7 +183,7 @@ export default {
         {
           title: "cheap_fs",
           foodServices: [],
-          filters: [{ type: "priceRange", value: "0.3" }]
+          filters: [{ type: "priceRange", value: "€" }]
         },
         {
           title: "traditional_cuisine",
@@ -228,6 +224,9 @@ export default {
     }
   },
   methods: {
+    printCuisines(cuisines) {
+      return cuisines.map(e => this.getTrad(e)).join(",");
+    },
     fsImageUrlAlt(event) {
       event.target.src = require("@/assets/rest-placeholder_lg.png");
     },
@@ -250,17 +249,32 @@ export default {
         .catch(error => {
           console.log(error);
         }); */
+      var userLoc = this.userLocation;
 
       for (var categoryPreview of this.categoriesPreviews) {
         let body = {
           geoDistance: "5000",
-          latitude: this.userLocation.latitude,
-          longitude: this.userLocation.longitude,
+          latitude: userLoc.latitude,
+          longitude: userLoc.longitude,
           language: "it",
-          unverified: false
+          unVerified: false
         };
         for (let filter of categoryPreview.filters) {
-          body[filter.type] = filter.value;
+          if (filter.type === "priceRange") {
+            if (filter.value === "€") {
+              body["priceRangeMin"] = "0";
+              body["priceRangeMax"] = "0.3";
+            } else if (filter.value === "€€") {
+              body["priceRangeMin"] = "0.31";
+              body["priceRangeMax"] = "0.7";
+            }
+            if (filter.value === "€€€") {
+              body["priceRangeMin"] = "0.71";
+              body["priceRangeMax"] = "1";
+            }
+          } else {
+            body[filter.type] = filter.value;
+          }
         }
         try {
           let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {

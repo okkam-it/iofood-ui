@@ -105,7 +105,7 @@ p {
   /* line-height: 125px; */
   height: 100%;
   width: 100%;
-  margin-top: 45px;
+  padding-top: 45px;
 }
 
 .item .inner-text p.title {

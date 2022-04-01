@@ -152,9 +152,9 @@ export default {
       cuisines: [],
       payments: [],
       prices: [
-        { label: "€", value: "0.3" },
-        { label: "€€", value: "0.7" },
-        { label: "€€€", value: "1" }
+        { label: "€", value: "€" },
+        { label: "€€", value: "€€" },
+        { label: "€€€", value: "€€€" }
       ],
       orderBy: ["DISTANCE", "RELEVANCE", "PRICE"],
       foodServiceTypes: [],

@@ -98,7 +98,7 @@ export default {
           params: { id: res.id }
         });
       } else {
-        this.addWhat(res.name);
+        this.addWhat(res.name || res);
       }
     },
     search(e) {

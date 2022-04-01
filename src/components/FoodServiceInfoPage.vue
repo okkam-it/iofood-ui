@@ -62,7 +62,7 @@
               :class="{ today : day === todayName }"
             >
               <div>
-                {{day}}
+                {{$t('day.' + day)}}
                 <b-icon-circle-fill
                   scale=".5"
                   v-if="day === todayName"
@@ -83,7 +83,7 @@
             <template v-for="service in activeServices">
               <li :key="service">
                 <b-icon-check scale="1.5" />
-                {{service}}
+                {{$t("service." + service)}}
               </li>
             </template>
           </ul>

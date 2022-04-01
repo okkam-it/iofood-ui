@@ -125,7 +125,8 @@ export default {
 
 .close-button-box {
   text-align: right;
-  margin-top: 20px;
+  /* margin-top: 20px; */
+  border-top: 1px solid #ccc;
   font-size: 16px;
   font-weight: bold;
 }

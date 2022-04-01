@@ -56,7 +56,7 @@
           </div>
         </div>
       </template>
-      <div class="nut-val-box" v-if="nutritionalValues" :key="'gender_' + gender">
+      <div class="nut-val-box" v-if="showNutritionalValues" :key="'gender_' + gender">
         <label>
           Valori nutrizionali
           <span>(Su base giornaliera)</span>
@@ -119,7 +119,7 @@
         </div>
       </div>
 
-      <div class="balanced-meal-box">
+      <div class="balanced-meal-box" v-if="dietary && Object.keys(dietary).length">
         <label>Combinazioni per un pasto equilibrato</label>
         <div class="gender-selector">
           <span>
@@ -135,9 +135,10 @@
         </div>
         <div class="combination" v-for="(pfps, k) in dietary" :key="k">
           <!-- <p>{{getTrad(pfp.name)}}</p> -->
-          <p>{{k}}</p>
-          <p v-for="pfp in pfps" :key="pfp">
-            <b-icon-arrow90deg-down rotate="-90" shift-v="3" />{{pfp}}
+          <p>{{$t("dietary." + k)}}</p>
+          <p v-for="pfp in pfps" :key="pfp.id">
+            <b-icon-arrow90deg-down rotate="-90" shift-v="3" />
+            {{getTrad(pfp.name)}}
           </p>
         </div>
         <!-- <div class="combination">
@@ -151,7 +152,7 @@
           <p>
             <b-icon-arrow90deg-down rotate="-90" shift-v="4" />Nome piatto 2
           </p>
-        </div> -->
+        </div>-->
       </div>
 
       <!-- <button @click="hide()">Chiudi</button> -->
@@ -182,7 +183,25 @@ export default {
       gen_m: require("@/assets/gen_m.png"),
       gen_f: require("@/assets/gen_f.png"),
       gen_m_active: require("@/assets/gen_m_active.png"),
-      gen_f_active: require("@/assets/gen_f_active.png")
+      gen_f_active: require("@/assets/gen_f_active.png"),
+      adaptFor: {
+        adaptForEquilibratedDinnerCombinedWith: {
+          male: "adaptForMaleEquilibratedDinnerCombinedWith",
+          female: "adaptForFemaleEquilibratedDinnerCombinedWith"
+        },
+        adaptForEquilibratedLunchCombinedWith: {
+          male: "adaptForMaleEquilibratedLunchCombinedWith",
+          female: "adaptForFemaleEquilibratedLunchCombinedWith"
+        },
+        adaptForHypocaloricDinnerCombinedWith: {
+          male: "adaptForMaleHypocaloricDinnerCombinedWith",
+          female: "adaptForFemaleHypocaloricDinnerCombinedWith"
+        },
+        adaptForHypocaloricLunchCombinedWith: {
+          male: "adaptForMaleHypocaloricLunchCombinedWith",
+          female: "adaptForFemaleHypocaloricLunchCombinedWith"
+        }
+      }
     };
   },
   props: {
@@ -196,11 +215,22 @@ export default {
     },
     gender() {
       return this.$store.getters["userModule/gender"];
+    },
+    showNutritionalValues() {
+      var nutritionalValues = this.nutritionalValues;
+      return (
+        nutritionalValues &&
+        ((nutritionalValues.energyKcal && nutritionalValues.energyKcal > 0) ||
+          (nutritionalValues.carbohydrate && nutritionalValues.carbohydrate > 0) ||
+          (nutritionalValues.fat && nutritionalValues.fat > 0) ||
+          (nutritionalValues.proteins && nutritionalValues.proteins > 0))
+      );
     }
   },
   watch: {
     gender() {
       this.setNutritionalDailyLimits();
+      this.loadDietary();
     }
   },
   mounted() {
@@ -219,12 +249,23 @@ export default {
         .then(response => {
           if (response.data) {
             var dietary = {};
-             for (let key in response.data) {
+            /* for (let key in response.data) {
                let val = response.data[key];
-              if (Array.isArray(val) && val.length) {
+              if (Array.isArray(val) && val.length && key !== "name") {
                dietary[key] = val;
               }
-            } 
+            }  */
+            for (let key in this.adaptFor) {
+              let gender = this.gender ? "female" : "male";
+              let genderKey = this.adaptFor[key][gender];
+              let val = response.data[genderKey];
+              if (val.length) {
+                if (val.length) dietary[genderKey] = val;
+              } else {
+                val = response.data[key];
+                if (val.length) dietary[key] = val;
+              }
+            }
             this.dietary = dietary;
             // console.log(JSON.stringify(this.dietary));
           }

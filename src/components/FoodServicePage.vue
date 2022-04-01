@@ -26,12 +26,10 @@
           <div class="info mb-2">
             <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
             <template v-if="foodService.cuisine && foodService.cuisine.length">
-            <b-icon-dot />
-            <span>
-              {{foodService.cuisine.map(function(elem){
-              return this.getTrad(elem.name);
-              }).join(",")}}
-            </span>
+              <b-icon-dot />
+              <span>
+                {{printCuisines(foodService.cuisine)}}
+              </span>
             </template>
             <br />
             <span>€€</span>
@@ -172,8 +170,15 @@
                           <img :src="getImage(pfp)" />
                         </div>
                         <!-- <b-icon-chevron-right class="more-info-icon" /> -->
+                        <span
+                            class="suggested-badge"
+                            v-if="suggestedPfps.includes(String(pfp.id))"
+                          >
+                            <b-icon-star-fill scale=".8" />Scelto per te
+                          </span>
                         <p class="pfp-title">
                           {{getTrad(pfp.name)}}
+                          
                           <!-- <span class="balanced-badge">
                             <span>
                               Equilibrato                              
@@ -309,10 +314,14 @@ export default {
       gen_m: require("@/assets/gen_m.png"),
       gen_f: require("@/assets/gen_f.png"),
       gen_m_active: require("@/assets/gen_m_active.png"),
-      gen_f_active: require("@/assets/gen_f_active.png")
+      gen_f_active: require("@/assets/gen_f_active.png"),
+      suggestedPfps: []
     };
   },
   methods: {
+    printCuisines(cuisines) {
+      return cuisines.map(e => this.getTrad(e.name)).join(",");
+    },
     getImage(pfp) {
       if (pfp.otherImages && pfp.otherImages.smallThumbnailImage) {
         return pfp.otherImages.smallThumbnailImage;
@@ -728,6 +737,10 @@ export default {
   mounted() {
     this.loadingMenus = true;
     this.loadFoodService();
+    var suggestedPfps = this.$route.query.suggested;
+    if (suggestedPfps) {
+      this.suggestedPfps = suggestedPfps.split(",");
+    }
   },
   computed: {
     gender() {
@@ -1279,5 +1292,19 @@ p.pfp-price {
 
 .gender-selector img.active {
   border-color: var(--info-color);
+}
+
+.suggested-badge {
+  font-size: 12px;
+  font-weight: normal;
+  background-color: orange;
+  color: #fff;
+  border-radius: 5px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.suggested-badge .b-icon {
+  margin-right: 5px;
 }
 </style>

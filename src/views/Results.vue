@@ -127,7 +127,7 @@
 
               <div
                 class="rest-card"
-                @click="showFoodServicePage(selectedFoodService.id)"
+                @click="showFoodServicePage(selectedFoodService)"
                 :data-restid="selectedFoodService.id"
               >
                 <div>
@@ -154,11 +154,7 @@
                     v-if="selectedFoodService.cuisines && selectedFoodService.cuisines.length"
                   >
                     <b-icon-dot />
-                    <span>
-                      {{selectedFoodService.cuisines.map(function(elem){
-                      return this.getTrad(elem.name);
-                      }).join(",")}}
-                    </span>
+                    <span>{{printCuisines(selectedFoodService.cuisines)}}</span>
                     <br />
                   </template>
                   <b-icon-dot />
@@ -170,7 +166,7 @@
                     <span>{{(selectedFoodService.distance / 1000).toFixed(1)}} km</span>
                   </template>
                 </p>
-                <div class="pfp-list" v-if="selectedFoodService.foodProducts.length">
+                <div class="pfp-list" v-if="selectedFoodService.foodProducts && selectedFoodService.foodProducts.length">
                   <template v-for="foodProduct in selectedFoodService.foodProducts.slice(0, 3)">
                     <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
                   </template>
@@ -181,7 +177,7 @@
                 <div
                   class="rest-card"
                   :key="foodService.id"
-                  @click="showFoodServicePage(foodService.id)"
+                  @click="showFoodServicePage(foodService)"
                   v-if="foodService.id !== selectedFoodService.id"
                   :data-restid="foodService.id"
                 >
@@ -207,11 +203,7 @@
                     <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
                     <template v-if="foodService.cuisines && foodService.cuisines.length">
                       <b-icon-dot />
-                      <span>
-                        {{foodService.cuisines.map(function(elem){
-                        return this.getTrad(elem.name);
-                        }).join(",")}}
-                      </span>
+                      <span>{{printCuisines(foodService.cuisines)}}</span>
                       <br />
                     </template>
                     <b-icon-dot />
@@ -223,7 +215,7 @@
                       <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
                     </template>
                   </p>
-                  <div class="pfp-list" v-if="foodService.foodProducts.length">
+                  <div class="pfp-list" v-if="foodService.foodProducts && foodService.foodProducts.length">
                     <template v-for="foodProduct in foodService.foodProducts.slice(0, 3)">
                       <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
                     </template>
@@ -273,7 +265,7 @@
                   <div
                     class="rest-card"
                     :key="foodService.id"
-                    @click="showFoodServicePage(foodService.id)"
+                    @click="showFoodServicePage(foodService)"
                   >
                     <div>
                       <img
@@ -297,11 +289,7 @@
                       <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
                       <template v-if="foodService.cuisines && foodService.cuisines.length">
                         <b-icon-dot />
-                        <span>
-                          {{foodService.cuisines.map(function(elem){
-                          return this.getTrad(elem.name);
-                          }).join(",")}}
-                        </span>
+                        <span>{{printCuisines(foodService.cuisines)}}</span>
                         <br />
                       </template>
                       <b-icon-dot />
@@ -313,7 +301,7 @@
                         <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
                       </template>
                     </p>
-                    <div class="pfp-list" v-if="foodService.foodProducts.length">
+                    <div class="pfp-list" v-if="foodService.foodProducts && foodService.foodProducts.length">
                       <template v-for="foodProduct in foodService.foodProducts.slice(0, 5)">
                         <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
                       </template>
@@ -594,6 +582,9 @@ export default {
     // this.buildMarkers();
   },
   methods: {
+    printCuisines(cuisines) {
+      return cuisines.map(e => this.getTrad(e)).join(",");
+    },
     refreshUserPosition() {
       this.getUserLocation();
       this.reloadFoodServices();
@@ -839,6 +830,19 @@ export default {
       // delete selectedFilters.foodRestrictions;
       // delete selectedFilters.allergens;
       // delete selectedFilters.mealVouchers;
+      var priceValue = selectedFilters.priceRange;
+      if (priceValue === "€") {
+        selectedFilters["priceRangeMin"] = "0";
+        selectedFilters["priceRangeMax"] = "0.3";
+      } else if (priceValue === "€€") {
+        selectedFilters["priceRangeMin"] = "0.31";
+        selectedFilters["priceRangeMax"] = "0.7";
+      }
+      if (priceValue === "€€€") {
+        selectedFilters["priceRangeMin"] = "0.71";
+        selectedFilters["priceRangeMax"] = "1";
+      }
+      delete selectedFilters.priceRange;
 
       for (const [key, value] of Object.entries(selectedFilters)) {
         if (Array.isArray(value) && !value.length) {
@@ -854,18 +858,22 @@ export default {
       var pfpFilter = {
         allergens: selectedFilters.allergens,
         // category: [],
-        name: this.selectedWhat.length ? this.selectedWhat[0] : null,
-        nutritionalAspects: selectedFilters.nutritionalAspects,
-        unverified: false
+        // name: this.selectedWhat.length ? this.selectedWhat[0] : null,
+        name: this.selectedWhat.length ? this.selectedWhat : null,
+        nutritionalAspects: selectedFilters.nutritionalAspects
       };
+
+      delete selectedFilters.allergens;
 
       var body = {
         ...filters,
         ...selectedFilters,
-        pfpFilter
+        pfpFilter,
+        unVerified: false
       };
 
       try {
+        console.log("load page: " + this.scrollingPage);
         let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
           params: {
             page: this.scrollingPage,
@@ -873,9 +881,10 @@ export default {
             sort: sort
           }
         });
-        this.scrollingPage++;
+        
         if (response.data) {
-          if (this.scrollingPage <= 1) {
+          if (response.data.length) this.scrollingPage++;
+          if (this.scrollingPage < 1) {
             this.foodServices = response.data;
           } else {
             this.foodServices = this.foodServices.concat(response.data);
@@ -971,12 +980,17 @@ export default {
     showLocationPicker() {
       this.$refs.locationpicker.show();
     },
-    showFoodServicePage(id) {
+    showFoodServicePage(fs) {
       // this.$router.push({ name: "FoodService" });
       // this.foodServiceIdToShow = 12;
+      var query;
+      if (this.selectedWhat && this.selectedWhat.length) {
+        query = { suggested: fs.foodProducts.map(e => e.id).join(",") };
+      }
       this.$router.push({
         name: "FoodServiceResult",
-        params: { id }
+        params: { id: fs.id },
+        query
       });
     },
     hideFoodServicePage() {
@@ -1160,6 +1174,7 @@ export default {
         this.selectedFilter = null;
         this.currentPreview = null;
         this.loadingContent = true;
+        this.scrollingPage = 0;
         if (this.$route.hash && this.$route.hash === "#mobilemodal") {
           this.$router.go(-1);
         }
