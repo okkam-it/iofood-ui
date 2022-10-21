@@ -220,6 +220,10 @@
                       km</span
                     >
                   </template>
+                  <food-service-opening-label
+                    :fsId="selectedFoodService.id"
+                    :small="true"
+                  />
                 </p>
                 <div
                   class="pfp-list"
@@ -296,6 +300,10 @@
                         >{{ (foodService.distance / 1000).toFixed(1) }} km</span
                       >
                     </template>
+                    <food-service-opening-label
+                      :fsId="foodService.id"
+                      :small="true"
+                    />
                   </p>
                   <div
                     class="pfp-list"
@@ -427,6 +435,10 @@
                           km</span
                         >
                       </template>
+                      <food-service-opening-label
+                        :fsId="foodService.id"
+                        :small="true"
+                      />
                     </p>
                     <div
                       class="pfp-list"
@@ -529,6 +541,7 @@ import FoodServicePage from "@/components/FoodServicePage";
 import FiltersContent from "@/components/FiltersContent";
 import MobileModal from "@/components/mobile-modal/MobileModal";
 import api from "@/helpers/api";
+import FoodServiceOpeningLabel from "@/components/FoodServiceOpeningLabel";
 // import restsData from '../assets/rests.json';
 import "leaflet/dist/leaflet.css";
 export default {
@@ -544,6 +557,7 @@ export default {
     FiltersContent,
     MobileModal,
     SearchWhatPicker,
+    FoodServiceOpeningLabel,
   },
   data() {
     return {
@@ -1593,21 +1607,21 @@ export default {
   overflow: hidden;
 }
 
-.rests-list .rest-card {
+.rest-card {
   width: 100%;
   border-radius: 15px;
   overflow: hidden;
   margin-bottom: 2vh;
 }
 
-.rests-list .rest-card label {
+.rest-card label {
   font-weight: bold;
   font-size: 20px;
   /* margin-top: 5px; */
   margin-top: 0;
 }
 
-.rests-list .rest-card p.info {
+.rest-card p.info {
   margin-bottom: 0;
   word-wrap: break-word;
   width: 100%;
@@ -1615,7 +1629,7 @@ export default {
   font-size: 14px;
 }
 
-.rests-list .rest-card img {
+.rest-card img {
   /* width: 100%;
   height: 25vh; */
   width: 100%;
@@ -1625,7 +1639,7 @@ export default {
   border-bottom-left-radius: 3px;
 }
 
-.rests-list .rest-card .image-slider {
+.rest-card .image-slider {
   margin-top: 3px;
   display: flex;
   overflow: auto;
@@ -1633,11 +1647,11 @@ export default {
   scrollbar-width: none; /* for Firefox */
 }
 
-.rests-list .rest-card .image-slider::-webkit-scrollbar {
+.rest-card .image-slider::-webkit-scrollbar {
   display: none;
 }
 
-.rests-list .rest-card .image-slider > div {
+.rest-card .image-slider > div {
   /* width: 35vw;
   height: 25vw; */
   width: 43vw;
@@ -1646,23 +1660,23 @@ export default {
   flex-shrink: 0;
 }
 
-.rests-list .rest-card .image-slider > div img {
+.rest-card .image-slider > div img {
   width: 100%;
   height: 100%;
   /* border-radius: 15px; */
 }
 
-.rests-list .rest-card .image-slider > div:first-child img {
+.rest-card .image-slider > div:first-child img {
   border-top-left-radius: 15px;
   border-bottom-left-radius: 5px;
 }
 
-.rests-list .rest-card .image-slider > div:last-child img {
+.rest-card .image-slider > div:last-child img {
   border-top-right-radius: 15px;
   border-bottom-right-radius: 5px;
 }
 
-.rests-list .rest-card .image-slider > div:only-child {
+.rest-card .image-slider > div:only-child {
   width: 100%;
   height: 20vh;
   object-fit: cover;
