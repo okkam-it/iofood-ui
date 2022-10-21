@@ -147,7 +147,7 @@
                 <b-icon-basket2 scale="1.5" />Ordina da asporto
               </button>
               <button class="small">
-                <b-icon-calendar2-day scale="1.5" />Prenota un tavolo
+                <b-icon-calendar2-day scale="1.5" />Prenota
               </button>
             </div>
           </div>
