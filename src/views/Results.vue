@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ noclick : loadingContent }">
+  <div :class="{ noclick: loadingContent }">
     <div class="header">
       <div class="back-button" @click="goBack()">
         <b-icon-chevron-left scale="1.3" shift-h="-5" />
@@ -15,26 +15,39 @@
       <div class="filters-box">
         <div @click="showFiltersBox()">
           <b-icon-sliders scale="1.2" />
-          <span class="filters-size" v-if="selectedFiltersSize > 0">{{selectedFiltersSize}}</span>
+          <span class="filters-size" v-if="selectedFiltersSize > 0">{{
+            selectedFiltersSize
+          }}</span>
         </div>
-        <div @click="showLocationPicker()" class="location-active" v-if="userLocation">
+        <div
+          @click="showLocationPicker()"
+          class="location-active"
+          v-if="userLocation"
+        >
           <b-icon-geo-alt-fill class="mr-2" />
-          {{getUserLocationString()}}
+          {{ getUserLocationString() }}
         </div>
         <template v-for="filter in quickFilters">
           <div
             @click="toggleSelectedFilter(filter)"
             :key="filter.label"
-            :class="{ active : filter.alternatives && selectedFilters[filter.code] ? selectedFilters[filter.code].length : selectedFilters[filter.code]}"
+            :class="{
+              active:
+                filter.alternatives && selectedFilters[filter.code]
+                  ? selectedFilters[filter.code].length
+                  : selectedFilters[filter.code],
+            }"
           >
             <template v-if="filter.alternatives">
-              <template
-                v-if="selectedFilters[filter.code]"
-              >{{Array.isArray(selectedFilters[filter.code]) ? filter.label : $t('filters.' + selectedFilters[filter.code]) }}</template>
-              <template v-else>{{filter.label}}</template>
+              <template v-if="selectedFilters[filter.code]">{{
+                Array.isArray(selectedFilters[filter.code])
+                  ? filter.label
+                  : $t("filters." + selectedFilters[filter.code])
+              }}</template>
+              <template v-else>{{ filter.label }}</template>
               <b-icon-caret-down-fill variant="secondary" />
             </template>
-            <template v-else>{{filter.label}}</template>
+            <template v-else>{{ filter.label }}</template>
           </div>
         </template>
       </div>
@@ -42,7 +55,7 @@
         <template v-for="what in selectedWhat">
           <div :key="what" @click="removeWhat(what)">
             <!-- {{$t("explore_shortcuts." + what)}} -->
-            {{what}}
+            {{ what }}
             <b-icon-x />
           </div>
         </template>
@@ -60,9 +73,17 @@
         <div class="subline inc"></div>
         <div class="subline dec"></div>
       </div>
-      <div class="new-position-banner" v-if="showNewPositionBanner && hiddenList && false">Cerca qui</div>
+      <div
+        class="new-position-banner"
+        v-if="showNewPositionBanner && hiddenList && false"
+      >
+        Cerca qui
+      </div>
     </div>
-    <location-picker ref="locationpicker" @locationChanged="refreshUserPosition()" />
+    <location-picker
+      ref="locationpicker"
+      @locationChanged="refreshUserPosition()"
+    />
     <search-what-picker ref="searchwhatpicker" @addWhat="addWhat" />
     <div class="content" v-if="!loadingUserLoc">
       <div class="map-view">
@@ -86,7 +107,11 @@
               :key="marker.name"
               @click="showRestPreview(marker)"
             >{{marker.name}}</l-marker>-->
-            <l-marker :key="marker.name" :lat-lng="marker.coords" @click="showRestPreview(marker)">
+            <l-marker
+              :key="marker.name"
+              :lat-lng="marker.coords"
+              @click="showRestPreview(marker)"
+            >
               <l-icon :icon-anchor="staticAnchor" class-name="custom-marker">
                 <div>
                   <!-- <img
@@ -94,7 +119,9 @@
                   />-->
                   <transition name="fade">
                     <img
-                      v-if="currentPreview && currentPreview == marker.foodServiceId"
+                      v-if="
+                        currentPreview && currentPreview == marker.foodServiceId
+                      "
                       :src="require('@/assets/icons/marker_red.png')"
                     />
                     <img v-else :src="require('@/assets/icons/marker.png')" />
@@ -102,8 +129,14 @@
                   <transition name="fade">
                     <p
                       class="label"
-                      v-if="currentZoom >= 13 && (!currentPreview || currentPreview !== marker.foodServiceId)"
-                    >{{ marker.name }}</p>
+                      v-if="
+                        currentZoom >= 13 &&
+                        (!currentPreview ||
+                          currentPreview !== marker.foodServiceId)
+                      "
+                    >
+                      {{ marker.name }}
+                    </p>
                   </transition>
                 </div>
               </l-icon>
@@ -137,38 +170,73 @@
                     @error="fsImageUrlAlt"
                   />
                   <div class="image-slider" v-else>
-                    <template v-for="foodProduct in selectedFoodService.foodProducts">
+                    <template
+                      v-for="foodProduct in selectedFoodService.foodProducts"
+                    >
                       <div :key="foodProduct.id" v-if="foodProduct.imageUrl">
-                        <img :src="foodProduct.imageUrl" @error="fsImageUrlAlt" />
+                        <img
+                          :src="foodProduct.imageUrl"
+                          @error="fsImageUrlAlt"
+                        />
                       </div>
                     </template>
                     <div>
-                      <img :src="getRestImage(selectedFoodService)" @error="fsImageUrlAlt" />
+                      <img
+                        :src="getRestImage(selectedFoodService)"
+                        @error="fsImageUrlAlt"
+                      />
                     </div>
                   </div>
                 </div>
-                <label>{{selectedFoodService.name}}</label>
+                <label>{{ selectedFoodService.name }}</label>
                 <p class="info">
-                  <span v-if="selectedFoodService.type">{{getTrad(selectedFoodService.type.name)}}</span>
+                  <span v-if="selectedFoodService.type">{{
+                    getTrad(selectedFoodService.type.name)
+                  }}</span>
                   <template
-                    v-if="selectedFoodService.cuisines && selectedFoodService.cuisines.length"
+                    v-if="
+                      selectedFoodService.cuisines &&
+                      selectedFoodService.cuisines.length
+                    "
                   >
                     <b-icon-dot />
-                    <span>{{printCuisines(selectedFoodService.cuisines)}}</span>
+                    <span>{{
+                      printCuisines(selectedFoodService.cuisines)
+                    }}</span>
                     <br />
                   </template>
-                  <b-icon-dot />
-                  <span
-                    v-if="selectedFoodService.priceRange"
-                  >{{getPriceRangeIcon(selectedFoodService.priceRange)}}</span>
+                  <template v-if="selectedFoodService.priceRange">
+                    <b-icon-dot />
+                    <span>{{
+                      getPriceRangeIcon(selectedFoodService.priceRange)
+                    }}</span>
+                  </template>
                   <template v-if="selectedFoodService.distance">
                     <b-icon-dot />
-                    <span>{{(selectedFoodService.distance / 1000).toFixed(1)}} km</span>
+                    <span
+                      >{{
+                        (selectedFoodService.distance / 1000).toFixed(1)
+                      }}
+                      km</span
+                    >
                   </template>
                 </p>
-                <div class="pfp-list" v-if="selectedFoodService.foodProducts && selectedFoodService.foodProducts.length">
-                  <template v-for="foodProduct in selectedFoodService.foodProducts.slice(0, 3)">
-                    <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
+                <div
+                  class="pfp-list"
+                  v-if="
+                    selectedFoodService.foodProducts &&
+                    selectedFoodService.foodProducts.length
+                  "
+                >
+                  <template
+                    v-for="foodProduct in selectedFoodService.foodProducts.slice(
+                      0,
+                      3
+                    )"
+                  >
+                    <span :key="foodProduct.id">{{
+                      getTrad(foodProduct.name).toLowerCase()
+                    }}</span>
                   </template>
                   <span>Vedi altro..</span>
                 </div>
@@ -190,34 +258,61 @@
                     <div class="image-slider" v-else>
                       <template v-for="foodProduct in foodService.foodProducts">
                         <div :key="foodProduct.id" v-if="foodProduct.imageUrl">
-                          <img :src="foodProduct.imageUrl" @error="fsImageUrlAlt" />
+                          <img
+                            :src="foodProduct.imageUrl"
+                            @error="fsImageUrlAlt"
+                          />
                         </div>
                       </template>
                       <div>
-                        <img :src="getRestImage(foodService)" @error="fsImageUrlAlt" />
+                        <img
+                          :src="getRestImage(foodService)"
+                          @error="fsImageUrlAlt"
+                        />
                       </div>
                     </div>
                   </div>
-                  <label>{{foodService.name}}</label>
+                  <label>{{ foodService.name }}</label>
                   <p class="info">
-                    <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
-                    <template v-if="foodService.cuisines && foodService.cuisines.length">
+                    <span v-if="foodService.type">{{
+                      getTrad(foodService.type.name)
+                    }}</span>
+                    <template
+                      v-if="foodService.cuisines && foodService.cuisines.length"
+                    >
                       <b-icon-dot />
-                      <span>{{printCuisines(foodService.cuisines)}}</span>
+                      <span>{{ printCuisines(foodService.cuisines) }}</span>
                       <br />
                     </template>
-                    <b-icon-dot />
-                    <span
-                      v-if="foodService.priceRange"
-                    >{{getPriceRangeIcon(foodService.priceRange)}}</span>
+                    <template v-if="foodService.priceRange">
+                      <b-icon-dot />
+                      <span>{{
+                        getPriceRangeIcon(foodService.priceRange)
+                      }}</span>
+                    </template>
                     <template v-if="foodService.distance">
                       <b-icon-dot />
-                      <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
+                      <span
+                        >{{ (foodService.distance / 1000).toFixed(1) }} km</span
+                      >
                     </template>
                   </p>
-                  <div class="pfp-list" v-if="foodService.foodProducts && foodService.foodProducts.length">
-                    <template v-for="foodProduct in foodService.foodProducts.slice(0, 3)">
-                      <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
+                  <div
+                    class="pfp-list"
+                    v-if="
+                      foodService.foodProducts &&
+                      foodService.foodProducts.length
+                    "
+                  >
+                    <template
+                      v-for="foodProduct in foodService.foodProducts.slice(
+                        0,
+                        3
+                      )"
+                    >
+                      <span :key="foodProduct.id">{{
+                        getTrad(foodProduct.name).toLowerCase()
+                      }}</span>
                     </template>
                     <span>Vedi altro..</span>
                   </div>
@@ -229,11 +324,15 @@
       </div>
       <div
         class="list-view"
-        :class="{ hidden : hiddenList }"
+        :class="{ hidden: hiddenList }"
         ref="listview"
         @scroll="handleScrollRestsList"
       >
-        <div class="map-link" @touchstart="hideList()" @mousedown="hideList()"></div>
+        <div
+          class="map-link"
+          @touchstart="hideList()"
+          @mousedown="hideList()"
+        ></div>
         <div class="list">
           <div class="list-handler">
             <div />
@@ -255,8 +354,12 @@
                     v-for="context in contexts"
                     :key="context"
                     @click="toggleContext(context)"
-                    :class="{ active : selectedFilters.moments.includes(context) }"
-                  >{{$t('filters.' + context)}}</div>
+                    :class="{
+                      active: selectedFilters.moments.includes(context),
+                    }"
+                  >
+                    {{ $t("filters." + context) }}
+                  </div>
                 </div>
                 <!-- <hr /> -->
               </div>
@@ -274,36 +377,73 @@
                         @error="fsImageUrlAlt"
                       />
                       <div class="image-slider" v-else>
-                        <template v-for="foodProduct in foodService.foodProducts">
-                          <div :key="foodProduct.id" v-if="foodProduct.imageUrl">
-                            <img :src="foodProduct.imageUrl" @error="fsImageUrlAlt" />
+                        <template
+                          v-for="foodProduct in foodService.foodProducts"
+                        >
+                          <div
+                            :key="foodProduct.id"
+                            v-if="foodProduct.imageUrl"
+                          >
+                            <img
+                              :src="foodProduct.imageUrl"
+                              @error="fsImageUrlAlt"
+                            />
                           </div>
                         </template>
                         <div>
-                          <img :src="getRestImage(foodService)" @error="fsImageUrlAlt" />
+                          <img
+                            :src="getRestImage(foodService)"
+                            @error="fsImageUrlAlt"
+                          />
                         </div>
                       </div>
                     </div>
-                    <label>{{foodService.name}}</label>
+                    <label>{{ foodService.name }}</label>
                     <p class="info">
-                      <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
-                      <template v-if="foodService.cuisines && foodService.cuisines.length">
+                      <span v-if="foodService.type">{{
+                        getTrad(foodService.type.name)
+                      }}</span>
+                      <template
+                        v-if="
+                          foodService.cuisines && foodService.cuisines.length
+                        "
+                      >
                         <b-icon-dot />
-                        <span>{{printCuisines(foodService.cuisines)}}</span>
+                        <span>{{ printCuisines(foodService.cuisines) }}</span>
                         <br />
                       </template>
-                      <b-icon-dot />
-                      <span
-                        v-if="foodService.priceRange"
-                      >{{getPriceRangeIcon(foodService.priceRange)}}</span>
+                      <template v-if="foodService.priceRange">
+                        <b-icon-dot />
+                        <span>{{
+                          getPriceRangeIcon(foodService.priceRange)
+                        }}</span>
+                      </template>
                       <template v-if="foodService.distance">
                         <b-icon-dot />
-                        <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
+                        <span
+                          >{{
+                            (foodService.distance / 1000).toFixed(1)
+                          }}
+                          km</span
+                        >
                       </template>
                     </p>
-                    <div class="pfp-list" v-if="foodService.foodProducts && foodService.foodProducts.length">
-                      <template v-for="foodProduct in foodService.foodProducts.slice(0, 5)">
-                        <span :key="foodProduct.id">{{getTrad(foodProduct.name).toLowerCase()}}</span>
+                    <div
+                      class="pfp-list"
+                      v-if="
+                        foodService.foodProducts &&
+                        foodService.foodProducts.length
+                      "
+                    >
+                      <template
+                        v-for="foodProduct in foodService.foodProducts.slice(
+                          0,
+                          5
+                        )"
+                      >
+                        <span :key="foodProduct.id">{{
+                          getTrad(foodProduct.name).toLowerCase()
+                        }}</span>
                       </template>
                       <span>Vedi altro..</span>
                     </div>
@@ -324,7 +464,10 @@
       </div>
     </div>
     <div class="food-service-content" v-if="foodServiceIdToShow">
-      <food-service-page @hide="hideFoodServicePage()" v-if="foodServiceIdToShow" />
+      <food-service-page
+        @hide="hideFoodServicePage()"
+        v-if="foodServiceIdToShow"
+      />
     </div>
     <div class="filters-content" v-if="showFilters">
       <filters-content
@@ -335,19 +478,42 @@
       />
     </div>
     <mobile-modal
-      v-if="selectedFilter && selectedFilter.alternatives && !selectedFilter.selectedAlternative"
+      v-if="
+        selectedFilter &&
+        selectedFilter.alternatives &&
+        !selectedFilter.selectedAlternative
+      "
       @hide="selectedFilter = null"
       showclosebutton
     >
-      <template #title>{{selectedFilter.label}}</template>
+      <template #title>{{ selectedFilter.label }}</template>
       <template #content>
         <div class="badge-selector-box">
           <span
-            @click="toggleAlternative(Array.isArray(selectedFilters[selectedFilter.code]), alternative)"
-            :class="{ selected : Array.isArray(selectedFilters[selectedFilter.code]) ? (selectedFilters[selectedFilter.code] && selectedFilters[selectedFilter.code].find(x => x.id ? (alternative.id ? x.id === alternative.id : x.id === alternative) : (alternative.id ? x === alternative.id : x === alternative))/* && selectedFilters[selectedFilter.code].includes(alternative) */) : (selectedFilters[selectedFilter.code] === alternative) }"
+            @click="
+              toggleAlternative(
+                Array.isArray(selectedFilters[selectedFilter.code]),
+                alternative
+              )
+            "
+            :class="{
+              selected: Array.isArray(selectedFilters[selectedFilter.code])
+                ? selectedFilters[selectedFilter.code] &&
+                  selectedFilters[selectedFilter.code].find((x) =>
+                    x.id
+                      ? alternative.id
+                        ? x.id === alternative.id
+                        : x.id === alternative
+                      : alternative.id
+                      ? x === alternative.id
+                      : x === alternative
+                  ) /* && selectedFilters[selectedFilter.code].includes(alternative) */
+                : selectedFilters[selectedFilter.code] === alternative,
+            }"
             v-for="alternative in selectedFilter.alternatives"
             :key="alternative"
-          >{{$t('filters.' + alternative)}}</span>
+            >{{ $t("filters." + alternative) }}</span
+          >
         </div>
       </template>
     </mobile-modal>
@@ -377,7 +543,7 @@ export default {
     FoodServicePage,
     FiltersContent,
     MobileModal,
-    SearchWhatPicker
+    SearchWhatPicker,
   },
   data() {
     return {
@@ -390,7 +556,7 @@ export default {
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       mapOptions: {
         zoomSnap: 0.5,
-        zoomControl: false
+        zoomControl: false,
       },
       showMap: true,
       hiddenList: false,
@@ -403,7 +569,7 @@ export default {
         iconRetinaUrl: require("@/assets/icons/marker.png"),
         iconUrl: require("@/assets/icons/marker.png"),
         iconSize: [31, 40],
-        iconAnchor: [15, 35]
+        iconAnchor: [15, 35],
         //shadowUrl: require('@/assets/images/tte_logo.png')
       }),
       markerRedIcon: icon({
@@ -411,7 +577,7 @@ export default {
         iconUrl: require("@/assets/icons/marker_red.png"),
         iconSize: [31, 40],
         // iconAnchor: [23, 47]
-        iconAnchor: [15, 35]
+        iconAnchor: [15, 35],
         //shadowUrl: require('@/assets/images/tte_logo.png')
       }),
       staticAnchor: [16, 37],
@@ -425,25 +591,25 @@ export default {
         {
           label: "Ordinamento",
           code: "orderby",
-          alternatives: ["DISTANCE", "RELEVANCE", "PRICE"]
+          alternatives: ["DISTANCE", "RELEVANCE", "PRICE"],
         },
         {
           label: "Aperti ora",
-          code: "openNow"
+          code: "openNow",
         },
         {
           label: "Prezzo",
           code: "priceRange",
-          alternatives: ["€", "€€", "€€€"]
+          alternatives: ["€", "€€", "€€€"],
         },
         {
           label: "Asporto",
-          code: "takeaway"
+          code: "takeaway",
         },
         {
           label: "Consegna a domicilio",
-          code: "delivery"
-        }
+          code: "delivery",
+        },
       ],
       selectedFilters: this.initSelectedFilters(),
       selectedFilter: null,
@@ -452,7 +618,7 @@ export default {
       contexts: [],
       prevRoute: null,
       scrollingPage: 0,
-      pageSize: 100
+      pageSize: 100,
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -470,7 +636,7 @@ export default {
     }
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       vm.prevRoute = from;
     });
   },
@@ -478,7 +644,7 @@ export default {
     selectedFiltersSize() {
       var size = 0;
       if (this.selectedFilters) {
-        Object.values(this.selectedFilters).forEach(value => {
+        Object.values(this.selectedFilters).forEach((value) => {
           if (Array.isArray(value)) {
             // variable is a boolean
             size += value.length;
@@ -505,7 +671,7 @@ export default {
       }
       // console.log(size);
       return size - 2;
-    }
+    },
   },
   mounted() {
     /* var whatFilter = this.$route.query.what;
@@ -583,7 +749,7 @@ export default {
   },
   methods: {
     printCuisines(cuisines) {
-      return cuisines.map(e => this.getTrad(e)).join(",");
+      return cuisines.map((e) => this.getTrad(e)).join(",");
     },
     refreshUserPosition() {
       this.getUserLocation();
@@ -601,11 +767,11 @@ export default {
         }); */
       this.axios
         .get(api.GET_FILTERS_OCCASIONS)
-        .then(response => {
+        .then((response) => {
           this.contexts = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -667,7 +833,7 @@ export default {
       }
     },
     removeWhat(what) {
-      var index = this.selectedWhat.findIndex(x => x === what);
+      var index = this.selectedWhat.findIndex((x) => x === what);
       if (index > -1) {
         this.selectedWhat.splice(index, 1);
       }
@@ -702,7 +868,7 @@ export default {
         openNow: false,
         allergens: [],
         orderby: "RELEVANCE",
-        foodRestrictions: []
+        foodRestrictions: [],
 
         /* opennow: false,
         orderby: "Pertinenza",
@@ -804,13 +970,12 @@ export default {
         return;
       }
       this.loading = true;
-      var userLocation = this.$store.getters[
-        "geolocationModule/lastUserLocation"
-      ];
+      var userLocation =
+        this.$store.getters["geolocationModule/lastUserLocation"];
       let filters = {
         latitude: userLocation.latitude,
         longitude: userLocation.longitude,
-        language: "it"
+        language: "it",
       };
       var selectedFilters = JSON.parse(JSON.stringify(this.selectedFilters));
       /* if (selectedFilters.price) {
@@ -860,7 +1025,7 @@ export default {
         // category: [],
         // name: this.selectedWhat.length ? this.selectedWhat[0] : null,
         name: this.selectedWhat.length ? this.selectedWhat : null,
-        nutritionalAspects: selectedFilters.nutritionalAspects
+        nutritionalAspects: selectedFilters.nutritionalAspects,
       };
 
       delete selectedFilters.allergens;
@@ -869,7 +1034,7 @@ export default {
         ...filters,
         ...selectedFilters,
         pfpFilter,
-        unVerified: false
+        unVerified: false,
       };
 
       try {
@@ -878,10 +1043,10 @@ export default {
           params: {
             page: this.scrollingPage,
             size: this.pageSize,
-            sort: sort
-          }
+            sort: sort,
+          },
         });
-        
+
         if (response.data) {
           if (response.data.length) this.scrollingPage++;
           if (this.scrollingPage < 1) {
@@ -951,7 +1116,7 @@ export default {
     },
     showRestPreview(marker) {
       this.selectedFoodService = this.foodServices.find(
-        x => x.id === marker.foodServiceId
+        (x) => x.id === marker.foodServiceId
       );
       this.currentPreview = marker.foodServiceId;
       setTimeout(() => {
@@ -966,7 +1131,7 @@ export default {
         markers.push({
           name: foodService.name,
           foodServiceId: foodService.id,
-          coords: latLng(foodService.latitude, foodService.longitude)
+          coords: latLng(foodService.latitude, foodService.longitude),
         });
       }
       this.markers = markers;
@@ -985,12 +1150,12 @@ export default {
       // this.foodServiceIdToShow = 12;
       var query;
       if (this.selectedWhat && this.selectedWhat.length) {
-        query = { suggested: fs.foodProducts.map(e => e.id).join(",") };
+        query = { suggested: fs.foodProducts.map((e) => e.id).join(",") };
       }
       this.$router.push({
         name: "FoodServiceResult",
         params: { id: fs.id },
-        query
+        query,
       });
     },
     hideFoodServicePage() {
@@ -1034,9 +1199,8 @@ export default {
       this.$router.go(-1);
     },
     getUserLocation() {
-      this.userLocation = this.$store.getters[
-        "geolocationModule/lastUserLocation"
-      ];
+      this.userLocation =
+        this.$store.getters["geolocationModule/lastUserLocation"];
       this.center = latLng(
         this.userLocation.latitude,
         this.userLocation.longitude
@@ -1079,7 +1243,7 @@ export default {
       }
     },
     toggleContext(moment) {
-      var index = this.selectedFilters.moments.findIndex(x => x === moment);
+      var index = this.selectedFilters.moments.findIndex((x) => x === moment);
       if (index > -1) {
         this.selectedFilters.moments.splice(index, 1);
       } else {
@@ -1089,13 +1253,14 @@ export default {
     toggleSelectedFilter(filter) {
       this.selectedFilter = filter;
       if (this.selectedFilter && !this.selectedFilter.alternatives) {
-        this.selectedFilters[this.selectedFilter.code] = !this.selectedFilters[
-          this.selectedFilter.code
-        ];
+        this.selectedFilters[this.selectedFilter.code] =
+          !this.selectedFilters[this.selectedFilter.code];
       }
     },
     toggleArrayItem(data, array) {
-      var index = array.findIndex(x => (x.id ? x.id === data.id : x === data));
+      var index = array.findIndex((x) =>
+        x.id ? x.id === data.id : x === data
+      );
       if (index > -1) {
         array.splice(index, 1);
       } else {
@@ -1133,7 +1298,7 @@ export default {
       /* const query = Object.assign({}, this.$route.query);
       delete query.what;
       this.$router.replace({ query }); */
-    }
+    },
     /* addParamsToLocation(params) {
       history.pushState(
         {},
@@ -1168,7 +1333,7 @@ export default {
       this.reloadFoodServices();
     },
     selectedFilters: {
-      handler: function() {
+      handler: function () {
         this.foodServices = [];
         this.markers = [];
         this.selectedFilter = null;
@@ -1186,9 +1351,9 @@ export default {
           });
         }, 100);
       },
-      deep: true
-    }
-  }
+      deep: true,
+    },
+  },
   /* selectedWhat: {
     handler: function() {
       this.loadFoodServices();
