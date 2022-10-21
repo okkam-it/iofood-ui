@@ -947,13 +947,19 @@ export default {
   content: "";
   flex: 1;
   margin-left: 1rem;
-  height: 1px;
-  background-color: #f2f2f2;
+  height: 0.8px;
+  background-color: #e6e6e6;
 }
 
 .pfp-item {
   padding: 5px 0.5vw;
   position: relative;
+  border-bottom: 1px solid #e6e6e6;
+  margin-bottom: 10px;
+}
+
+.pfp-item:last-child {
+  border-bottom-color: transparent;
 }
 
 .pfp-item.image-layout > p {
