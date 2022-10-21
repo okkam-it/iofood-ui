@@ -1,26 +1,34 @@
 <template>
   <div class="filter-box">
-    <label>{{title}}</label>
+    <label>{{ title }}</label>
     <div>
       <ul>
-        <li v-for="option in options" :key="option.id || option.label || option">
+        <li
+          v-for="option in options"
+          :key="option.id || option.label || option"
+        >
           <template v-if="option.id">
             <span
-              :class="{ active : selectedFilter === option}"
+              :class="{ active: selectedFilter === option }"
               @click="toggleArrayItem(option)"
-            >{{getOptionName(option.name)}}</span>
+              >{{ getOptionName(option.name) }}</span
+            >
           </template>
           <template v-if="option.label">
             <span
-              :class="{ active : String(selectedFilter) === String(option.value)}"
+              :class="{
+                active: String(selectedFilter) === String(option.value),
+              }"
               @click="toggleArrayItem(String(option.value))"
-            >{{getOptionName(option.label)}}</span>
+              >{{ getOptionName(option.label) }}</span
+            >
           </template>
           <template v-else>
             <span
-              :class="{ active : selectedFilter === option}"
+              :class="{ active: selectedFilter === option }"
               @click="toggleArrayItem(option)"
-            >{{option}}</span>
+              >{{ option }}</span
+            >
           </template>
         </li>
       </ul>
@@ -40,27 +48,26 @@
 
 <script>
 export default {
-  name: "FilterMultiOption",
+  name: "FilterSingleOption",
   components: {},
   data() {
     return {
-      maxListItems: 3
+      maxListItems: 3,
     };
   },
   props: {
     options: {
-      type: Array
+      type: Array,
     },
     selectedFilter: {
-      type: String
+      type: String,
     },
     title: {
-      type: String
+      type: String,
     },
     optional: {
-      type: Boolean
-    }
-
+      type: Boolean,
+    },
   },
   methods: {
     getOptionName(name) {
@@ -86,15 +93,15 @@ export default {
       } else {
         this.$emit("update:selectedFilter", data);
       }
-      
+
       /* var index = array.findIndex(x => (x.id ? x.id === data.id : x === data));
       if (index > -1) {
         array.splice(index, 1);
       } else {
         array.push(data);
       } */
-    }
-  }
+    },
+  },
 };
 </script>
 
