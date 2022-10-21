@@ -61,7 +61,7 @@
                   goToResults([
                     {
                       type: 'what',
-                      value: [categoryShortcut],
+                      value: [$t('explore_shortcuts.' + categoryShortcut)],
                     },
                   ])
                 "
