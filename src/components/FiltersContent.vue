@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div class="header">
-      <b-icon-x scale="2.2" @click="hide()" />Filtra
-    </div>
+    <div class="header"><b-icon-x scale="2.2" @click="hide()" />Filtra</div>
     <div class="content">
       <!-- HIDDEN -->
       <!-- <filter-single-option
@@ -23,7 +21,10 @@
         :option="'takeaway'"
         title="Asporto/Domicilio"
       />
-      <filter-base-option :selectedFilter.sync="filters.delivery" :option="'delivery'" />
+      <filter-base-option
+        :selectedFilter.sync="filters.delivery"
+        :option="'delivery'"
+      />
 
       <!-- <filter-multi-option
         :selectedFilters.sync="filters.price"
@@ -120,7 +121,9 @@
     </div>
     <div class="footer">
       <div>
-        <button class="transparent" @click="resetFilters()">Cancella filtri</button>
+        <button class="transparent" @click="resetFilters()">
+          Cancella filtri
+        </button>
       </div>
       <div>
         <button class="primary" @click="showResults()">Mostra risultati</button>
@@ -143,7 +146,7 @@ export default {
     FilterMultiOption,
     FilterBaseOption,
     FilterSingleOption,
-    FilterSliderOption
+    FilterSliderOption,
   },
   data() {
     return {
@@ -152,9 +155,9 @@ export default {
       cuisines: [],
       payments: [],
       prices: [
-        { label: "€", value: "€" },
-        { label: "€€", value: "€€" },
-        { label: "€€€", value: "€€€" }
+        { label: this.$t("filters.€"), value: "€" },
+        { label: this.$t("filters.€€"), value: "€€" },
+        { label: this.$t("filters.€€€"), value: "€€€" },
       ],
       orderBy: ["DISTANCE", "RELEVANCE", "PRICE"],
       foodServiceTypes: [],
@@ -166,21 +169,21 @@ export default {
       allergens: [],
       maxListItems: 3,
       filters: JSON.parse(JSON.stringify(this.selectedFilters)),
-      selectedFilter: null
+      selectedFilter: null,
     };
   },
   props: {
     selectedFilters: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   watch: {
     selectedFilters: {
-      handler: function() {
+      handler: function () {
         this.filters = JSON.parse(JSON.stringify(this.selectedFilters));
       },
-      deep: true
-    }
+      deep: true,
+    },
     /* filters: {
       handler: function() {
         this.$emit("onChangeSelectedFilters", this.filters);
@@ -250,11 +253,11 @@ export default {
         }); */
       this.axios
         .get(api.GET_FILTERS_SITUATION)
-        .then(response => {
+        .then((response) => {
           this.situations = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -281,11 +284,11 @@ export default {
         }); */
       this.axios
         .get(api.GET_FILTERS_NUTRITIONAL_ASPECTS)
-        .then(response => {
+        .then((response) => {
           this.nutritionalFacts = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -297,7 +300,9 @@ export default {
       this.$emit("resetFilters");
     },
     toggleArrayItem(data, array) {
-      var index = array.findIndex(x => (x.id ? x.id === data.id : x === data));
+      var index = array.findIndex((x) =>
+        x.id ? x.id === data.id : x === data
+      );
       if (index > -1) {
         array.splice(index, 1);
       } else {
@@ -319,92 +324,92 @@ export default {
         }); */
       this.axios
         .get(api.GET_FILTERS_ALLERGENS)
-        .then(response => {
+        .then((response) => {
           this.allergens = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadContexts() {
       this.axios
         .get(api.GET_FILTERS_OCCASIONS)
-        .then(response => {
+        .then((response) => {
           this.contexts = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadFoodRestrictions() {
       this.axios
         .get(api.GET_FILTERS_FOOD_RESTRICTIONS)
-        .then(response => {
+        .then((response) => {
           this.foodRestrictions = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadServices() {
       this.axios
         .get(api.GET_FILTERS_FACILITIES)
-        .then(response => {
+        .then((response) => {
           this.facilities = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadCuisines() {
       this.axios
         .get(api.GET_FILTERS_CUISINES)
-        .then(response => {
+        .then((response) => {
           this.cuisines = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadMealVouchers() {
       this.axios
         .get(api.GET_FILTERS_MEAL_VOUCHERS)
-        .then(response => {
+        .then((response) => {
           this.mealVouchers = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadFoodServiceTypes() {
       this.axios
         .get(api.GET_FILTERS_FS_TYPES)
-        .then(response => {
+        .then((response) => {
           this.foodServiceTypes = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadPayments() {
       this.axios
         .get(api.GET_FILTERS_PAYMENTS)
-        .then(response => {
+        .then((response) => {
           this.payments = response.data;
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -505,7 +505,8 @@
             @click="
               toggleAlternative(
                 Array.isArray(selectedFilters[selectedFilter.code]),
-                alternative
+                alternative,
+                selectedFilter.optional
               )
             "
             :class="{
@@ -615,6 +616,7 @@ export default {
           label: "Prezzo",
           code: "priceRange",
           alternatives: ["€", "€€", "€€€"],
+          optional: true,
         },
         {
           label: "Asporto",
@@ -908,14 +910,21 @@ export default {
       this.selectedFilters = filters;
       // console.log("change");
     },
-    toggleAlternative(isArray, alternative) {
+    toggleAlternative(isArray, alternative, optional) {
       if (isArray) {
         this.toggleArrayItem(
           alternative,
           this.selectedFilters[this.selectedFilter.code]
         );
       } else {
-        this.selectedFilters[this.selectedFilter.code] = alternative;
+        if (
+          optional &&
+          this.selectedFilters[this.selectedFilter.code] === alternative
+        ) {
+          this.selectedFilters[this.selectedFilter.code] = null;
+        } else {
+          this.selectedFilters[this.selectedFilter.code] = alternative;
+        }
       }
 
       /* if (!this.selectedFilter.selectedAlternatives) {
