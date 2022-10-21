@@ -308,8 +308,10 @@ export default {
         });
     },
     showResults() {
-      this.$emit("onChangeSelectedFilters", this.filters);
-      this.hide();
+      // this.hide();
+      this.$nextTick(() => {
+        this.$emit("onChangeSelectedFilters", this.filters);
+      });
     },
     resetFilters() {
       this.$emit("resetFilters");

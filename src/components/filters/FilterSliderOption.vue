@@ -1,6 +1,6 @@
 <template>
   <div class="filter-box">
-    <label>{{title}}</label>
+    <label>{{ title }}</label>
     <div class="range">
       <input
         :value="selectedFilter"
@@ -10,40 +10,40 @@
         :step="step"
         @input="updateValue"
       />
-      <span class="active">{{selectedFilter/1000}}km</span>
+      <span class="active">{{ selectedFilter / 1000 }}km</span>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "FilterMultiOption",
+  name: "FilterSliderMultiOption",
   components: {},
   data() {
     return {};
   },
   props: {
     selectedFilter: {
-      type: Number
+      type: Number,
     },
     title: {
-      type: String
+      type: String,
     },
     min: {
-      type: String
+      type: String,
     },
     max: {
-      type: String
+      type: String,
     },
     step: {
-      type: String
-    }
+      type: String,
+    },
   },
   methods: {
     updateValue(event) {
       this.$emit("update:selectedFilter", parseInt(event.target.value));
       // selectedFilter[option] = !Boolean(selectedFilter[option])
-    }
+    },
     /* filterElements(filtered, full) {
       if (filtered && filtered.length > 0 && filtered.length < full.length) {
         return full;
@@ -59,7 +59,7 @@ export default {
         array.push(data);
       }
     } */
-  }
+  },
 };
 </script>
 

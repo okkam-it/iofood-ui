@@ -636,7 +636,6 @@ export default {
       scrollingPage: 0,
       pageSize: 100,
       requestController: null,
-      initializingFilters: true,
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -700,7 +699,7 @@ export default {
         this.selectedWhat.push(whatFilter);
       }
     } */
-    this.initializingFilters = true;
+    this.loadContexts();
     var filters = this.$route.query;
     if (filters) {
       for (let filter in filters) {
@@ -745,7 +744,11 @@ export default {
             if (this.isNumeric(val)) {
               this.selectedFilters[filter] = parseInt(val);
             } else {
-              this.selectedFilters[filter] = val;
+              if (val === "true" || val === "false") {
+                this.selectedFilters[filter] = Boolean(val);
+              } else {
+                this.selectedFilters[filter] = val;
+              }
             }
           }
         }
@@ -763,14 +766,13 @@ export default {
     }, 200);
 
     // this.loadFoodServices();
+    this.reloadFoodServices();
 
-    this.loadContexts();
-
+    // this.loadContexts();
     this.checkRouteState(this.$route);
-    this.$nextTick(() => {
-      this.initializingFilters = false;
+    /* this.$nextTick(() => {
       this.reloadFoodServices();
-    });
+    }); */
     // this.buildMarkers();
   },
   methods: {
@@ -1003,7 +1005,7 @@ export default {
         return;
       } */
       if (this.requestController) {
-        this.controller.abort();
+        this.requestController.abort();
       }
       this.loading = true;
       var userLocation =
@@ -1073,8 +1075,8 @@ export default {
         unVerified: false,
       };
 
-      this.controller = new AbortController();
-      const signal = this.controller.signal;
+      this.requestController = new AbortController();
+      const signal = this.requestController.signal;
 
       try {
         console.log("load page: " + this.scrollingPage);
@@ -1191,8 +1193,19 @@ export default {
     showFoodServicePage(fs) {
       // this.$router.push({ name: "FoodService" });
       // this.foodServiceIdToShow = 12;
+      let filtersLen = 0;
+      for (const [key, value] of Object.entries(this.selectedFilters)) {
+        if (!["orderby", "relevance", "geoDistance"].includes(key)) {
+          if (value && Array.isArray(value)) {
+            filtersLen += value.length;
+          } else if (value) {
+            filtersLen++;
+          }
+        }
+      }
+
       var query;
-      if (this.selectedWhat && this.selectedWhat.length) {
+      if ((this.selectedWhat && this.selectedWhat.length) || filtersLen > 0) {
         query = { suggested: fs.foodProducts.map((e) => e.id).join(",") };
       }
       this.$router.push({
@@ -1339,7 +1352,11 @@ export default {
       // query.filters = filters.join(",");
 
       // this.addParamsToLocation(query);
-      this.$router.replace({ query });
+      if (this.$route.name !== "Results") {
+        this.$router.replace({ name: "Results", query });
+      } else {
+        this.$router.replace({ query });
+      }
 
       /* const query = Object.assign({}, this.$route.query);
       delete query.what;
@@ -1374,14 +1391,12 @@ export default {
       }
     },
     selectedWhat() {
-      if (this.initializingFilters) return;
       this.updateQueryParams();
       this.loadingContent = true;
       this.reloadFoodServices();
     },
     selectedFilters: {
       handler: function () {
-        if (this.initializingFilters) return;
         this.foodServices = [];
         this.markers = [];
         this.selectedFilter = null;
@@ -1391,6 +1406,8 @@ export default {
         if (this.$route.hash && this.$route.hash === "#mobilemodal") {
           this.$router.go(-1);
         }
+        this.updateQueryParams();
+        this.reloadFoodServices();
         /* setTimeout(() => {
           this.$nextTick(() => {
             this.updateQueryParams();
@@ -1398,8 +1415,8 @@ export default {
             // this.loadFoodServices();
           });
         }, 100); */
-        this.updateQueryParams();
-        this.reloadFoodServices();
+        /* this.updateQueryParams();
+        this.reloadFoodServices(); */
       },
       deep: true,
     },

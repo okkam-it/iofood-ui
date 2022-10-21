@@ -1,36 +1,38 @@
 <template>
-  <div class="filter-box" :class="{ sub : !title }">
-    <label v-if="title">{{title}}</label>
+  <div class="filter-box" :class="{ sub: !title }">
+    <label v-if="title">{{ title }}</label>
 
     <div>
-      <span :class="{ active : selectedFilter }" @click="updateValue()">{{$t("filters." + option)}}</span>
+      <span :class="{ active: selectedFilter }" @click="updateValue()">{{
+        $t("filters." + option)
+      }}</span>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "FilterMultiOption",
+  name: "FilterBaseOption",
   components: {},
   data() {
     return {};
   },
   props: {
     option: {
-      type: String
+      type: String,
     },
     selectedFilter: {
-      type: Boolean
+      type: Boolean,
     },
     title: {
-      type: String
-    }
+      type: String,
+    },
   },
   methods: {
     updateValue() {
       this.$emit("update:selectedFilter", !this.selectedFilter);
       // selectedFilter[option] = !Boolean(selectedFilter[option])
-    }
+    },
     /* filterElements(filtered, full) {
       if (filtered && filtered.length > 0 && filtered.length < full.length) {
         return full;
@@ -46,7 +48,7 @@ export default {
         array.push(data);
       }
     } */
-  }
+  },
 };
 </script>
 
