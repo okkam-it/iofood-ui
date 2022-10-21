@@ -12,6 +12,7 @@
           @input="search"
           type="text"
           placeholder="Pesce, milanese, nome ristorante"
+          v-on:keyup.enter="showResult(searchString.trim())"
         />
         <!-- <input
           ref="searchinput"
@@ -29,9 +30,9 @@
               <b-img v-if="res.id" :src="require('@/assets/food_icons/restaurant.png')" />
               {{res.name}}
             </li>
-            <li @click="showResult(searchString)">
+            <li @click="showResult(searchString.trim())">
               <b-icon-search />Cerca risultati per
-              <strong>"{{searchString}}"</strong>
+              <strong>"{{searchString.trim()}}"</strong>
             </li>
           </ul>
         </template>
