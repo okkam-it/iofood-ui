@@ -1,15 +1,23 @@
 <template>
   <div id="app">
-    <router-view />
+    <transition name="fade">
+      <landing-page v-if="showLanding" />
+      <router-view v-else />
+    </transition>
   </div>
 </template>
 
 <script>
+import LandingPage from "@/views/LandingPage";
 export default {
   name: "App",
+  components: {
+    LandingPage,
+  },
   data() {
     return {
       // deferredPrompt: null
+      showLanding: true,
     };
   },
   created() {
@@ -18,8 +26,19 @@ export default {
       // Stash the event so it can be triggered later.
       this.deferredPrompt = e;
     }); */
+    this.checkIsPwa();
   },
   methods: {
+    checkIsPwa() {
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        this.showLanding = false;
+      } else {
+        this.showLanding = true;
+        setTimeout(() => {
+          this.showLanding = false;
+        }, 2500);
+      }
+    },
     /* async install() {
       this.deferredPrompt.prompt();
     } */
