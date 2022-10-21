@@ -18,11 +18,11 @@
       <div class="info-box">
         <p v-if="address">
           <b-icon-geo-fill />
-          {{address}}
+          {{ address }}
         </p>
         <p v-if="phoneNumber">
           <b-icon-phone />
-          {{phoneNumber}}
+          {{ phoneNumber }}
         </p>
         <!-- <p v-if="timetables">
           <b-icon-clock-fill />
@@ -40,14 +40,29 @@
                 <template v-if="opening.singleDay">
                   <p v-if="opening.opening">Apertura straordinaria il</p>
                   <p v-else>Chiuso il</p>
-                  <strong>{{new Date(opening.fromDate).toLocaleDateString('default', dateOptions)}}</strong>
+                  <strong>{{
+                    new Date(opening.fromDate).toLocaleDateString(
+                      "default",
+                      dateOptions
+                    )
+                  }}</strong>
                 </template>
                 <template v-else>
                   <p v-if="opening.opening">Apertura straordinaria dal</p>
                   <p v-else>Chiuso dal</p>
-                  <strong>{{new Date(opening.fromDate).toLocaleDateString('default', dateOptions)}}</strong>
-                  {{" al "}}
-                  <strong>{{ new Date(opening.toDate).toLocaleDateString('default', dateOptions)}}</strong>
+                  <strong>{{
+                    new Date(opening.fromDate).toLocaleDateString(
+                      "default",
+                      dateOptions
+                    )
+                  }}</strong>
+                  {{ " al " }}
+                  <strong>{{
+                    new Date(opening.toDate).toLocaleDateString(
+                      "default",
+                      dateOptions
+                    )
+                  }}</strong>
                 </template>
               </li>
             </template>
@@ -57,20 +72,22 @@
           <ul>
             <li
               class="hour-item"
-              v-for="(values, day)  in timetables"
+              v-for="(values, day) in timetables"
               :key="day"
-              :class="{ today : day === todayName }"
+              :class="{ today: day === todayName }"
             >
               <div>
-                {{$t('day.' + day)}}
+                {{ $t("day." + day) }}
                 <b-icon-circle-fill
                   scale=".5"
                   v-if="day === todayName"
-                  :class="{ closednow : closedNow }"
+                  :class="{ closednow: closedNow }"
                 />
               </div>
               <div>
-                <p v-for="value in values" :key="value.id">{{value.fromHour + "-" + value.toHour}}</p>
+                <p v-for="value in values" :key="value.id">
+                  {{ value.fromHour + "-" + value.toHour }}
+                </p>
               </div>
             </li>
           </ul>
@@ -83,19 +100,43 @@
             <template v-for="service in activeServices">
               <li :key="service">
                 <b-icon-check scale="1.5" />
-                {{$t("service." + service)}}
+                {{ $t("service." + service) }}
               </li>
             </template>
           </ul>
         </div>
       </div>
-      <div v-if="foodService.mealvouchers" class="info-box">
+      <div
+        v-if="foodService.payments && foodService.payments.length"
+        class="info-box"
+      >
         <label>Pagamenti digitali</label>
-        <div>{{JSON.stringify(foodService.mealvouchers)}}</div>
+        <div>
+          <ul>
+            <template v-for="payment in foodService.payments">
+              <li :key="'payment-' + payment.id">
+                <b-icon-check scale="1.5" />
+                {{ $t("filters." + payment) }}
+              </li>
+            </template>
+          </ul>
+        </div>
       </div>
-      <div v-if="foodService.payments" class="info-box">
+      <div
+        v-if="foodService.mealvouchers && foodService.mealvouchers.length"
+        class="info-box"
+      >
         <label>Buoni pasto</label>
-        <div>{{JSON.stringify(foodService.payments)}}</div>
+        <div>
+          <ul>
+            <template v-for="mealvoucher in foodService.mealvouchers">
+              <li :key="'mealvoucher-' + mealvoucher.id">
+                <b-icon-check scale="1.5" />
+                {{ mealvoucher.name }}
+              </li>
+            </template>
+          </ul>
+        </div>
       </div>
     </template>
   </div>
@@ -109,7 +150,7 @@ export default {
   components: {
     LMap,
     LTileLayer,
-    LMarker
+    LMarker,
   },
   data() {
     return {
@@ -119,14 +160,14 @@ export default {
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       mapOptions: {
         zoomSnap: 0.5,
-        zoomControl: false
+        zoomControl: false,
       },
       markerRedIcon: icon({
         iconRetinaUrl: require("@/assets/icons/marker_red.png"),
         iconUrl: require("@/assets/icons/marker_red.png"),
         iconSize: [31, 40],
         // iconAnchor: [23, 47]
-        iconAnchor: [15, 35]
+        iconAnchor: [15, 35],
         //shadowUrl: require('@/assets/images/tte_logo.png')
       }),
       services: [
@@ -139,9 +180,9 @@ export default {
         "privateRoom",
         "smokingRoom",
         "wheelchairAccessible",
-        "wifi"
+        "wifi",
       ],
-      dateOptions: { day: "numeric", month: "long", year: "numeric" }
+      dateOptions: { day: "numeric", month: "long", year: "numeric" },
     };
   },
   computed: {
@@ -153,7 +194,7 @@ export default {
         "Wednesday",
         "Thursday",
         "Friday",
-        "Saturday"
+        "Saturday",
       ];
       var d = new Date();
       // var dayName = days[d.getDay()];
@@ -212,14 +253,14 @@ export default {
         wednesday: [],
         thursday: [],
         friday: [],
-        saturday: []
+        saturday: [],
       };
 
       for (let timetable of timetables) {
         days[timetable.day.toLowerCase()].push(timetable);
       }
 
-      Object.values(days).forEach(vals => {
+      Object.values(days).forEach((vals) => {
         vals.sort((a, b) => {
           let from1 = a.fromHour.split(":")[0];
           let from2 = b.fromHour.split(":")[0];
@@ -244,19 +285,19 @@ export default {
         return this.foodService.contacts.phoneNumber;
       }
       return null;
-    }
+    },
   },
   props: {
     foodService: {
-      type: Object
+      type: Object,
     },
     closedNow: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
   methods: {
-    mapCLick() {}
-  }
+    mapCLick() {},
+  },
 };
 </script>
 
