@@ -754,7 +754,10 @@ export default {
     // this.getUserLocation();
     // this.$refs.myMap.mapObject.invalidateSize();
     setTimeout(() => {
-      this.$refs.listview.scrollTop = window.innerHeight / 2.5;
+      let listview = this.$refs.listview;
+      if (listview) {
+        listview.scrollTop = window.innerHeight / 2.5;
+      }
     }, 200);
 
     this.loadFoodServices();
@@ -1160,7 +1163,10 @@ export default {
       this.markers = markers;
     },
     hideList() {
-      this.$refs.listview.scrollTop = 0;
+      let listview = this.$refs.listview;
+      if (listview) {
+        listview.scrollTop = 0;
+      }
       setTimeout(() => {
         this.hiddenList = true;
       }, 500);
@@ -1240,7 +1246,10 @@ export default {
       this.selectedFoodService = null;
       this.currentPreview = null;
       this.$nextTick(() => {
-        this.$refs.listview.scrollTop = window.innerHeight / 2.5;
+        let listview = this.$refs.listview;
+        if (listview) {
+          listview.scrollTop = window.innerHeight / 2.5;
+        }
       });
     },
     goBack() {
