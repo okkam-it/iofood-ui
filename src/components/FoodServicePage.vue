@@ -481,7 +481,7 @@ export default {
           this.loadFsInfo();
           this.loadFsOpenings();
           this.loadFsContacts();
-          // this.loadFsPayments();
+          this.loadFsPayments();
           this.loadFsLocation();
           this.loadMenus();
           this.loadGallery();
