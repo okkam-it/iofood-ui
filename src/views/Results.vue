@@ -108,7 +108,7 @@
               @click="showRestPreview(marker)"
             >{{marker.name}}</l-marker>-->
             <l-marker
-              :key="marker.name"
+              :key="'marker_' + marker.name"
               :lat-lng="marker.coords"
               @click="showRestPreview(marker)"
             >
@@ -248,7 +248,7 @@
               <template v-for="foodService in foodServices">
                 <div
                   class="rest-card"
-                  :key="foodService.id"
+                  :key="'fs_' + foodService.id"
                   @click="showFoodServicePage(foodService)"
                   v-if="foodService.id !== selectedFoodService.id"
                   :data-restid="foodService.id"
@@ -375,7 +375,7 @@
                 <template v-for="foodService in foodServices">
                   <div
                     class="rest-card"
-                    :key="foodService.id"
+                    :key="'fs_' + foodService.id"
                     @click="showFoodServicePage(foodService)"
                   >
                     <div>
@@ -635,6 +635,8 @@ export default {
       prevRoute: null,
       scrollingPage: 0,
       pageSize: 100,
+      requestController: null,
+      initializingFilters: true,
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -698,7 +700,7 @@ export default {
         this.selectedWhat.push(whatFilter);
       }
     } */
-
+    this.initializingFilters = true;
     var filters = this.$route.query;
     if (filters) {
       for (let filter in filters) {
@@ -760,10 +762,15 @@ export default {
       }
     }, 200);
 
-    this.loadFoodServices();
+    // this.loadFoodServices();
+
     this.loadContexts();
 
     this.checkRouteState(this.$route);
+    this.$nextTick(() => {
+      this.initializingFilters = false;
+      this.reloadFoodServices();
+    });
     // this.buildMarkers();
   },
   methods: {
@@ -992,8 +999,11 @@ export default {
       this.loadFoodServices();
     },
     async loadFoodServices() {
-      if (this.loading) {
+      /* if (this.loading) {
         return;
+      } */
+      if (this.requestController) {
+        this.controller.abort();
       }
       this.loading = true;
       var userLocation =
@@ -1011,7 +1021,7 @@ export default {
           selectedFilters.price = 0.65;
         } else if (selectedFilters.price === '€€€') {
           selectedFilters.price = 1;
-        } 
+        }
       } */
       // delete selectedFilters.price;
       // delete selectedFilters.type;
@@ -1063,6 +1073,9 @@ export default {
         unVerified: false,
       };
 
+      this.controller = new AbortController();
+      const signal = this.controller.signal;
+
       try {
         console.log("load page: " + this.scrollingPage);
         let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
@@ -1071,6 +1084,7 @@ export default {
             size: this.pageSize,
             sort: sort,
           },
+          signal,
         });
 
         if (response.data) {
@@ -1360,12 +1374,14 @@ export default {
       }
     },
     selectedWhat() {
+      if (this.initializingFilters) return;
       this.updateQueryParams();
       this.loadingContent = true;
       this.reloadFoodServices();
     },
     selectedFilters: {
       handler: function () {
+        if (this.initializingFilters) return;
         this.foodServices = [];
         this.markers = [];
         this.selectedFilter = null;
@@ -1375,13 +1391,15 @@ export default {
         if (this.$route.hash && this.$route.hash === "#mobilemodal") {
           this.$router.go(-1);
         }
-        setTimeout(() => {
+        /* setTimeout(() => {
           this.$nextTick(() => {
             this.updateQueryParams();
             this.reloadFoodServices();
             // this.loadFoodServices();
           });
-        }, 100);
+        }, 100); */
+        this.updateQueryParams();
+        this.reloadFoodServices();
       },
       deep: true,
     },

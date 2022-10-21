@@ -31,8 +31,8 @@ export default {
 
 .content > div.logo {
   position: absolute;
-  top: 50%;
-  transform: translate(0, -50%);
+  top: 40%;
+  transform: translate(0, -40%);
   padding: 15%;
 }
 
