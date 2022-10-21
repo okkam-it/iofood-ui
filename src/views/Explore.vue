@@ -238,7 +238,7 @@ export default {
           filters: [
             {
               type: "cuisine",
-              value: [124],
+              value: [129, 130],
             } /* , { type: "cuisine", value: 1 } */,
           ],
         },
