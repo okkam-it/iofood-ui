@@ -31,7 +31,7 @@
             @click="findCoordinates(pred)"
           >
             <b-icon-geo-alt class="mr-2" />
-            {{pred.description}}
+            {{ pred.description }}
           </div>
         </template>
         <template v-else>
@@ -48,7 +48,7 @@
               @click="setLocation(city)"
             >
               <b-icon-geo-alt class="mr-2" />
-              {{city.name}}
+              {{ city.name }}
             </div>
           </template>
           <template v-else>
@@ -60,7 +60,7 @@
               @click="setLocation(city)"
             >
               <b-icon-geo-alt class="mr-2" />
-              {{city.name}}
+              {{ city.name }}
             </div>
           </template>
         </template>
@@ -81,18 +81,21 @@ export default {
       searchString: "",
       lastCities: [],
       defaultCities: [
-        { name: "Trento", latitude: 46.066669, longitude: 11.11907 },
+        /* { name: "Trento", latitude: 46.066669, longitude: 11.11907 },
         { name: "Jesolo", latitude: 45.536591, longitude: 12.63933 },
-        { name: "Trieste", latitude: 45.653599, longitude: 13.77852 }
+        { name: "Trieste", latitude: 45.653599, longitude: 13.77852 } */
+        { name: "Jesolo", latitude: 45.536591, longitude: 12.63933 },
+        { name: "Portogruaro", latitude: 45.775002, longitude: 12.83789 },
+        { name: "Trieste", latitude: 45.653599, longitude: 13.77852 },
       ],
-      predictions: []
+      predictions: [],
     };
   },
   watch: {
     searchString() {
       // console.log("wee");
       this.autocompleteLocation();
-    }
+    },
   },
   methods: {
     isOpen() {
@@ -103,7 +106,7 @@ export default {
       this.autocompleteLocation();
       // console.log("Debounce button clicked!");
     }, 500), */
-    search: _.debounce(function(e) {
+    search: _.debounce(function (e) {
       this.searchString = e.target.value;
       // this.autocompleteLocation();
       // console.log("weee: " + e.target.value);
@@ -115,14 +118,14 @@ export default {
         .get(api.GET_AUTOCOMPLETE_PLACE, {
           params: {
             input: searchString,
-            type: "geocode"
-          }
+            type: "geocode",
+          },
         })
-        .then(response => {
+        .then((response) => {
           // console.log(JSON.stringify(response.data));
           this.predictions = response.data.predictions;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -130,10 +133,10 @@ export default {
       this.axios
         .get(api.GET_PLACE_COORDS, {
           params: {
-            placeId: locData.place_id
-          }
+            placeId: locData.place_id,
+          },
         })
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             // console.log(JSON.stringify(locData));
 
@@ -143,7 +146,7 @@ export default {
               name:
                 locData.terms && locData.terms.length
                   ? locData.terms[0].value
-                  : locData.structured_formatting.main_text
+                  : locData.structured_formatting.main_text,
             };
 
             this.$store.dispatch("geolocationModule/setUserLocation", location);
@@ -152,7 +155,7 @@ export default {
             this.hide();
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
       // console.log(JSON.stringify(address));
@@ -186,7 +189,7 @@ export default {
       var location = {
         latitude: city.latitude,
         longitude: city.longitude,
-        name: city.name
+        name: city.name,
       };
 
       this.$store.dispatch("geolocationModule/setUserLocation", location);
@@ -238,7 +241,7 @@ export default {
     },
     hide() {
       this.showPicker = false;
-    }
+    },
     /* goToExplore() {
       this.$router.replace({ name: "Explore" });
     },
@@ -256,7 +259,7 @@ export default {
       }
       // let pos = await this.getGeolocation();     
     } */
-  }
+  },
 };
 </script>
 

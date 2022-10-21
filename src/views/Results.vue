@@ -363,7 +363,7 @@
                     :key="context"
                     @click="toggleContext(context)"
                     :class="{
-                      active: selectedFilters.moments.includes(context),
+                      active: selectedFilters.occasions.includes(context),
                     }"
                   >
                     {{ $t("filters." + context) }}
@@ -1266,11 +1266,11 @@ export default {
       }
     },
     toggleContext(moment) {
-      var index = this.selectedFilters.moments.findIndex((x) => x === moment);
+      var index = this.selectedFilters.occasions.findIndex((x) => x === moment);
       if (index > -1) {
-        this.selectedFilters.moments.splice(index, 1);
+        this.selectedFilters.occasions.splice(index, 1);
       } else {
-        this.selectedFilters.moments.push(moment);
+        this.selectedFilters.occasions.push(moment);
       }
     },
     toggleSelectedFilter(filter) {
