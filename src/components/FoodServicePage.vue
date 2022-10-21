@@ -18,34 +18,57 @@
         <div class="back-button" @click="hide()">
           <b-icon-chevron-left scale="1.3" shift-h="-2" shift-v="0" />
         </div>
-        <p class="header-rest-name">{{foodService.name}}</p>
+        <p class="header-rest-name">{{ foodService.name }}</p>
       </div>
       <div class="content">
         <div>
-          <h1 class="rest-name">{{foodService.name}}</h1>
+          <h1 class="rest-name">{{ foodService.name }}</h1>
           <div class="info mb-2">
-            <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
+            <span v-if="foodService.type">{{
+              getTrad(foodService.type.name)
+            }}</span>
             <template v-if="foodService.cuisine && foodService.cuisine.length">
               <b-icon-dot />
               <span>
-                {{printCuisines(foodService.cuisine)}}
+                {{ printCuisines(foodService.cuisine) }}
               </span>
             </template>
+            <template
+              v-if="
+                foodService.additionalInfo &&
+                foodService.additionalInfo.priceRange
+              "
+            >
+              <b-icon-dot /><span>{{
+                getPriceRangeIcon(foodService.additionalInfo.priceRange)
+              }}</span></template
+            >
             <br />
-            <span>€€</span>
             <!-- <b-icon-dot />
             <span>1.5 km</span>-->
-            <label v-if="closedNow" @click="showMoreInfo = true" class="closed-now">
+            <label
+              v-if="closedNow"
+              @click="showMoreInfo = true"
+              class="closed-now"
+            >
               <b-icon-clock-fill />Chiuso ora
               <span v-if="openAt">
-                - apre alle {{openAt.getHours().toLocaleString("it-IT", {
-                minimumIntegerDigits: 2,
-                useGrouping: false,
-                }) + ":" + openAt.getMinutes().toLocaleString("it-IT", {
-                minimumIntegerDigits: 2,
-                useGrouping: false,
-                })}}
+                - apre alle
+                {{
+                  openAt.getHours().toLocaleString("it-IT", {
+                    minimumIntegerDigits: 2,
+                    useGrouping: false,
+                  }) +
+                  ":" +
+                  openAt.getMinutes().toLocaleString("it-IT", {
+                    minimumIntegerDigits: 2,
+                    useGrouping: false,
+                  })
+                }}
               </span>
+            </label>
+            <label v-else class="open-now">
+              <b-icon-clock-fill />Aperto ora
             </label>
             <div class="openings-box" v-if="openings.length">
               <ul>
@@ -54,27 +77,42 @@
                     <template v-if="opening.singleDay">
                       <p v-if="opening.opening">Apertura straordinaria il</p>
                       <p v-else>Chiuso il</p>
-                      <strong>{{new Date(opening.fromDate).toLocaleDateString('default', dateOptions)}}</strong>
+                      <strong>{{
+                        new Date(opening.fromDate).toLocaleDateString(
+                          "default",
+                          dateOptions
+                        )
+                      }}</strong>
                     </template>
                     <template v-else>
                       <p v-if="opening.opening">Apertura straordinaria dal</p>
                       <p v-else>Chiuso dal</p>
-                      <strong>{{new Date(opening.fromDate).toLocaleDateString('default', dateOptions)}}</strong>
-                      {{" al "}}
-                      <strong>{{ new Date(opening.toDate).toLocaleDateString('default', dateOptions)}}</strong>
+                      <strong>{{
+                        new Date(opening.fromDate).toLocaleDateString(
+                          "default",
+                          dateOptions
+                        )
+                      }}</strong>
+                      {{ " al " }}
+                      <strong>{{
+                        new Date(opening.toDate).toLocaleDateString(
+                          "default",
+                          dateOptions
+                        )
+                      }}</strong>
                     </template>
                   </li>
                 </template>
               </ul>
             </div>
             <br />
-            <label class="more-info" @click="showMoreInfo = true">
+            <!-- <label class="more-info" @click="showMoreInfo = true">
               Clicca qui per visualizzare orari, indirizzo e altre
               <span>
                 informazioni
                 <b-icon-chevron-right scale="1.2" />
               </span>
-            </label>
+            </label> -->
           </div>
           <!-- <p class="info" v-if="foodService.location">
             <span>
@@ -99,6 +137,9 @@
             <div @click="openShare()" v-if="sharingEnabled">
               <b-icon-share-fill scale="1.5" />Condividi
             </div>
+            <div @click="showMoreInfo = true">
+              <b-icon-three-dots scale="1.5" />Info
+            </div>
           </div>
           <div class="actions2">
             <div>
@@ -106,7 +147,7 @@
                 <b-icon-basket2 scale="1.5" />Ordina da asporto
               </button>
               <button class="small">
-                <b-icon-calendar2-day scale="1.5" />Prenota un tavolo
+                <b-icon-calendar2-day scale="1.5" />Prenota
               </button>
             </div>
           </div>
@@ -122,8 +163,16 @@
           </template>
           <template v-else>
             <div class="tabs-header">
-              <span :class="{ active: selectedTab === 0 }" @click="selectedTab = 0">Menu</span>
-              <span :class="{ active: selectedTab === 1 }" @click="selectedTab = 1">Foto</span>
+              <span
+                :class="{ active: selectedTab === 0 }"
+                @click="selectedTab = 0"
+                >Menu</span
+              >
+              <span
+                :class="{ active: selectedTab === 1 }"
+                @click="selectedTab = 1"
+                >Foto</span
+              >
             </div>
             <template v-if="selectedTab === 0">
               <div class="menus">
@@ -132,8 +181,11 @@
                     v-for="menu in menus"
                     :key="menu.id"
                     @click="selectedMenu = menu"
-                    :class="{ active : selectedMenu && selectedMenu.id == menu.id}"
-                  >{{getTrad(menu.name)}}</span>
+                    :class="{
+                      active: selectedMenu && selectedMenu.id == menu.id,
+                    }"
+                    >{{ getTrad(menu.name) }}</span
+                  >
                 </div>
                 <div class="menu-content" v-if="selectedMenu">
                   <div class="gender-selector">
@@ -144,24 +196,34 @@
                       <b-icon-person-fill class="border rounded p-1" />-->
                       <template v-if="gender === 0">
                         <img :src="gen_m_active" class="active" />
-                        <img :src="gen_f" @click="$store.dispatch('userModule/setGenderFemale');" />
+                        <img
+                          :src="gen_f"
+                          @click="$store.dispatch('userModule/setGenderFemale')"
+                        />
                       </template>
                       <template v-else>
-                        <img :src="gen_m" @click="$store.dispatch('userModule/setGenderMale');" />
+                        <img
+                          :src="gen_m"
+                          @click="$store.dispatch('userModule/setGenderMale')"
+                        />
                         <img :src="gen_f_active" class="active" />
                       </template>
                     </span>
                   </div>
-                  <p
-                    class="menu-desc"
-                    v-if="selectedMenu.description"
-                  >{{getTrad(selectedMenu.description)}}</p>
+                  <p class="menu-desc" v-if="selectedMenu.description">
+                    {{ getTrad(selectedMenu.description) }}
+                  </p>
                   <template v-for="section in selectedMenu.sections">
-                    <div v-if="section.preparedFoodProducts.length" :key="section.id">
-                      <label class="section-title">{{getTrad(section.name)}}</label>
+                    <div
+                      v-if="section.preparedFoodProducts.length"
+                      :key="section.id"
+                    >
+                      <label class="section-title">{{
+                        getTrad(section.name)
+                      }}</label>
                       <div
                         class="pfp-item"
-                        :class="{'image-layout' : pfp.image }"
+                        :class="{ 'image-layout': pfp.image }"
                         v-for="pfp in section.preparedFoodProducts"
                         :key="pfp.id"
                         @click="dishToShow = pfp"
@@ -171,14 +233,14 @@
                         </div>
                         <!-- <b-icon-chevron-right class="more-info-icon" /> -->
                         <span
-                            class="suggested-badge"
-                            v-if="suggestedPfps.includes(String(pfp.id))"
-                          >
-                            <b-icon-star-fill scale=".8" />Scelto per te
-                          </span>
+                          class="suggested-badge"
+                          v-if="suggestedPfps.includes(String(pfp.id))"
+                        >
+                          <b-icon-star-fill scale=".8" />Scelto per te
+                        </span>
                         <p class="pfp-title">
-                          {{getTrad(pfp.name)}}
-                          
+                          {{ getTrad(pfp.name) }}
+
                           <!-- <span class="balanced-badge">
                             <span>
                               Equilibrato                              
@@ -188,17 +250,26 @@
                         </p>
                         <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
                         <pfp-price :pfp="pfp" />
-                        <p class="pfp-ingredients">{{printIngredients(pfp.ingredients)}}</p>
+                        <p class="pfp-ingredients">
+                          {{ printIngredients(pfp.ingredients) }}
+                        </p>
                         <p class="pfp-info">
                           <template v-for="allergen in pfp.allergens">
                             <img
                               class="allergen-icon"
                               :key="allergen"
-                              :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
+                              :src="
+                                require('@/assets/allergens/' +
+                                  allergen.toUpperCase() +
+                                  '.png')
+                              "
                             />
                           </template>
                         </p>
-                        <pfp-nutritional-values-preview :pfpId="String(pfp.id)" :gender="gender" />
+                        <pfp-nutritional-values-preview
+                          :pfpId="String(pfp.id)"
+                          :gender="gender"
+                        />
                         <!-- <div class="val-nut-box">                          
                           <span>
                             500
@@ -230,12 +301,20 @@
                   <template v-for="image in foodService.gallery">
                     <div class="box" :key="image.id">
                       <template v-if="image.demo">
-                        <img class="image" :src="require('@/assets/pics-demo/' + image.imageUrl)" />
+                        <img
+                          class="image"
+                          :src="require('@/assets/pics-demo/' + image.imageUrl)"
+                        />
                       </template>
                       <template v-else>
                         <img
                           class="image"
-                          :src="image.otherImages && image.otherImages.smallThumbnailImage ? image.otherImages.smallThumbnailImage : image.imageUrl"
+                          :src="
+                            image.otherImages &&
+                            image.otherImages.smallThumbnailImage
+                              ? image.otherImages.smallThumbnailImage
+                              : image.imageUrl
+                          "
                         />
                       </template>
                     </div>
@@ -253,21 +332,34 @@
         </div>
       </div>
     </template>
-    <mobile-modal v-if="showMoreInfo" @hide="showMoreInfo = false" showclosebutton>
+    <mobile-modal
+      v-if="showMoreInfo"
+      @hide="showMoreInfo = false"
+      showclosebutton
+    >
       <template #content>
-        <food-service-info-page :foodService="foodService" :closedNow="closedNow" />
+        <food-service-info-page
+          :foodService="foodService"
+          :closedNow="closedNow"
+        />
       </template>
     </mobile-modal>
-    <mobile-modal v-if="allergensToShow" @hide="allergensToShow = null" showclosebutton>
+    <mobile-modal
+      v-if="allergensToShow"
+      @hide="allergensToShow = null"
+      showclosebutton
+    >
       <template #content>
         <div class="allergens-list-modal">
           <div v-for="allergen in allergensToShow" :key="allergen">
             <img
               class="allergen-icon"
               :key="allergen"
-              :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
+              :src="
+                require('@/assets/allergens/' + allergen.toUpperCase() + '.png')
+              "
             />
-            {{allergen}}
+            {{ allergen }}
           </div>
         </div>
       </template>
@@ -295,7 +387,7 @@ export default {
     FoodServiceInfoPage,
     PfpInfoPage,
     PfpPrice,
-    PfpNutritionalValuesPreview
+    PfpNutritionalValuesPreview,
   },
   data() {
     return {
@@ -315,12 +407,12 @@ export default {
       gen_f: require("@/assets/gen_f.png"),
       gen_m_active: require("@/assets/gen_m_active.png"),
       gen_f_active: require("@/assets/gen_f_active.png"),
-      suggestedPfps: []
+      suggestedPfps: [],
     };
   },
   methods: {
     printCuisines(cuisines) {
-      return cuisines.map(e => this.getTrad(e.name)).join(",");
+      return cuisines.map((e) => this.getTrad(e.name)).join(",");
     },
     getImage(pfp) {
       if (pfp.otherImages && pfp.otherImages.smallThumbnailImage) {
@@ -344,7 +436,7 @@ export default {
         navigator
           .share({
             title: this.foodService.name,
-            url: window.location.href
+            url: window.location.href,
           })
           .then(() => {
             console.log("Thanks for sharing!");
@@ -406,7 +498,7 @@ export default {
     loadFoodService() {
       this.axios
         .get(api.GET_FOOD_SERVICE_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.foodService = response.data;
           this.loadFsInfo();
           this.loadFsOpenings();
@@ -416,25 +508,38 @@ export default {
           this.loadMenus();
           this.loadGallery();
           this.loadCuisine();
+          this.loadAdditionalInfo();
         })
-        .catch(error => {
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    loadAdditionalInfo() {
+      this.axios
+        .get(
+          api.GET_FOOD_SERVICE_ADDITIONAL_INFO_BY_ID.replace("{id}", this.fsId)
+        )
+        .then((response) => {
+          this.$set(this.foodService, "additionalInfo", response.data);
+        })
+        .catch((error) => {
           console.log(error);
         });
     },
     loadCuisine() {
       this.axios
         .get(api.GET_FOOD_SERVICE_CUISINE_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.$set(this.foodService, "cuisine", response.data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadGallery() {
       this.axios
         .get(api.GET_FOOD_SERVICE_GALLERY_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           if (response.data && response.data.length) {
             this.$set(this.foodService, "gallery", response.data);
           } else {
@@ -443,71 +548,71 @@ export default {
                 id: 0,
                 imageUrl: "rist_demo_3.jpeg",
                 order: 1,
-                demo: true
+                demo: true,
                 // preferred: true
               },
               {
                 id: 1,
                 imageUrl: "rist_demo_5.jpeg",
                 order: 2,
-                demo: true
+                demo: true,
                 // preferred: true
               },
               {
                 id: 2,
                 imageUrl: "rist_demo_7.jpeg",
                 order: 3,
-                demo: true
+                demo: true,
                 // preferred: true
               },
               {
                 id: 3,
                 imageUrl: "rist_demo_6.jpeg",
                 order: 4,
-                demo: true
+                demo: true,
                 // preferred: true
               },
               {
                 id: 4,
                 imageUrl: "rist_demo_4.jpeg",
                 order: 5,
-                demo: true
+                demo: true,
                 // preferred: true
-              }
+              },
             ]);
           }
           // this.$set(this.foodService, "gallery", response.data);
           // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadFsContacts() {
       this.axios
         .get(api.GET_FOOD_SERVICE_CONTACTS_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.$set(this.foodService, "contacts", response.data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadFsPayments() {
       this.axios
         .get(api.GET_FOOD_SERVICE_MEALVOUCHERS_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.$set(this.foodService, "mealvouchers", response.data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
       this.axios
         .get(api.GET_FOOD_SERVICE_PAYMENTS_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.$set(this.foodService, "payments", response.data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -577,7 +682,7 @@ export default {
             // use/access the results
           })
         )
-        .catch(errors => {
+        .catch((errors) => {
           // react on errors.
           console.log(errors);
         });
@@ -585,20 +690,20 @@ export default {
     loadFsInfo() {
       this.axios
         .get(api.GET_FOOD_SERVICE_INFO_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.$set(this.foodService, "info", response.data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadFsLocation() {
       this.axios
         .get(api.GET_FOOD_SERVICE_LOCATION_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.$set(this.foodService, "location", response.data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -606,10 +711,10 @@ export default {
       this.axios
         .get(api.GET_ALL_RESTAURANT_MENUS, {
           params: {
-            foodServiceId: this.fsId
-          }
+            foodServiceId: this.fsId,
+          },
         })
-        .then(response => {
+        .then((response) => {
           var menus = [];
           for (let menu of response.data) {
             console.log(menu.type);
@@ -624,7 +729,7 @@ export default {
 
           this.loadingMenus = false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -679,13 +784,13 @@ export default {
           "Wednesday",
           "Thursday",
           "Friday",
-          "Saturday"
+          "Saturday",
         ];
         var d = new Date();
         var dayName = days[d.getDay()];
 
         var timetablesToday = timetables.filter(
-          x => x.day === dayName.toUpperCase()
+          (x) => x.day === dayName.toUpperCase()
         );
         if (timetablesToday.length) {
           var currentDate = new Date();
@@ -732,7 +837,7 @@ export default {
       }
 
       this.closedNow = true;
-    }
+    },
   },
   mounted() {
     this.loadingMenus = true;
@@ -788,8 +893,8 @@ export default {
         return loc.address + ", " + loc.city;
       }
       return null;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -1079,7 +1184,7 @@ div.actions button .b-icon {
 label.closed-now {
   color: var(--danger-color);
   opacity: 0.7;
-  display: block;
+  /* display: block; */
   font-weight: bold;
   margin-top: 3px;
   margin-bottom: 3px;
@@ -1089,6 +1194,23 @@ label.closed-now .b-icon {
   margin-right: 5px;
 }
 label.closed-now span {
+  color: #4d4d4d;
+  font-size: 12.5px;
+}
+
+label.open-now {
+  color: var(--success-color);
+  opacity: 0.7;
+  /* display: block; */
+  font-weight: bold;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+label.open-now .b-icon {
+  margin-right: 5px;
+}
+label.open-now span {
   color: #4d4d4d;
   font-size: 12.5px;
 }

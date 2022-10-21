@@ -8,6 +8,7 @@ export default {
   GET_FOOD_SERVICE_TIMETABLES_BY_ID: ROOT_API + "foodservice/{id}/timetables",
   GET_FOOD_SERVICE_CONTACTS_BY_ID: ROOT_API + "foodservice/{id}/contacts",
   GET_FOOD_SERVICE_CUISINE_BY_ID: ROOT_API + "foodservice/{id}/cuisine",
+  GET_FOOD_SERVICE_ADDITIONAL_INFO_BY_ID: ROOT_API + "foodservice/{id}/additional-info",
   GET_FOOD_SERVICE_MEALVOUCHERS_BY_ID:
     ROOT_API + "foodservice/{id}/vouchers/list",
   GET_FOOD_SERVICE_PAYMENTS_BY_ID: ROOT_API + "foodservice/{id}/payment/list",
