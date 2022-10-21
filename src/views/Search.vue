@@ -23,6 +23,7 @@
             @input="search"
             type="text"
             placeholder="Pesce, milanese, nome ristorante"
+            v-on:keyup.enter="showResult(searchString.trim())"
           />
         </div>
       </div>
@@ -32,6 +33,10 @@
             <li v-for="(res, k) in results" :key="k" @click="showResult(res)">
               <b-img v-if="res.id" :src="require('@/assets/food_icons/restaurant.png')" />
               {{res.name}}
+            </li>
+            <li @click="showResult(searchString.trim())">
+              <b-icon-search />Cerca risultati per
+              <strong>"{{searchString.trim()}}"</strong>
             </li>
           </ul>
         </template>
@@ -119,7 +124,7 @@ export default {
         var query = {};
 
         // if (this.selectedWhats.length) {
-        query["what"] = [res.name];
+        query["what"] = [res.name || res];
         // }
 
         this.$router.replace({
@@ -341,6 +346,11 @@ ul.results-box {
 .results-box li img {
   width: 20px;
   margin-right: 10px;
+}
+
+.results-box .b-icon {
+  margin-right: 10px;
+  color: #ccc;
 }
 
 div.what-box {
