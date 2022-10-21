@@ -46,30 +46,7 @@
             <br />
             <!-- <b-icon-dot />
             <span>1.5 km</span>-->
-            <label
-              v-if="closedNow"
-              @click="showMoreInfo = true"
-              class="closed-now"
-            >
-              <b-icon-clock-fill />Chiuso ora
-              <span v-if="openAt">
-                - apre alle
-                {{
-                  openAt.getHours().toLocaleString("it-IT", {
-                    minimumIntegerDigits: 2,
-                    useGrouping: false,
-                  }) +
-                  ":" +
-                  openAt.getMinutes().toLocaleString("it-IT", {
-                    minimumIntegerDigits: 2,
-                    useGrouping: false,
-                  })
-                }}
-              </span>
-            </label>
-            <label v-else class="open-now">
-              <b-icon-clock-fill />Aperto ora
-            </label>
+            <food-service-opening-label :fsId="foodService.id" :small="true" />
             <div class="openings-box" v-if="openings.length">
               <ul>
                 <template v-for="opening in openings">
@@ -105,7 +82,6 @@
                 </template>
               </ul>
             </div>
-            <br />
             <!-- <label class="more-info" @click="showMoreInfo = true">
               Clicca qui per visualizzare orari, indirizzo e altre
               <span>
@@ -379,6 +355,7 @@ import FoodServiceInfoPage from "@/components/FoodServiceInfoPage";
 import PfpInfoPage from "@/components/PfpInfoPage";
 import PfpPrice from "@/components/foodservicemenutable/PfpPrice";
 import PfpNutritionalValuesPreview from "@/components/PfpNutritionalValuesPreview";
+import FoodServiceOpeningLabel from "@/components/FoodServiceOpeningLabel";
 
 export default {
   name: "FoodServicePage",
@@ -388,6 +365,7 @@ export default {
     PfpInfoPage,
     PfpPrice,
     PfpNutritionalValuesPreview,
+    FoodServiceOpeningLabel,
   },
   data() {
     return {
@@ -677,7 +655,7 @@ export default {
             ];
             this.$set(this.foodService, "openings", testOp); */
 
-            this.checkClosedNow();
+            // this.checkClosedNow();
 
             // use/access the results
           })
@@ -734,7 +712,7 @@ export default {
         });
     },
     checkStickyHeader() {},
-    checkClosedNow() {
+    /* checkClosedNow() {
       let openings = this.foodService.openings;
       let timetables = this.foodService.timetables;
       // var closedNow = true;
@@ -837,7 +815,7 @@ export default {
       }
 
       this.closedNow = true;
-    },
+    }, */
   },
   mounted() {
     this.loadingMenus = true;
@@ -1181,39 +1159,6 @@ div.actions button .b-icon {
   display: block;
   color: rgba(17, 17, 17, 0.1);
 } */
-label.closed-now {
-  color: var(--danger-color);
-  opacity: 0.7;
-  /* display: block; */
-  font-weight: bold;
-  margin-top: 3px;
-  margin-bottom: 3px;
-}
-
-label.closed-now .b-icon {
-  margin-right: 5px;
-}
-label.closed-now span {
-  color: #4d4d4d;
-  font-size: 12.5px;
-}
-
-label.open-now {
-  color: var(--success-color);
-  opacity: 0.7;
-  /* display: block; */
-  font-weight: bold;
-  margin-top: 3px;
-  margin-bottom: 3px;
-}
-
-label.open-now .b-icon {
-  margin-right: 5px;
-}
-label.open-now span {
-  color: #4d4d4d;
-  font-size: 12.5px;
-}
 
 label.more-info {
   font-size: 13px;

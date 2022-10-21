@@ -29,7 +29,7 @@
         <p v-if="userLocation" @click="showLocationPicker()">
           <b-icon-geo-alt-fill scale="1.3" class="geo-icon" />
           <!-- {{userLocation.address.village || userLocation.address.city || userLocation.address.town}} -->
-          {{userLocation.name }}
+          {{ userLocation.name }}
         </p>
         <div class="search-input-box" @click="searchClick()">
           <b-icon-search scale=".8" />
@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-    <div class="content" :class="{ disabled : foodServiceIdToShow }">
+    <div class="content" :class="{ disabled: foodServiceIdToShow }">
       <transition name="fade">
         <template v-if="!loadingContent">
           <div key="content">
@@ -52,26 +52,38 @@
             <div class="categories-shortcuts-box" key="shortcuts-loaders">
               <div @click="goToResults()">
                 <b-img :src="require('@/assets/food_icons/restaurant.png')" />
-                {{$t("explore_shortcuts.allfs")}}
+                {{ $t("explore_shortcuts.allfs") }}
               </div>
               <div
                 v-for="categoryShortcut in categoriesShortcuts"
                 :key="categoryShortcut"
-                @click="goToResults([{
-                type: 'what',
-                value: [categoryShortcut]
-              }])"
+                @click="
+                  goToResults([
+                    {
+                      type: 'what',
+                      value: [categoryShortcut],
+                    },
+                  ])
+                "
               >
                 <b-img
-                  :src="require('@/assets/food_icons/' + categoryShortcut.toLowerCase() + '.png')"
+                  :src="
+                    require('@/assets/food_icons/' +
+                      categoryShortcut.toLowerCase() +
+                      '.png')
+                  "
                 />
-                {{$t("explore_shortcuts." + categoryShortcut)}}
+                {{ $t("explore_shortcuts." + categoryShortcut) }}
               </div>
             </div>
             <template v-for="category in categoriesPreviews">
-              <div class="rests-category" :key="category.title" v-if="category.foodServices.length">
+              <div
+                class="rests-category"
+                :key="category.title"
+                v-if="category.foodServices.length"
+              >
                 <label>
-                  {{$t("explore_shortcuts." + category.title)}}
+                  {{ $t("explore_shortcuts." + category.title) }}
                   <span
                     class="show-all-button"
                     @click="goToResults(category.filters)"
@@ -88,28 +100,51 @@
                       :key="foodService.id"
                     >
                       <div>
-                        <img :src="getRestImage(foodService)" @error="fsImageUrlAlt" />
+                        <img
+                          :src="getRestImage(foodService)"
+                          @error="fsImageUrlAlt"
+                        />
                       </div>
-                      <label>{{foodService.name}}</label>
+                      <label>{{ foodService.name }}</label>
                       <p class="info">
-                        <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
-                        <template v-if="foodService.cuisines && foodService.cuisines.length">
+                        <span v-if="foodService.type">{{
+                          getTrad(foodService.type.name)
+                        }}</span>
+                        <template
+                          v-if="
+                            foodService.cuisines && foodService.cuisines.length
+                          "
+                        >
                           <b-icon-dot />
-                          <span>{{printCuisines(foodService.cuisines)}}</span>
+                          <span>{{ printCuisines(foodService.cuisines) }}</span>
                           <br />
                         </template>
-                        <b-icon-dot />
-                        <span
-                          v-if="foodService.priceRange"
-                        >{{getPriceRangeIcon(foodService.priceRange)}}</span>
+                        <template v-if="foodService.priceRange">
+                          <b-icon-dot />
+                          <span>{{
+                            getPriceRangeIcon(foodService.priceRange)
+                          }}</span>
+                        </template>
                         <template v-if="foodService.distance">
                           <b-icon-dot />
-                          <span>{{(foodService.distance / 1000).toFixed(1)}} km</span>
+                          <span
+                            >{{
+                              (foodService.distance / 1000).toFixed(1)
+                            }}
+                            km</span
+                          >
                         </template>
+                        <food-service-opening-label
+                          :fsId="foodService.id"
+                          :small="true"
+                        />
                       </p>
                     </div>
                   </template>
-                  <div class="show-all-card" @click="goToResults(category.filters)">
+                  <div
+                    class="show-all-card"
+                    @click="goToResults(category.filters)"
+                  >
                     <p>
                       <span>
                         Vedi tutti
@@ -140,9 +175,15 @@
       </transition>
     </div>
     <!-- </template> -->
-    <location-picker ref="locationpicker" @locationChanged="getUserLocation()" />
+    <location-picker
+      ref="locationpicker"
+      @locationChanged="getUserLocation()"
+    />
     <div class="food-service-content" v-if="foodServiceIdToShow">
-      <food-service-page @hide="hideFoodServicePage()" v-if="foodServiceIdToShow" />
+      <food-service-page
+        @hide="hideFoodServicePage()"
+        v-if="foodServiceIdToShow"
+      />
     </div>
   </div>
 </template>
@@ -151,10 +192,16 @@
 import LocationPicker from "@/components/LocationPicker";
 import InstallBanner from "@/components/InstallBanner";
 import FoodServicePage from "@/components/FoodServicePage";
+import FoodServiceOpeningLabel from "@/components/FoodServiceOpeningLabel";
 import api from "@/helpers/api";
 export default {
   name: "Explore",
-  components: { LocationPicker, InstallBanner, FoodServicePage },
+  components: {
+    LocationPicker,
+    InstallBanner,
+    FoodServicePage,
+    FoodServiceOpeningLabel,
+  },
   data() {
     return {
       userLocation: null,
@@ -165,25 +212,25 @@ export default {
         {
           title: "happy_hour",
           foodServices: [],
-          filters: [{ type: "moments", value: ["APERITIF"] }]
+          filters: [{ type: "moments", value: ["APERITIF"] }],
         },
         {
           title: "delivery_takeaway",
           foodServices: [],
           filters: [
             { type: "delivery", value: true },
-            { type: "takeaway", value: true }
-          ]
+            { type: "takeaway", value: true },
+          ],
         },
         {
           title: "openNow",
           foodServices: [],
-          filters: [{ type: "openNow", value: true }]
+          filters: [{ type: "openNow", value: true }],
         },
         {
           title: "cheap_fs",
           foodServices: [],
-          filters: [{ type: "priceRange", value: "€" }]
+          filters: [{ type: "priceRange", value: "€" }],
         },
         {
           title: "traditional_cuisine",
@@ -191,15 +238,15 @@ export default {
           filters: [
             {
               type: "cuisine",
-              value: [124]
-            } /* , { type: "cuisine", value: 1 } */
-          ]
-        }
+              value: [124],
+            } /* , { type: "cuisine", value: 1 } */,
+          ],
+        },
       ],
       foodServices: [],
       loadingHeader: true,
       loadingContent: true,
-      hidingFsPage: false
+      hidingFsPage: false,
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -221,11 +268,11 @@ export default {
           this.hidingFsPage = false;
         }
       }
-    }
+    },
   },
   methods: {
     printCuisines(cuisines) {
-      return cuisines.map(e => this.getTrad(e)).join(",");
+      return cuisines.map((e) => this.getTrad(e)).join(",");
     },
     fsImageUrlAlt(event) {
       event.target.src = require("@/assets/rest-placeholder_lg.png");
@@ -257,7 +304,7 @@ export default {
           latitude: userLoc.latitude,
           longitude: userLoc.longitude,
           language: "it",
-          unVerified: false
+          unVerified: false,
         };
         for (let filter of categoryPreview.filters) {
           if (filter.type === "priceRange") {
@@ -280,8 +327,8 @@ export default {
           let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
             params: {
               page: 0,
-              size: 5
-            }
+              size: 5,
+            },
           });
           if (response.data) {
             this.$set(categoryPreview, "foodServices", response.data);
@@ -351,7 +398,7 @@ export default {
         // let query = { what: encodeURIComponent(filter.toLowerCase()) };
         this.$router.push({
           name: "Results",
-          query
+          query,
         });
       } else {
         this.$router.push({ name: "Results" });
@@ -385,13 +432,13 @@ export default {
       } else {
         this.foodServiceIdToShow = null;
       }
-    }
+    },
   },
   mounted() {
     this.getUserLocation();
     this.checkRouteState(this.$route);
     // this.loadFoodServices();
-  }
+  },
 };
 </script>
 
