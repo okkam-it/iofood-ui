@@ -122,7 +122,7 @@
     <div class="footer">
       <div>
         <button class="transparent" @click="resetFilters()">
-          Cancella filtri
+          Cancella filtri <span v-if="filtersLen > 0">({{ filtersLen }})</span>
         </button>
       </div>
       <div>
@@ -175,6 +175,21 @@ export default {
   props: {
     selectedFilters: {
       type: Object,
+    },
+  },
+  computed: {
+    filtersLen() {
+      let len = 0;
+      for (const [key, value] of Object.entries(this.filters)) {
+        if (!["orderby", "relevance", "geoDistance"].includes(key)) {
+          if (value && Array.isArray(value)) {
+            len += value.length;
+          } else if (value) {
+            len++;
+          }
+        }
+      }
+      return len;
     },
   },
   watch: {
