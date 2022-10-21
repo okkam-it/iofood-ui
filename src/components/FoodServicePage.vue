@@ -120,7 +120,7 @@
           <div class="actions2">
             <div>
               <button class="small">
-                <b-icon-basket2 scale="1.5" />Ordina da asporto
+                <b-icon-basket2 scale="1.5" />Ordina
               </button>
               <button class="small">
                 <b-icon-calendar2-day scale="1.5" />Prenota
@@ -1084,9 +1084,10 @@ div.actions > div {
   display: inline-block;
   text-align: center;
   font-size: 14px;
-  margin: 0 3vw;
+  margin: 0 5px;
   color: #808080;
   font-weight: bold;
+  min-width: 20%;
 }
 
 div.actions > div .b-icon {
@@ -1125,6 +1126,7 @@ div.actions2 > div button {
   font-weight: bold;
   text-align: center;
   flex-shrink: 0;
+  flex: auto;
 }
 
 div.actions2 button .b-icon {
