@@ -3,6 +3,9 @@
     <div @click.stop>
       <p class="title">
         <slot name="title"></slot>
+        <span class="close-button" v-if="showclosebuttontop" @click="hide()"
+          ><b-icon-x scale="2.2"></b-icon-x
+        ></span>
       </p>
       <div class="contentmodal">
         <slot name="content"></slot>
@@ -25,8 +28,11 @@ export default {
   },
   props: {
     showclosebutton: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
+    showclosebuttontop: {
+      type: Boolean,
+    },
   },
   watch: {
     $route(to) {
@@ -37,7 +43,7 @@ export default {
       // console.log(this.$route.hash);
       // if (to.)
       // this.hide();
-    }
+    },
   },
   methods: {
     hide() {
@@ -58,18 +64,18 @@ export default {
           }); */
         }
       });
-    }
+    },
   },
   mounted() {
     if (!this.$route.path.includes("#mobilemodal")) {
       this.$router.push({
-        path: this.$route.path + "#mobilemodal"
+        path: this.$route.path + "#mobilemodal",
       });
     }
 
     // location.hash = "mobilemodal";
     // location.hash = "mobilemodal";
-  }
+  },
 };
 </script>
 <style scoped>
@@ -96,6 +102,11 @@ export default {
 .title {
   font-weight: bold;
   font-size: 16px;
+}
+
+.title .close-button {
+  float: right;
+  margin-right: 5px;
 }
 
 .badge-selector-box {

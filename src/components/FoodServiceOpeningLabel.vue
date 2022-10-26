@@ -36,6 +36,7 @@ export default {
       closedNow: false,
       timetables: null,
       openings: null,
+      openAt: null,
     };
   },
   props: {

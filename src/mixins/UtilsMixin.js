@@ -19,13 +19,14 @@ export default {
       this.protDaily = this.gender === 0 ? 80 : 68;
     },
     getPriceRangeIcon(range) {
-      if (range < 0.3) {
+      if (range ===  1) {
         return "€";
-      } else if (range < 0.6) {
+      } else if (range === 2) {
         return "€€";
-      } else {
+      } else if (range === 3){
         return "€€€";
       }
+      return "";
     }
   }
 };

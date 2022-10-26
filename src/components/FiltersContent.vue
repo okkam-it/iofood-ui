@@ -26,18 +26,18 @@
         :option="'delivery'"
       />
 
-      <!-- <filter-multi-option
+      <filter-multi-option
         :selectedFilters.sync="filters.price"
         :options="prices"
         title="Prezzo"
-      />-->
+      />
 
-      <filter-single-option
+      <!-- <filter-single-option
         :selectedFilter.sync="filters.priceRange"
         :options="prices"
         title="Prezzo"
         optional
-      />
+      /> -->
 
       <!-- <filter-multi-option
         :selectedFilters.sync="filters.price"
@@ -136,7 +136,7 @@
 // import MobileModal from "@/components/mobile-modal/MobileModal";
 import FilterMultiOption from "@/components/filters/FilterMultiOption";
 import FilterBaseOption from "@/components/filters/FilterBaseOption";
-import FilterSingleOption from "@/components/filters/FilterSingleOption";
+// import FilterSingleOption from "@/components/filters/FilterSingleOption";
 import FilterSliderOption from "@/components/filters/FilterSliderOption";
 import api from "@/helpers/api";
 export default {
@@ -145,7 +145,7 @@ export default {
     // MobileModal,
     FilterMultiOption,
     FilterBaseOption,
-    FilterSingleOption,
+    // FilterSingleOption,
     FilterSliderOption,
   },
   data() {
@@ -155,9 +155,12 @@ export default {
       cuisines: [],
       payments: [],
       prices: [
-        { label: this.$t("filters.€"), value: "€" },
-        { label: this.$t("filters.€€"), value: "€€" },
-        { label: this.$t("filters.€€€"), value: "€€€" },
+        /* { label: this.$t("filters.€"), value: "1" },
+        { label: this.$t("filters.€€"), value: "2" },
+        { label: this.$t("filters.€€€"), value: "3" }, */
+        "p1",
+        "p2",
+        "p3",
       ],
       orderBy: ["DISTANCE", "RELEVANCE", "PRICE"],
       foodServiceTypes: [],
