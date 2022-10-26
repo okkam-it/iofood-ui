@@ -47,7 +47,7 @@
       <transition name="fade">
         <template v-if="!loadingContent">
           <div key="content">
-            <install-banner key="banner-loader" />
+            <!-- <install-banner key="banner-loader" /> -->
             <!-- <div @click="goToResults()">Risultati</div> -->
             <div class="categories-shortcuts-box" key="shortcuts-loaders">
               <div @click="goToResults()">
@@ -190,7 +190,7 @@
 
 <script>
 import LocationPicker from "@/components/LocationPicker";
-import InstallBanner from "@/components/InstallBanner";
+// import InstallBanner from "@/components/InstallBanner";
 import FoodServicePage from "@/components/FoodServicePage";
 import FoodServiceOpeningLabel from "@/components/FoodServiceOpeningLabel";
 import api from "@/helpers/api";
@@ -198,7 +198,7 @@ export default {
   name: "Explore",
   components: {
     LocationPicker,
-    InstallBanner,
+    // InstallBanner,
     FoodServicePage,
     FoodServiceOpeningLabel,
   },
@@ -230,14 +230,14 @@ export default {
         {
           title: "cheap_fs",
           foodServices: [],
-          filters: [{ type: "priceRange", value: "€" }],
+          filters: [{ type: "price", value: ["p1"] }],
         },
         {
           title: "traditional_cuisine",
           foodServices: [],
           filters: [
             {
-              type: "cuisine",
+              type: "cuisines",
               value: [129, 130],
             } /* , { type: "cuisine", value: 1 } */,
           ],
@@ -307,7 +307,7 @@ export default {
           unVerified: false,
         };
         for (let filter of categoryPreview.filters) {
-          if (filter.type === "priceRange") {
+          /* if (filter.type === "priceRange") {
             if (filter.value === "€") {
               body["priceRangeMin"] = "0";
               body["priceRangeMax"] = "0.3";
@@ -321,7 +321,8 @@ export default {
             }
           } else {
             body[filter.type] = filter.value;
-          }
+          } */
+          body[filter.type] = filter.value;
         }
         try {
           let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {

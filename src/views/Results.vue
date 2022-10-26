@@ -614,8 +614,8 @@ export default {
         },
         {
           label: "Prezzo",
-          code: "priceRange",
-          alternatives: ["€", "€€", "€€€"],
+          code: "price",
+          alternatives: ["p1", "p2", "p3"],
           optional: true,
         },
         {
@@ -887,7 +887,7 @@ export default {
         // name: "string",
         nutritionalAspects: [],
         occasions: [],
-        priceRange: /* [] */ null,
+        price: [] /* null */,
         facilities: [],
         takeaway: false,
         type: [],
@@ -924,10 +924,7 @@ export default {
     },
     toggleAlternative(isArray, alternative, optional) {
       if (isArray) {
-        this.toggleArrayItem(
-          alternative,
-          this.selectedFilters[this.selectedFilter.code]
-        );
+        this.toggleArrayItem(alternative);
       } else {
         if (
           optional &&
@@ -938,6 +935,7 @@ export default {
           this.selectedFilters[this.selectedFilter.code] = alternative;
         }
       }
+      this.updateQueryParams();
 
       /* if (!this.selectedFilter.selectedAlternatives) {
         this.$set(this.selectedFilter, "selectedAlternatives", []);
@@ -1033,8 +1031,8 @@ export default {
       // delete selectedFilters.foodRestrictions;
       // delete selectedFilters.allergens;
       // delete selectedFilters.mealVouchers;
-      var priceValue = selectedFilters.priceRange;
-      if (priceValue === "€") {
+      var priceValues = selectedFilters.price;
+      /* if (priceValue === "€") {
         selectedFilters["priceRangeMin"] = "0";
         selectedFilters["priceRangeMax"] = "0.3";
       } else if (priceValue === "€€") {
@@ -1044,8 +1042,19 @@ export default {
       if (priceValue === "€€€") {
         selectedFilters["priceRangeMin"] = "0.71";
         selectedFilters["priceRangeMax"] = "1";
+      } */
+      let priceRange = [];
+      for (let priceValue of priceValues) {
+        if (priceValue === "p1") {
+          priceRange.push("1");
+        } else if (priceValue === "p2") {
+          priceRange.push("2");
+        } else if (priceValue === "p3") {
+          priceRange.push("3");
+        }
       }
-      delete selectedFilters.priceRange;
+      selectedFilters["priceRange"] = priceRange;
+      delete selectedFilters.price;
 
       for (const [key, value] of Object.entries(selectedFilters)) {
         if (Array.isArray(value) && !value.length) {
@@ -1280,7 +1289,8 @@ export default {
       });
     },
     goBack() {
-      this.$router.go(-1);
+      // this.$router.go(-1);
+      this.$router.replace({ name: "Explore" });
     },
     zoomUpdate(zoom) {
       this.currentZoom = zoom;
@@ -1316,14 +1326,17 @@ export default {
           !this.selectedFilters[this.selectedFilter.code];
       }
     },
-    toggleArrayItem(data, array) {
-      var index = array.findIndex((x) =>
-        x.id ? x.id === data.id : x === data
+    toggleArrayItem(data) {
+      if (!this.selectedFilters[this.selectedFilter.code]) {
+        this.selectedFilters[this.selectedFilter.code] = [];
+      }
+      var index = this.selectedFilters[this.selectedFilter.code].findIndex(
+        (x) => (x.id ? x.id === data.id : x === data)
       );
       if (index > -1) {
-        array.splice(index, 1);
+        this.selectedFilters[this.selectedFilter.code].splice(index, 1);
       } else {
-        array.push(data);
+        this.selectedFilters[this.selectedFilter.code].push(data);
       }
     },
     updateQueryParams() {

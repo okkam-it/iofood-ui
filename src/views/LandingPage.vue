@@ -4,7 +4,7 @@
       <img :src="logo" />
     </div>
     <div class="pat-box">
-      <p>Progetto finanziato da</p>
+      <p>Progetto realizzato grazie al finanziamento di</p>
       <img :src="pat_logo" />
     </div>
   </div>
@@ -27,13 +27,21 @@ export default {
 <style scoped>
 .content {
   text-align: center;
+  z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff;
 }
 
 .content > div.logo {
   position: absolute;
   top: 40%;
-  transform: translate(0, -40%);
-  padding: 15%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  padding: 15% 0;
 }
 
 .content > div.logo img {

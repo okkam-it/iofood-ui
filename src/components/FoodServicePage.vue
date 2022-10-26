@@ -186,6 +186,23 @@
                       </template>
                     </span>
                   </div>
+                  <div class="dishes-4you-selector" v-if="suggestedPfps.length">
+                    <span
+                      >Mostra solo
+                      <span class="suggested-badge">
+                        <b-icon-star-fill scale=".8" />Scelto per te
+                      </span>
+                      <label class="switch">
+                        <input
+                          :checked="dishes4youonly"
+                          @input="
+                            $store.dispatch('userModule/toggleDishes4youonly')
+                          "
+                          type="checkbox"
+                        />
+                        <span class="slider"></span> </label
+                    ></span>
+                  </div>
                   <p class="menu-desc" v-if="selectedMenu.description">
                     {{ getTrad(selectedMenu.description) }}
                   </p>
@@ -197,56 +214,61 @@
                       <label class="section-title">{{
                         getTrad(section.name)
                       }}</label>
-                      <div
-                        class="pfp-item"
-                        :class="{ 'image-layout': pfp.image }"
-                        v-for="pfp in section.preparedFoodProducts"
-                        :key="pfp.id"
-                        @click="dishToShow = pfp"
-                      >
-                        <div class="pfp-image" v-if="pfp.image">
-                          <img :src="getImage(pfp)" />
-                        </div>
-                        <!-- <b-icon-chevron-right class="more-info-icon" /> -->
-                        <span
-                          class="suggested-badge"
-                          v-if="suggestedPfps.includes(String(pfp.id))"
+                      <template v-for="pfp in section.preparedFoodProducts">
+                        <div
+                          class="pfp-item"
+                          :class="{ 'image-layout': pfp.image }"
+                          :key="pfp.id"
+                          @click="dishToShow = pfp"
+                          v-if="
+                            !dishes4youonly ||
+                            !suggestedPfps.length ||
+                            suggestedPfps.includes(String(pfp.id))
+                          "
                         >
-                          <b-icon-star-fill scale=".8" />Scelto per te
-                        </span>
-                        <p class="pfp-title">
-                          {{ getTrad(pfp.name) }}
+                          <div class="pfp-image" v-if="pfp.image">
+                            <img :src="getImage(pfp)" />
+                          </div>
+                          <!-- <b-icon-chevron-right class="more-info-icon" /> -->
+                          <span
+                            class="suggested-badge"
+                            v-if="suggestedPfps.includes(String(pfp.id))"
+                          >
+                            <b-icon-star-fill scale=".8" />Scelto per te
+                          </span>
+                          <p class="pfp-title">
+                            {{ getTrad(pfp.name) }}
 
-                          <!-- <span class="balanced-badge">
+                            <!-- <span class="balanced-badge">
                             <span>
                               Equilibrato                              
                               <b-icon-star-fill scale=".8" />
                             </span>
                           </span>-->
-                        </p>
-                        <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
-                        <pfp-price :pfp="pfp" />
-                        <p class="pfp-ingredients">
-                          {{ printIngredients(pfp.ingredients) }}
-                        </p>
-                        <p class="pfp-info">
-                          <template v-for="allergen in pfp.allergens">
-                            <img
-                              class="allergen-icon"
-                              :key="allergen"
-                              :src="
-                                require('@/assets/allergens/' +
-                                  allergen.toUpperCase() +
-                                  '.png')
-                              "
-                            />
-                          </template>
-                        </p>
-                        <pfp-nutritional-values-preview
-                          :pfpId="String(pfp.id)"
-                          :gender="gender"
-                        />
-                        <!-- <div class="val-nut-box">                          
+                          </p>
+                          <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
+                          <pfp-price :pfp="pfp" />
+                          <p class="pfp-ingredients">
+                            {{ printIngredients(pfp.ingredients) }}
+                          </p>
+                          <p class="pfp-info">
+                            <template v-for="allergen in pfp.allergens">
+                              <img
+                                class="allergen-icon"
+                                :key="allergen"
+                                :src="
+                                  require('@/assets/allergens/' +
+                                    allergen.toUpperCase() +
+                                    '.png')
+                                "
+                              />
+                            </template>
+                          </p>
+                          <pfp-nutritional-values-preview
+                            :pfpId="String(pfp.id)"
+                            :gender="gender"
+                          />
+                          <!-- <div class="val-nut-box">                          
                           <span>
                             500
                             <span>Kcal</span>
@@ -264,7 +286,8 @@
                             <b-icon-reception3 scale="1.2" />
                           </span>
                         </div>-->
-                      </div>
+                        </div>
+                      </template>
                       <!-- <hr /> -->
                     </div>
                   </template>
@@ -829,6 +852,9 @@ export default {
     gender() {
       return this.$store.getters["userModule/gender"];
     },
+    dishes4youonly() {
+      return this.$store.getters["userModule/dishes4youonly"];
+    },
     sharingEnabled() {
       return navigator.share;
     },
@@ -1330,6 +1356,12 @@ p.pfp-price {
   margin-right: 2px;
 }
 
+.dishes-4you-selector {
+  text-align: right;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
 .gender-selector {
   text-align: right;
   margin-bottom: 20px;
@@ -1381,5 +1413,60 @@ p.pfp-price {
 
 .suggested-badge .b-icon {
   margin-right: 5px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 24px;
+  margin-right: 10px;
+  margin-left: 15px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px);
 }
 </style>

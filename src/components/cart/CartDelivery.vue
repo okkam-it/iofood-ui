@@ -8,7 +8,7 @@
           <strong v-if="!showCart">Completa ordine</strong>
           <b-icon-x v-else scale="2" />
         </p>
-        <p class="tot-price" v-if="!showCart">{{cartTotalPrice}}€</p>
+        <p class="tot-price" v-if="!showCart">{{ cartTotalPrice }}€</p>
       </div>
       <b-collapse v-model="showCart">
         <div class="body">
@@ -27,25 +27,25 @@
               <template v-for="opt in $store.getters.deliveryTypes">
                 <span
                   :key="opt.text"
-                  :class="{ active : opt.value === deliveryOption}"
+                  :class="{ active: opt.value === deliveryOption }"
                   @click="deliveryOption = opt.value"
                 >
                   <!-- <input v-model="deliveryOption" :key="opt.text" type="radio" :value="opt.value" /> -->
-                  {{opt.text}}
+                  {{ opt.text }}
                 </span>
               </template>
             </div>
 
-            <div class="address-box" v-if="deliveryOption==1">
+            <div class="address-box" v-if="deliveryOption == 1">
               <input
                 id="target-tooltip-address"
                 placeholder="Indirizzo di consegna"
                 v-model="deliveryAddress"
                 @input="deliveryAddressChange"
-                :class="{missing : addressState}"
+                :class="{ missing: addressState }"
               />
             </div>
-            <div class="address-box" v-if="deliveryOption==1">
+            <div class="address-box" v-if="deliveryOption == 1">
               <input
                 id="target-tooltip-address"
                 placeholder="Nome sul citofono"
@@ -53,7 +53,7 @@
                 @input="deliveryIntercomNameChange"
               />
             </div>
-            <div class="payment-box" v-if="deliveryOption==1">
+            <div class="payment-box" v-if="deliveryOption == 1">
               <!-- <b-form-group>
                 <b-form-checkbox v-model="deliveryPaymentCard">
                   <b-icon-credit-card />
@@ -70,10 +70,10 @@
             </div>
           </div>
           <div class="time-selector" @click="showHourPicker()">
-            <span v-if="deliveryOption===0">Ritiro:</span>
+            <span v-if="deliveryOption === 0">Ritiro:</span>
             <span v-else>Consegna:</span>
             <span class="time">
-              <template v-if="deliveryTime">alle {{deliveryTime}}</template>
+              <template v-if="deliveryTime">alle {{ deliveryTime }}</template>
               <template v-else>
                 Prima possibile
                 <b-icon-pencil-fill scale=".8" />
@@ -97,17 +97,24 @@
             <li v-for="(item, index) in cartItems" :key="index">
               <b-row>
                 <b-col cols="1">
-                  <span class="quantity-text">{{item.quantity}}x</span>
+                  <span class="quantity-text">{{ item.quantity }}x</span>
                 </b-col>
                 <b-col cols="11">
                   <div class="sub-item-box">
                     <b-row>
-                      <b-col cols="8">{{item.item.name}}</b-col>
+                      <b-col cols="8">{{ item.item.name }}</b-col>
                       <b-col cols="2">
-                        <span class="light-text">{{(item.item.price * item.quantity).toFixed(2)}}€</span>
+                        <span class="light-text"
+                          >{{
+                            (item.item.price * item.quantity).toFixed(2)
+                          }}€</span
+                        >
                       </b-col>
                       <b-col cols="1">
-                        <div class="btnTrash" @click="removeItem(item.item.id, index)">
+                        <div
+                          class="btnTrash"
+                          @click="removeItem(item.item.id, index)"
+                        >
                           <b-icon-trash scale="1" />
                         </div>
                       </b-col>
@@ -150,13 +157,15 @@
           <div class="btn-send-order">
             <div class="total">
               <strong>Totale</strong>
-              <span>{{cartTotalPrice}}€</span>
+              <span>{{ cartTotalPrice }}€</span>
             </div>
             <button
               class="button"
-              :class="{disabled: !cartSize}"
+              :class="{ disabled: !cartSize }"
               @click="sendOrder()"
-            >Invia ordine su WhatsApp</button>
+            >
+              Invia ordine su WhatsApp
+            </button>
           </div>
         </div>
       </b-collapse>
@@ -184,11 +193,18 @@
           </div>
           <div @click="deliveryTimeType = 1">
             <b-icon-clock-history />Programma per dopo
-            <input type="radio" @click.stop v-model="deliveryTimeType" :value="1" />
+            <input
+              type="radio"
+              @click.stop
+              v-model="deliveryTimeType"
+              :value="1"
+            />
             <div v-if="deliveryTimeType == 1">
               <!-- <span v-if="deliveryTimeTemp">{{deliveryTimeTemp}}</span> -->
               <select v-model="deliveryTimeTemp">
-                <option v-for="(opt, k) in hourOptions" :key="k" :value="opt">{{opt}}</option>
+                <option v-for="(opt, k) in hourOptions" :key="k" :value="opt">
+                  {{ opt }}
+                </option>
               </select>
             </div>
           </div>
@@ -207,7 +223,7 @@ import MobileModal from "@/components/mobile-modal/MobileModal";
 export default {
   name: "CartDelivery",
   components: {
-    MobileModal
+    MobileModal,
   },
   data() {
     return {
@@ -254,7 +270,7 @@ export default {
     removeItem(id, index) {
       var payload = {
         id: id,
-        index: index
+        index: index,
       };
       this.$store.dispatch("removeItem", payload);
     },
@@ -262,7 +278,7 @@ export default {
       var payload = {
         id: id,
         value: e.target.value,
-        index: index
+        index: index,
       };
       this.$store.dispatch("updateNote", payload);
     },
@@ -289,7 +305,7 @@ export default {
           msgTime: dt.HH + ":" + dt.mm,
           msgAddress: this.$store.getters.deliveryAddress,
           orderItems: JSON.stringify(this.$store.getters.cartItems),
-          orderText: encodeURI(order_message)
+          orderText: encodeURI(order_message),
         });
 
         this.hide();
@@ -338,7 +354,7 @@ export default {
       setTimeout(() => {
         this.$refs.tooltiphour.$emit("close");
       }, 2000);
-    }
+    },
   },
   watch: {
     deliveryOption() {
@@ -364,7 +380,7 @@ export default {
       } else {
         this.deliveryTimeTemp = null;
       }
-    }
+    },
   },
   computed: {
     fsId() {
@@ -378,8 +394,8 @@ export default {
     },
     cartSize() {
       return this.$store.getters.cartSize;
-    }
-  }
+    },
+  },
 };
 </script>
 

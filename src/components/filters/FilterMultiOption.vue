@@ -1,7 +1,10 @@
 <template>
-  <div class="filter-box" @click="options.length > maxListItems ? showMore = true : null">
+  <div
+    class="filter-box"
+    @click="options.length > maxListItems ? (showMore = true) : null"
+  >
     <label>
-      {{title}}
+      {{ title }}
       <!-- <span
         class="selected-badge"
         v-if="selectedFilters && selectedFilters.length > 0"
@@ -9,18 +12,23 @@
     </label>
     <div v-if="options.length <= maxListItems">
       <ul>
-        <li v-for="option in options.slice(0, maxListItems)" :key="option.id || option">
+        <li
+          v-for="option in options.slice(0, maxListItems)"
+          :key="option.id || option"
+        >
           <template v-if="option.id">
             <span
-              :class="{ active : isActive(option)}"
+              :class="{ active: isActive(option) }"
               @click="toggleArrayItem(option)"
-            >{{getOptionName(option.name)}}</span>
+              >{{ getOptionName(option.name) }}</span
+            >
           </template>
           <template v-else>
             <span
-              :class="{ active : selectedFilters.includes(option)}"
+              :class="{ active: selectedFilters.includes(option) }"
               @click="toggleArrayItem(option)"
-            >{{$t("filters." + option)}}</span>
+              >{{ $t("filters." + option) }}</span
+            >
           </template>
         </li>
       </ul>
@@ -38,9 +46,10 @@
       <ul v-if="selectedFilters.length">
         <li v-for="option in selectedFilters" :key="option.id || option">
           <span
-            :class="{ active : selectedFilters.includes(option)}"
+            :class="{ active: selectedFilters.includes(option) }"
             @click.stop="toggleArrayItem(option)"
-          >{{getSelectedFilterName(option)}}</span>
+            >{{ getSelectedFilterName(option) }}</span
+          >
         </li>
         <!-- <li v-for="option in selectedFilters" :key="option.id || option">
           <template v-if="option.id">
@@ -63,12 +72,12 @@
     </template>
 
     <template v-if="options.length > maxListItems">
-      <mobile-modal v-if="showMore" @hide="showMore = false">
+      <mobile-modal v-if="showMore" @hide="showMore = false" showclosebuttontop>
         <template #title>
-          {{title}}
-          <div class="close-modal" @click="showMore = false">
+          {{ title }}
+          <!-- <div class="close-modal" @click="showMore = false">
             <b-icon-x scale="2.2" />
-          </div>
+          </div> -->
           <!-- <div v-if="options.length > 10">
               <div class="search-input-box">
                 <input v-model="searchString" type="text" placeholder="Cerca.." />
@@ -81,15 +90,17 @@
               <li v-for="option in filteredOptions" :key="option.id || option">
                 <template v-if="option.id">
                   <span
-                    :class="{ active : isActive(option)}"
+                    :class="{ active: isActive(option) }"
                     @click="toggleArrayItem(option)"
-                  >{{getOptionName(option.name)}}</span>
+                    >{{ getOptionName(option.name) }}</span
+                  >
                 </template>
                 <template v-else>
                   <span
-                    :class="{ active : selectedFilters.includes(option)}"
+                    :class="{ active: selectedFilters.includes(option) }"
                     @click="toggleArrayItem(option)"
-                  >{{$t("filters." + option)}}</span>
+                    >{{ $t("filters." + option) }}</span
+                  >
                   <!-- <template v-if="option === 'balanced'">
                     <span class="gender-selector">
                       <b-icon-person-fill class="border rounded p-1 active" />
@@ -111,37 +122,37 @@ import MobileModal from "@/components/mobile-modal/MobileModal";
 export default {
   name: "FilterMultiOption",
   components: {
-    MobileModal
+    MobileModal,
   },
   data() {
     return {
       maxListItems: 3,
       showMore: false,
-      searchString: ""
+      searchString: "",
     };
   },
   props: {
     options: {
-      type: Array
+      type: Array,
     },
     selectedFilters: {
-      type: Array
+      type: Array,
     },
     title: {
-      type: String
-    }
+      type: String,
+    },
   },
   computed: {
     filteredOptions() {
       if (this.searchString.length) {
-        return this.options.filter(val =>
+        return this.options.filter((val) =>
           val.name
             ? val.name.includes(this.searchString)
             : val.includes(this.searchString)
         );
       }
       return this.options;
-    }
+    },
   },
   methods: {
     getOptionName(name) {
@@ -155,7 +166,7 @@ export default {
     },
     getSelectedFilterName(option) {
       if (this.isNumeric(option)) {
-        var opt = this.options.find(x => option === x.id);
+        var opt = this.options.find((x) => option === x.id);
         if (!opt) {
           return this.$t("filters." + opt);
         }
@@ -179,11 +190,11 @@ export default {
     },
     isActive(option) {
       var id = option.code || option.id || option;
-      return this.selectedFilters.find(x => (x.id ? x.id === id : x === id));
+      return this.selectedFilters.find((x) => (x.id ? x.id === id : x === id));
     },
     toggleArrayItem(data) {
       var id = data.code || data.id || data;
-      var index = this.selectedFilters.findIndex(x => x === id);
+      var index = this.selectedFilters.findIndex((x) => x === id);
       if (index > -1) {
         this.selectedFilters.splice(index, 1);
       } else {
@@ -195,8 +206,8 @@ export default {
           this.selectedFilters.push(data);
         }
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

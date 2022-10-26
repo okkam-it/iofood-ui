@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <install-banner />
     <transition name="fade">
       <landing-page v-if="showLanding" />
       <router-view v-else />
@@ -9,10 +10,12 @@
 
 <script>
 import LandingPage from "@/views/LandingPage";
+import InstallBanner from "@/components/InstallBanner";
 export default {
   name: "App",
   components: {
     LandingPage,
+    InstallBanner,
   },
   data() {
     return {
@@ -30,14 +33,14 @@ export default {
   },
   methods: {
     checkIsPwa() {
-      if (window.matchMedia("(display-mode: standalone)").matches) {
+      /* if (window.matchMedia("(display-mode: standalone)").matches) {
         this.showLanding = false;
-      } else {
-        this.showLanding = true;
-        setTimeout(() => {
-          this.showLanding = false;
-        }, 2500);
-      }
+      } else { */
+      this.showLanding = true;
+      setTimeout(() => {
+        this.showLanding = false;
+      }, 2500);
+      // }
     },
     /* async install() {
       this.deferredPrompt.prompt();
