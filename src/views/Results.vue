@@ -1073,9 +1073,12 @@ export default {
         // name: this.selectedWhat.length ? this.selectedWhat[0] : null,
         name: this.selectedWhat.length ? this.selectedWhat : null,
         nutritionalAspects: selectedFilters.nutritionalAspects,
+        foodRestrictions: selectedFilters.foodRestrictions,
       };
 
       delete selectedFilters.allergens;
+      delete selectedFilters.nutritionalAspects;
+      delete selectedFilters.foodRestrictions;
 
       var body = {
         ...filters,
@@ -1200,21 +1203,29 @@ export default {
       this.$refs.locationpicker.show();
     },
     showFoodServicePage(fs) {
-      // this.$router.push({ name: "FoodService" });
-      // this.foodServiceIdToShow = 12;
-      let filtersLen = 0;
+      let dishfiltersLen = 0;
       for (const [key, value] of Object.entries(this.selectedFilters)) {
-        if (!["orderby", "relevance", "geoDistance"].includes(key)) {
+        if (
+          [
+            "allergens",
+            "cuisines",
+            "nutritionalAspects",
+            "foodRestrictions",
+          ].includes(key)
+        ) {
           if (value && Array.isArray(value)) {
-            filtersLen += value.length;
+            dishfiltersLen += value.length;
           } else if (value) {
-            filtersLen++;
+            dishfiltersLen++;
           }
         }
       }
 
       var query;
-      if ((this.selectedWhat && this.selectedWhat.length) || filtersLen > 0) {
+      if (
+        (this.selectedWhat && this.selectedWhat.length) ||
+        dishfiltersLen > 0
+      ) {
         query = { suggested: fs.foodProducts.map((e) => e.id).join(",") };
       }
       this.$router.push({

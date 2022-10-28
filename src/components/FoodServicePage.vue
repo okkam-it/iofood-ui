@@ -44,9 +44,31 @@
               }}</span></template
             >
             <br />
+            <template
+              v-if="
+                foodService.additionalInfo &&
+                foodService.additionalInfo.occasions
+              "
+            >
+              <span>
+                <span
+                  v-for="occasion in foodService.additionalInfo.occasions.split(
+                    ','
+                  )"
+                  :key="'occasion-' + occasion"
+                >
+                  <b-icon-check scale="1.2" />{{ $t("filters." + occasion) }}
+                </span>
+              </span>
+              <br />
+            </template>
             <!-- <b-icon-dot />
             <span>1.5 km</span>-->
-            <food-service-opening-label :fsId="foodService.id" :small="true" />
+            <food-service-opening-label
+              :fsId="foodService.id"
+              :small="true"
+              class="mt-1"
+            />
             <div class="openings-box" v-if="openings.length">
               <ul>
                 <template v-for="opening in openings">
@@ -413,7 +435,7 @@ export default {
   },
   methods: {
     printCuisines(cuisines) {
-      return cuisines.map((e) => this.getTrad(e.name)).join(",");
+      return cuisines.map((e) => this.getTrad(e.name)).join(", ");
     },
     getImage(pfp) {
       if (pfp.otherImages && pfp.otherImages.smallThumbnailImage) {

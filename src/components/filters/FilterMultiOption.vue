@@ -10,30 +10,31 @@
         v-if="selectedFilters && selectedFilters.length > 0"
       >{{selectedFilters.length}}</span>-->
     </label>
-    <div v-if="options.length <= maxListItems">
-      <ul>
-        <li
-          v-for="option in options.slice(0, maxListItems)"
-          :key="option.id || option"
-        >
-          <template v-if="option.id">
-            <span
-              :class="{ active: isActive(option) }"
-              @click="toggleArrayItem(option)"
-              >{{ getOptionName(option.name) }}</span
-            >
-          </template>
-          <template v-else>
-            <span
-              :class="{ active: selectedFilters.includes(option) }"
-              @click="toggleArrayItem(option)"
-              >{{ $t("filters." + option) }}</span
-            >
-          </template>
-        </li>
-      </ul>
+    <template v-if="options.length">
+      <div v-if="options.length <= maxListItems">
+        <ul>
+          <li
+            v-for="option in options.slice(0, maxListItems)"
+            :key="option.id || option"
+          >
+            <template v-if="option.id">
+              <span
+                :class="{ active: isActive(option) }"
+                @click="toggleArrayItem(option)"
+                >{{ getOptionName(option.name) }}</span
+              >
+            </template>
+            <template v-else>
+              <span
+                :class="{ active: selectedFilters.includes(option) }"
+                @click="toggleArrayItem(option)"
+                >{{ $t("filters." + option) }}</span
+              >
+            </template>
+          </li>
+        </ul>
 
-      <!-- <p
+        <!-- <p
         class="expand-collapse-button"
         @click="showMore = true"
         v-if="options.length > maxListItems"
@@ -41,17 +42,17 @@
         Mostra di più
         <b-icon-caret-down-fill />
       </p>-->
-    </div>
-    <template v-else>
-      <ul v-if="selectedFilters.length">
-        <li v-for="option in selectedFilters" :key="option.id || option">
-          <span
-            :class="{ active: selectedFilters.includes(option) }"
-            @click.stop="toggleArrayItem(option)"
-            >{{ getSelectedFilterName(option) }}</span
-          >
-        </li>
-        <!-- <li v-for="option in selectedFilters" :key="option.id || option">
+      </div>
+      <template v-else>
+        <ul v-if="selectedFilters.length">
+          <li v-for="option in selectedFilters" :key="option.id || option">
+            <span
+              :class="{ active: selectedFilters.includes(option) }"
+              @click.stop="toggleArrayItem(option)"
+              >{{ getSelectedFilterName(option) }}</span
+            >
+          </li>
+          <!-- <li v-for="option in selectedFilters" :key="option.id || option">
           <template v-if="option.id">
             <span
               :class="{ active : selectedFilters.find(x => x.id ? x.id === option.id : x === option.id)}"
@@ -65,54 +66,62 @@
             >{{$t("filters." + option)}}</span>
           </template>
         </li>-->
-      </ul>
-      <div class="show-more-icon">
-        <b-icon-chevron-right shift-v="-2" />
-      </div>
-    </template>
+        </ul>
+        <div class="show-more-icon">
+          <b-icon-chevron-right shift-v="-2" />
+        </div>
+      </template>
 
-    <template v-if="options.length > maxListItems">
-      <mobile-modal v-if="showMore" @hide="showMore = false" showclosebuttontop>
-        <template #title>
-          {{ title }}
-          <!-- <div class="close-modal" @click="showMore = false">
+      <template v-if="options.length > maxListItems">
+        <mobile-modal
+          v-if="showMore"
+          @hide="showMore = false"
+          showclosebuttontop
+        >
+          <template #title>
+            {{ title }}
+            <!-- <div class="close-modal" @click="showMore = false">
             <b-icon-x scale="2.2" />
           </div> -->
-          <!-- <div v-if="options.length > 10">
+            <!-- <div v-if="options.length > 10">
               <div class="search-input-box">
                 <input v-model="searchString" type="text" placeholder="Cerca.." />
               </div>
           </div>-->
-        </template>
-        <template #content>
-          <div>
-            <ul>
-              <li v-for="option in filteredOptions" :key="option.id || option">
-                <template v-if="option.id">
-                  <span
-                    :class="{ active: isActive(option) }"
-                    @click="toggleArrayItem(option)"
-                    >{{ getOptionName(option.name) }}</span
-                  >
-                </template>
-                <template v-else>
-                  <span
-                    :class="{ active: selectedFilters.includes(option) }"
-                    @click="toggleArrayItem(option)"
-                    >{{ $t("filters." + option) }}</span
-                  >
-                  <!-- <template v-if="option === 'balanced'">
+          </template>
+          <template #content>
+            <div>
+              <ul>
+                <li
+                  v-for="option in filteredOptions"
+                  :key="option.id || option"
+                >
+                  <template v-if="option.id">
+                    <span
+                      :class="{ active: isActive(option) }"
+                      @click="toggleArrayItem(option)"
+                      >{{ getOptionName(option.name) }}</span
+                    >
+                  </template>
+                  <template v-else>
+                    <span
+                      :class="{ active: selectedFilters.includes(option) }"
+                      @click="toggleArrayItem(option)"
+                      >{{ $t("filters." + option) }}</span
+                    >
+                    <!-- <template v-if="option === 'balanced'">
                     <span class="gender-selector">
                       <b-icon-person-fill class="border rounded p-1 active" />
                       <b-icon-person-fill class="border rounded p-1" />
                     </span>
                   </template>-->
-                </template>
-              </li>
-            </ul>
-          </div>
-        </template>
-      </mobile-modal>
+                  </template>
+                </li>
+              </ul>
+            </div>
+          </template>
+        </mobile-modal>
+      </template>
     </template>
   </div>
 </template>
