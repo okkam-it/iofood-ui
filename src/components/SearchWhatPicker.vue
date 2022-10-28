@@ -26,13 +26,20 @@
       <div class="content">
         <template v-if="searchString.length">
           <ul class="results-box">
-            <li v-for="(res, k ) in results" :key="k" @click="showResult(res)">
-              <b-img v-if="res.id" :src="require('@/assets/food_icons/restaurant.png')" />
-              {{res.name}}
+            <li
+              v-for="(res, k) in autocompleteItems"
+              :key="k"
+              @click="showResult(res)"
+            >
+              <b-img
+                v-if="res.id"
+                :src="require('@/assets/food_icons/restaurant.png')"
+              />
+              {{ res.name }}
             </li>
             <li @click="showResult(searchString.trim())">
               <b-icon-search />Cerca risultati per
-              <strong>"{{searchString.trim()}}"</strong>
+              <strong>"{{ searchString.trim() }}"</strong>
             </li>
           </ul>
         </template>
@@ -42,7 +49,7 @@
             <div v-for="tip in tips" :key="tip.name">
               <div @click="showResult(tip)">
                 <b-icon-search />
-                {{tip.name}}
+                {{ tip.name }}
               </div>
             </div>
           </div>
@@ -53,9 +60,16 @@
 </template>
 
 <script>
+import _ from "lodash";
+import api from "@/helpers/api";
 export default {
   name: "SearchWhatPicker",
   components: {},
+  props: {
+    fixed: {
+      type: Boolean,
+    },
+  },
   data() {
     return {
       showPicker: false,
@@ -67,10 +81,12 @@ export default {
         { name: "Braciola di maiale" },
         { name: "Fiorentina" },
         { name: "Tagliata" },
-        { name: "Bistecca" }
+        { name: "Bistecca" },
       ],
-      results: [],
-      items: [
+      autocompleteItems: [],
+      userLocation: null,
+      // results: [],
+      /* items: [
         { name: "Braciola" },
         { name: "Braciola di maiale" },
         { name: "Pesce" },
@@ -84,10 +100,24 @@ export default {
         { name: "Bar Ristorantino Tecla alle Gru", id: 5 },
         { name: "Chiosco Skipper", id: 6 },
         { name: "Ošterija Na Planinci", id: 10 }
-      ]
+      ] */
     };
   },
+  mounted() {
+    if (this.fixed) {
+      this.show();
+    }
+    this.getUserLocation();
+  },
   methods: {
+    getUserLocation() {
+      this.userLocation =
+        this.$store.getters["geolocationModule/lastUserLocation"];
+      // console.log(JSON.stringify(userLocation));
+      /* this.userLocation = this.$store.getters[
+        "geolocationModule/lastUserLocation"
+      ]; */
+    },
     isOpen() {
       return this.showPicker;
     },
@@ -96,25 +126,69 @@ export default {
         this.hide();
         this.$router.push({
           name: "FoodServiceResult",
-          params: { id: res.id }
+          params: { id: res.id },
         });
       } else {
         this.addWhat(res.name || res);
       }
     },
-    search(e) {
+    search: _.debounce(async function (e) {
       this.searchString = e.target.value;
       if (this.searchString.length <= 2) {
-        this.results = [];
+        this.autocompleteItems = [];
       } else {
-        this.results = this.items.filter(val =>
-          val.name.toLowerCase().includes(this.searchString.toLowerCase())
-        );
+        let autocompleteItems = [];
+        try {
+          /* let response = await this.axios.post(
+            api.FIND_INGREDIENTS,
+            {
+              language: "it",
+              search: this.searchString,
+              unVerified: false,
+            },
+            {
+              params: {
+                page: 0,
+                size: 5,
+              },
+            }
+          );
+          if (response.data) {
+            autocompleteItems = response.data;
+          } */
+          var userLoc = this.userLocation;
+          let fsResponse = await this.axios.post(
+            api.FIND_FOOD_SERVICES,
+            {
+              geoDistance: "5000",
+              latitude: userLoc.latitude,
+              longitude: userLoc.longitude,
+              language: "it",
+              unVerified: false,
+              name: this.searchString,
+            },
+            {
+              params: {
+                page: 0,
+                size: 3,
+              },
+            }
+          );
+          if (fsResponse.data) {
+            autocompleteItems = fsResponse.data;
+          }
+          this.autocompleteItems = autocompleteItems;
+        } catch (error) {
+          this.autocompleteItems = [];
+          console.log(error);
+        }
       }
-    },
+    }, 500),
     addWhat(suggestion) {
       this.$emit("addWhat", suggestion);
-      this.hide();
+      if (!this.fixed) {
+        this.hide();
+      }
     },
     show() {
       this.showPicker = true;
@@ -125,8 +199,9 @@ export default {
     },
     hide() {
       this.showPicker = false;
-    }
-  }
+      this.$emit("hide");
+    },
+  },
 };
 </script>
 

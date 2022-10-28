@@ -26,6 +26,7 @@ export default {
   FIND_FOOD_SERVICES: ROOT_API + "foodservice",
   GET_PFP_DIETARY: ROOT_API + "pfp/{id}/dietary",
   GET_PFP_NUTRITIONAL_VALUES: ROOT_API + "pfp/{id}/nutritional-label/",
+  FIND_INGREDIENTS: ROOT_API + "ingredient/all",
 
   // Filters
   GET_FILTERS_SITUATION: ROOT_API + "iofood/food-service/moments",

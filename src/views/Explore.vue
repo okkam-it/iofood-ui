@@ -307,9 +307,20 @@ export default {
           unVerified: false,
         };
         for (let filter of categoryPreview.filters) {
-          /* if (filter.type === "priceRange") {
-            if (filter.value === "€") {
-              body["priceRangeMin"] = "0";
+          if (filter.type === "price") {
+            let priceRange = [];
+            for (let priceValue of filter.value) {
+              if (priceValue === "p1") {
+                priceRange.push("1");
+              } else if (priceValue === "p2") {
+                priceRange.push("2");
+              } else if (priceValue === "p3") {
+                priceRange.push("3");
+              }
+            }
+            body["priceRange"] = priceRange;
+            /* if (filter.value === "€") {
+              body["priceRange"] = "0";
               body["priceRangeMax"] = "0.3";
             } else if (filter.value === "€€") {
               body["priceRangeMin"] = "0.31";
@@ -318,11 +329,11 @@ export default {
             if (filter.value === "€€€") {
               body["priceRangeMin"] = "0.71";
               body["priceRangeMax"] = "1";
-            }
+            } */
           } else {
             body[filter.type] = filter.value;
-          } */
-          body[filter.type] = filter.value;
+          }
+          // body[filter.type] = filter.value;
         }
         try {
           let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
