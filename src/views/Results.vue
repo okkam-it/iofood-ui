@@ -355,7 +355,7 @@
           </template>
           <template v-else>
             <div class="rests-list">
-              <div class="contexts-box">
+              <div class="contexts-box" v-if="contexts.length">
                 <label>Si tratta di un'occasione particolare?</label>
                 <div>
                   <div
@@ -487,6 +487,8 @@
         @resetFilters="resetSelectedFilters()"
         :selectedFilters="selectedFilters"
         @onChangeSelectedFilters="onChangeSelectedFilters"
+        :filtersAvailable="filtersAvailable"
+        @temporaryFiltersChanged="reloadFiltersAvailable"
       />
     </div>
     <mobile-modal
@@ -636,6 +638,7 @@ export default {
       scrollingPage: 0,
       pageSize: 100,
       requestController: null,
+      filtersAvailable: {},
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -699,7 +702,7 @@ export default {
         this.selectedWhat.push(whatFilter);
       }
     } */
-    this.loadContexts();
+    // this.loadContexts();
     var filters = this.$route.query;
     if (filters) {
       for (let filter in filters) {
@@ -783,26 +786,16 @@ export default {
       this.getUserLocation();
       this.reloadFoodServices();
     },
-    loadContexts() {
-      /* this.axios
-        .get("/contexts.json")
-        .then(response => {
-          this.contexts = response.data;
-          // console.log(JSON.stringify(response.data));
-        })
-        .catch(error => {
-          console.log(error);
-        }); */
+    /* loadContexts() {
       this.axios
         .get(api.GET_FILTERS_OCCASIONS)
         .then((response) => {
           this.contexts = response.data;
-          // console.log(JSON.stringify(response.data));
         })
         .catch((error) => {
           console.log(error);
         });
-    },
+    }, */
     isNumeric(val) {
       return /^-?\d+$/.test(val);
     },
@@ -1006,6 +999,46 @@ export default {
         this.requestController.abort();
       }
       this.loading = true;
+      var sort = this.selectedFilters.orderby;
+      var body = this.buildFsBodyRequest(this.selectedFilters);
+
+      this.requestController = new AbortController();
+      const signal = this.requestController.signal;
+
+      try {
+        console.log("load page: " + this.scrollingPage);
+        let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
+          params: {
+            page: this.scrollingPage,
+            size: this.pageSize,
+            sort: sort,
+          },
+          signal,
+        });
+
+        if (response.data) {
+          if (response.data.length) this.scrollingPage++;
+          if (this.scrollingPage < 1) {
+            this.foodServices = response.data.foodServices;
+          } else {
+            this.foodServices = this.foodServices.concat(
+              response.data.foodServices
+            );
+          }
+          this.filtersAvailable = response.data.aggregators;
+          this.contexts = this.filtersAvailable.occasions || [];
+          // this.foodServices = response.data;
+          // this.$set(categoryPreview, "foodServices", response.data);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
+      this.buildMarkers();
+      this.loadingContent = false;
+      this.loading = false;
+    },
+    buildFsBodyRequest(currentFilters) {
       var userLocation =
         this.$store.getters["geolocationModule/lastUserLocation"];
       let filters = {
@@ -1013,7 +1046,7 @@ export default {
         longitude: userLocation.longitude,
         language: "it",
       };
-      var selectedFilters = JSON.parse(JSON.stringify(this.selectedFilters));
+      var selectedFilters = JSON.parse(JSON.stringify(currentFilters));
       /* if (selectedFilters.price) {
         if (selectedFilters.price === '€') {
           selectedFilters.price = 0.30;
@@ -1025,7 +1058,7 @@ export default {
       } */
       // delete selectedFilters.price;
       // delete selectedFilters.type;
-      var sort = selectedFilters.orderby;
+
       delete selectedFilters.orderby;
       // delete selectedFilters.moment;
       // delete selectedFilters.foodRestrictions;
@@ -1080,44 +1113,31 @@ export default {
       delete selectedFilters.nutritionalAspects;
       delete selectedFilters.foodRestrictions;
 
-      var body = {
+      return {
         ...filters,
         ...selectedFilters,
         pfpFilter,
         unVerified: false,
       };
-
-      this.requestController = new AbortController();
-      const signal = this.requestController.signal;
-
+    },
+    async reloadFiltersAvailable(filters) {
+      var body = this.buildFsBodyRequest(filters);
       try {
-        console.log("load page: " + this.scrollingPage);
         let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
           params: {
-            page: this.scrollingPage,
+            page: 0,
             size: this.pageSize,
-            sort: sort,
           },
-          signal,
         });
 
         if (response.data) {
-          if (response.data.length) this.scrollingPage++;
-          if (this.scrollingPage < 1) {
-            this.foodServices = response.data;
-          } else {
-            this.foodServices = this.foodServices.concat(response.data);
-          }
-          // this.foodServices = response.data;
-          // this.$set(categoryPreview, "foodServices", response.data);
+          // this.$set(this.filtersAvailable, {}, response.data.aggregators);
+          this.filtersAvailable = {};
+          this.filtersAvailable = response.data.aggregators;
         }
       } catch (e) {
         console.log(e);
       }
-
-      this.buildMarkers();
-      this.loadingContent = false;
-      this.loading = false;
     },
     mapPositionChange() {
       let newCenter = this.$refs.map.mapObject.getCenter();
@@ -1235,7 +1255,6 @@ export default {
       });
     },
     hideFoodServicePage() {
-      console.log("backk");
       this.hidingFsPage = true;
       if (this.prevRoute) {
         this.$router.go(-1);

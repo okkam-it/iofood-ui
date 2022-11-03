@@ -134,12 +134,16 @@ export default {
     },
     search: _.debounce(async function (e) {
       this.searchString = e.target.value;
-      if (this.searchString.length <= 2) {
+      if (this.searchString.length <= 1) {
         this.autocompleteItems = [];
       } else {
         let autocompleteItems = [];
-        try {
-          /* let response = await this.axios.post(
+        autocompleteItems = this.tips.filter((x) =>
+          x.name.toLowerCase().includes(this.searchString.toLowerCase())
+        );
+        if (this.searchString.length > 2) {
+          try {
+            /* let response = await this.axios.post(
             api.FIND_INGREDIENTS,
             {
               language: "it",
@@ -156,32 +160,36 @@ export default {
           if (response.data) {
             autocompleteItems = response.data;
           } */
-          var userLoc = this.userLocation;
-          let fsResponse = await this.axios.post(
-            api.FIND_FOOD_SERVICES,
-            {
-              geoDistance: "5000",
-              latitude: userLoc.latitude,
-              longitude: userLoc.longitude,
-              language: "it",
-              unVerified: false,
-              name: this.searchString,
-            },
-            {
-              params: {
-                page: 0,
-                size: 3,
+            var userLoc = this.userLocation;
+            let fsResponse = await this.axios.post(
+              api.FIND_FOOD_SERVICES,
+              {
+                geoDistance: "5000",
+                latitude: userLoc.latitude,
+                longitude: userLoc.longitude,
+                language: "it",
+                unVerified: false,
+                name: this.searchString,
               },
+              {
+                params: {
+                  page: 0,
+                  size: 3,
+                },
+              }
+            );
+            if (fsResponse.data) {
+              autocompleteItems = [
+                ...autocompleteItems,
+                ...fsResponse.data.foodServices,
+              ];
             }
-          );
-          if (fsResponse.data) {
-            autocompleteItems = fsResponse.data;
+          } catch (error) {
+            this.autocompleteItems = [];
+            console.log(error);
           }
-          this.autocompleteItems = autocompleteItems;
-        } catch (error) {
-          this.autocompleteItems = [];
-          console.log(error);
         }
+        this.autocompleteItems = autocompleteItems;
       }
     }, 500),
     addWhat(suggestion) {
