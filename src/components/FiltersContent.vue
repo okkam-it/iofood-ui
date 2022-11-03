@@ -48,7 +48,13 @@
       <filter-multi-option
         :selectedFilters.sync="filters.cuisines"
         :options="cuisines"
+        :filtersAvailable="filtersAvailable.cuisines"
         title="Tipo di cucina"
+        :class="{
+          disabled:
+            filtersAvailable.cuisines === undefined ||
+            !filtersAvailable.cuisines.length,
+        }"
       />
 
       <filter-multi-option
@@ -65,14 +71,26 @@
 
       <filter-multi-option
         :selectedFilters.sync="filters.foodRestrictions"
+        :filtersAvailable="filtersAvailable.foodRestrictions"
         :options="foodRestrictions"
         title="Scelte alimentari"
+        :class="{
+          disabled:
+            filtersAvailable.foodRestrictions === undefined ||
+            !filtersAvailable.foodRestrictions.length,
+        }"
       />
 
       <filter-multi-option
         :selectedFilters.sync="filters.nutritionalAspects"
+        :filtersAvailable="filtersAvailable.nutritionalAspects"
         :options="nutritionalFacts"
         title="Aspetti nutrizionali"
+        :class="{
+          disabled:
+            filtersAvailable.nutritionalAspects === undefined ||
+            !filtersAvailable.nutritionalAspects.length,
+        }"
       />
 
       <filter-base-option
@@ -83,8 +101,14 @@
 
       <filter-multi-option
         :selectedFilters.sync="filters.facilities"
+        :filtersAvailable="filtersAvailable.facilities"
         :options="facilities"
         title="Servizi"
+        :class="{
+          disabled:
+            filtersAvailable.facilities === undefined ||
+            !filtersAvailable.facilities.length,
+        }"
       />
 
       <filter-slider-option
@@ -97,26 +121,50 @@
 
       <filter-multi-option
         :selectedFilters.sync="filters.type"
+        :filtersAvailable="filtersAvailable.foodServiceTypes"
         :options="foodServiceTypes"
         title="Tipo di locale"
+        :class="{
+          disabled:
+            filtersAvailable.foodServiceTypes === undefined ||
+            !filtersAvailable.foodServiceTypes.length,
+        }"
       />
 
       <filter-multi-option
         :selectedFilters.sync="filters.digitalPayments"
+        :filtersAvailable="filtersAvailable.digitalPayments"
         :options="payments"
         title="Pagamenti digitali"
+        :class="{
+          disabled:
+            filtersAvailable.digitalPayments === undefined ||
+            !filtersAvailable.digitalPayments.length,
+        }"
       />
 
       <filter-multi-option
         :selectedFilters.sync="filters.mealVouchers"
+        :filtersAvailable="filtersAvailable.mealVouchers"
         :options="mealVouchers"
         title="Buoni pasto"
+        :class="{
+          disabled:
+            filtersAvailable.mealVouchers === undefined ||
+            !filtersAvailable.mealVouchers.length,
+        }"
       />
 
       <filter-multi-option
         :selectedFilters.sync="filters.occasions"
+        :filtersAvailable="filtersAvailable.occasions"
         :options="contexts"
         title="Occasione"
+        :class="{
+          disabled:
+            filtersAvailable.occasions === undefined ||
+            !filtersAvailable.occasions.length,
+        }"
       />
     </div>
     <div class="footer">
@@ -179,6 +227,9 @@ export default {
     selectedFilters: {
       type: Object,
     },
+    filtersAvailable: {
+      type: Object,
+    },
   },
   computed: {
     filtersLen() {
@@ -202,12 +253,12 @@ export default {
       },
       deep: true,
     },
-    /* filters: {
-      handler: function() {
-        this.$emit("onChangeSelectedFilters", this.filters);
+    filters: {
+      handler: function () {
+        this.$emit("temporaryFiltersChanged", this.filters);
       },
-      deep: true
-    }, */
+      deep: true,
+    },
     /* cuisines() {
       this.filteredCuisines = this.filterElements(
         this.filteredCuisines,

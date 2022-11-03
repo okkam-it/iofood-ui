@@ -92,31 +92,33 @@
           <template #content>
             <div>
               <ul>
-                <li
-                  v-for="option in filteredOptions"
-                  :key="option.id || option"
-                >
-                  <template v-if="option.id">
-                    <span
-                      :class="{ active: isActive(option) }"
-                      @click="toggleArrayItem(option)"
-                      >{{ getOptionName(option.name) }}</span
-                    >
-                  </template>
-                  <template v-else>
-                    <span
-                      :class="{ active: selectedFilters.includes(option) }"
-                      @click="toggleArrayItem(option)"
-                      >{{ $t("filters." + option) }}</span
-                    >
-                    <!-- <template v-if="option === 'balanced'">
+                <template v-for="option in filteredOptions">
+                  <li
+                    :key="option.id || option"
+                    v-if="checkFilterIsAvailable(option)"
+                  >
+                    <template v-if="option.id">
+                      <span
+                        :class="{ active: isActive(option) }"
+                        @click="toggleArrayItem(option)"
+                        >{{ getOptionName(option.name) }}</span
+                      >
+                    </template>
+                    <template v-else>
+                      <span
+                        :class="{ active: selectedFilters.includes(option) }"
+                        @click="toggleArrayItem(option)"
+                        >{{ $t("filters." + option) }}</span
+                      >
+                      <!-- <template v-if="option === 'balanced'">
                     <span class="gender-selector">
                       <b-icon-person-fill class="border rounded p-1 active" />
                       <b-icon-person-fill class="border rounded p-1" />
                     </span>
                   </template>-->
-                  </template>
-                </li>
+                    </template>
+                  </li>
+                </template>
               </ul>
             </div>
           </template>
@@ -150,6 +152,9 @@ export default {
     title: {
       type: String,
     },
+    filtersAvailable: {
+      type: Array,
+    },
   },
   computed: {
     filteredOptions() {
@@ -164,6 +169,16 @@ export default {
     },
   },
   methods: {
+    checkFilterIsAvailable(option) {
+      if (!this.filtersAvailable) {
+        return true;
+      }
+      if (option.id) {
+        return this.filtersAvailable.includes(option.id);
+      } else {
+        return this.filtersAvailable.includes(option);
+      }
+    },
     getOptionName(name) {
       if (typeof name === "string" || name instanceof String) {
         return name;
@@ -226,6 +241,11 @@ export default {
   border-bottom: 1px solid #e6e6e6;
   /* padding-bottom: 2vh; */
   position: relative;
+}
+
+.filter-box.disabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .filter-box label {

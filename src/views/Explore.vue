@@ -343,7 +343,7 @@ export default {
             },
           });
           if (response.data) {
-            this.$set(categoryPreview, "foodServices", response.data);
+            this.$set(categoryPreview, "foodServices", response.data.foodServices);
           }
         } catch (e) {
           console.log(e);
