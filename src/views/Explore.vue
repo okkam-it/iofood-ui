@@ -207,7 +207,7 @@ export default {
       userLocation: null,
       // loading: true,
       foodServiceIdToShow: null,
-      categoriesShortcuts: ["pizza", "sushi", "salad", "hamburger", "poke"],
+      categoriesShortcuts: ["pizza", "sushi", "salad", "hamburger", "grill"],
       categoriesPreviews: [
         {
           title: "happy_hour",
@@ -343,7 +343,11 @@ export default {
             },
           });
           if (response.data) {
-            this.$set(categoryPreview, "foodServices", response.data.foodServices);
+            this.$set(
+              categoryPreview,
+              "foodServices",
+              response.data.foodServices
+            );
           }
         } catch (e) {
           console.log(e);

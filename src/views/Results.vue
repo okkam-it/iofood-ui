@@ -87,6 +87,9 @@
     <search-what-picker ref="searchwhatpicker" @addWhat="addWhat" />
     <div class="content" v-if="!loadingUserLoc">
       <div class="map-view">
+        <div class="list-link" v-if="hiddenList" @click="showList()">
+          <b-icon-list scale="1.2" />Mostra lista
+        </div>
         <l-map
           ref="map"
           v-if="showMap"
@@ -143,10 +146,8 @@
             </l-marker>
           </template>
         </l-map>
+
         <div class="map-actions-box">
-          <div class="list-link" v-if="hiddenList" @click="showList()">
-            <b-icon-list scale="1.2" />Mostra lista
-          </div>
           <transition name="fade">
             <div
               ref="restspreviewlist"
@@ -440,6 +441,12 @@
                         :small="true"
                       />
                     </p>
+                    <food-service-occasions
+                      :occasions="foodService.occasions"
+                      v-if="
+                        foodService.occasions && foodService.occasions.length
+                      "
+                    />
                     <div
                       class="pfp-list"
                       v-if="
@@ -462,7 +469,7 @@
                   </div>
                 </template>
               </template>
-              <template v-else>
+              <template v-else-if="!loadingContent">
                 <div class="no-results-box">
                   <p>
                     <strong>Nessun ristorante trovato</strong>
@@ -547,6 +554,7 @@ import api from "@/helpers/api";
 import FoodServiceOpeningLabel from "@/components/FoodServiceOpeningLabel";
 // import restsData from '../assets/rests.json';
 import "leaflet/dist/leaflet.css";
+import FoodServiceOccasions from "@/components/FoodServiceOccasions";
 export default {
   name: "Results",
   components: {
@@ -561,6 +569,7 @@ export default {
     MobileModal,
     SearchWhatPicker,
     FoodServiceOpeningLabel,
+    FoodServiceOccasions,
   },
   data() {
     return {
@@ -784,6 +793,7 @@ export default {
     },
     refreshUserPosition() {
       this.getUserLocation();
+      this.selectedFilters = this.initSelectedFilters();
       this.reloadFoodServices();
     },
     /* loadContexts() {
@@ -1600,15 +1610,16 @@ export default {
 }
 
 .map-view .list-link {
-  margin-left: auto;
-  margin-right: 10px;
   width: fit-content;
   background-color: #fff;
-  padding: 12px 15px;
+  padding: 8px 10px;
   border-radius: 10px;
   font-weight: bold;
-  margin-bottom: 6vh;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+  position: absolute;
+  top: 70px;
+  right: 5px;
+  z-index: 1000;
 }
 
 .map-view .list-link > .b-icon {
