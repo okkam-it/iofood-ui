@@ -272,7 +272,7 @@ export default {
   },
   methods: {
     printCuisines(cuisines) {
-      return cuisines.map((e) => this.getTrad(e)).join(",");
+      return cuisines.map((e) => this.getTrad(e)).join(", ");
     },
     fsImageUrlAlt(event) {
       event.target.src = require("@/assets/rest-placeholder_lg.png");
@@ -300,7 +300,7 @@ export default {
 
       for (var categoryPreview of this.categoriesPreviews) {
         let body = {
-          geoDistance: "5000",
+          geoDistance: "10000",
           latitude: userLoc.latitude,
           longitude: userLoc.longitude,
           language: "it",

@@ -93,16 +93,33 @@
           </ul>
         </div>
       </div>
-      <div v-if="activeServices && activeServices.length" class="info-box">
+      <div
+        v-if="
+          (activeServices && activeServices.length) ||
+          foodService.info.delivery ||
+          foodService.info.takeaway
+        "
+        class="info-box"
+      >
         <label>Servizi</label>
         <div>
           <ul>
-            <template v-for="service in activeServices">
-              <li :key="service">
-                <b-icon-check scale="1.5" />
-                {{ $t("service." + service) }}
-              </li>
+            <template v-if="activeServices && activeServices.length">
+              <template v-for="service in activeServices">
+                <li :key="service">
+                  <b-icon-check scale="1.5" />
+                  {{ $t("service." + service) }}
+                </li>
+              </template>
             </template>
+            <li v-if="foodService.info.delivery">
+              <b-icon-check scale="1.5" />
+              {{ $t("service.delivery") }}
+            </li>
+            <li v-if="foodService.info.takeaway">
+              <b-icon-check scale="1.5" />
+              {{ $t("service.takeaway") }}
+            </li>
           </ul>
         </div>
       </div>

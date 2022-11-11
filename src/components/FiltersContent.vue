@@ -60,7 +60,13 @@
       <filter-multi-option
         :selectedFilters.sync="filters.moments"
         :options="situations"
+        :filtersAvailable="filtersAvailable.moments"
         title="Momenti della giornata"
+        :class="{
+          disabled:
+            filtersAvailable.moments === undefined ||
+            !filtersAvailable.moments.length,
+        }"
       />
 
       <filter-multi-option
