@@ -139,12 +139,12 @@
               <b-icon-three-dots scale="1.5" />Info
             </div>
           </div>
-          <div class="actions2">
+          <div class="actions2" v-if="myfoodDelivery || myfoodTableBooking">
             <div>
-              <button class="small">
+              <button class="small" v-if="myfoodDelivery">
                 <b-icon-basket2 scale="1.5" />Ordina
               </button>
-              <button class="small">
+              <button class="small" v-if="myfoodTableBooking">
                 <b-icon-calendar2-day scale="1.5" />Prenota
               </button>
             </div>
@@ -230,7 +230,10 @@
                   </p>
                   <template v-for="section in selectedMenu.sections">
                     <div
-                      v-if="section.preparedFoodProducts.length"
+                      v-if="
+                        section.preparedFoodProducts.length &&
+                        checkSectionHasSuggested(section.preparedFoodProducts)
+                      "
                       :key="section.id"
                     >
                       <label class="section-title">{{
@@ -431,9 +434,21 @@ export default {
       gen_m_active: require("@/assets/gen_m_active.png"),
       gen_f_active: require("@/assets/gen_f_active.png"),
       suggestedPfps: [],
+      deliveryMenu: null,
     };
   },
   methods: {
+    checkSectionHasSuggested(pfps) {
+      if (!this.dishes4youonly) {
+        return true;
+      }
+      for (let pfp of pfps) {
+        if (this.suggestedPfps.includes(String(pfp.id))) {
+          return true;
+        }
+      }
+      return false;
+    },
     printCuisines(cuisines) {
       return cuisines.map((e) => this.getTrad(e.name)).join(", ");
     },
@@ -532,6 +547,7 @@ export default {
           this.loadGallery();
           this.loadCuisine();
           this.loadAdditionalInfo();
+          this.loadDeliveryMenu();
         })
         .catch((error) => {
           console.log(error);
@@ -554,6 +570,23 @@ export default {
         .get(api.GET_FOOD_SERVICE_CUISINE_BY_ID.replace("{id}", this.fsId))
         .then((response) => {
           this.$set(this.foodService, "cuisine", response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    loadDeliveryMenu() {
+      this.axios
+        .get(api.GET_FOOD_SERVICE_MENU_COLLECTIONS.replace("{id}", this.fsId))
+        .then((response) => {
+          if (response.data) {
+            let deliverycollection = response.data.find(
+              (x) => x.type === "DELIVERY"
+            );
+            if (deliverycollection && deliverycollection.menus.length) {
+              this.deliveryMenu = deliverycollection.menus[0];
+            }
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -871,6 +904,12 @@ export default {
     }
   },
   computed: {
+    myfoodDelivery() {
+      return this.deliveryMenu;
+    },
+    myfoodTableBooking() {
+      return false;
+    },
     gender() {
       return this.$store.getters["userModule/gender"];
     },

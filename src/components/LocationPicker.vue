@@ -86,7 +86,7 @@ export default {
         { name: "Trieste", latitude: 45.653599, longitude: 13.77852 } */
         { name: "Jesolo", latitude: 45.536591, longitude: 12.63933 },
         { name: "Portogruaro", latitude: 45.775002, longitude: 12.83789 },
-        { name: "Trieste", latitude: 45.653599, longitude: 13.77852 },
+        // { name: "Trieste", latitude: 45.653599, longitude: 13.77852 },
       ],
       predictions: [],
     };

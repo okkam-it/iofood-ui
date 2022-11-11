@@ -1,6 +1,6 @@
 <template>
   <span
-    v-if="closedNow"
+    v-if="timetables && timetables.length && closedNow"
     @click="showMoreInfo = true"
     class="opening-label closed"
     :class="{ small }"
@@ -21,7 +21,7 @@
       }}
     </span>
   </span>
-  <span v-else class="opening-label open" :class="{ small }">
+  <span v-else-if="timetables && timetables.length" class="opening-label open" :class="{ small }">
     <b-icon-clock-fill />Aperto ora
   </span>
 </template>
