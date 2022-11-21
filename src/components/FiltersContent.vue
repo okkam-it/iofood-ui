@@ -30,6 +30,7 @@
         :selectedFilters.sync="filters.price"
         :options="prices"
         title="Prezzo"
+        subtitle="Si riferisce al prezzo medio dei piatti"
       />
 
       <!-- <filter-single-option

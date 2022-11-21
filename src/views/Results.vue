@@ -79,6 +79,9 @@
       >
         Cerca qui
       </div>
+      <div class="list-link" v-if="hiddenList" @click="showList()">
+        <b-icon-list scale="1.2" />Mostra lista
+      </div>
     </div>
     <location-picker
       ref="locationpicker"
@@ -87,9 +90,6 @@
     <search-what-picker ref="searchwhatpicker" @addWhat="addWhat" />
     <div class="content" v-if="!loadingUserLoc">
       <div class="map-view">
-        <div class="list-link" v-if="hiddenList" @click="showList()">
-          <b-icon-list scale="1.2" />Mostra lista
-        </div>
         <l-map
           ref="map"
           v-if="showMap"
@@ -167,7 +167,7 @@
                 <div>
                   <img
                     v-if="!selectedFoodService.foodProducts"
-                    :src="getRestImage(foodService)"
+                    :src="getRestImage(selectedFoodService)"
                     @error="fsImageUrlAlt"
                   />
                   <div class="image-slider" v-else>
@@ -508,6 +508,9 @@
       showclosebutton
     >
       <template #title>{{ selectedFilter.label }}</template>
+      <template #subtitle v-if="selectedFilter.subtitle">{{
+        selectedFilter.subtitle
+      }}</template>
       <template #content>
         <div class="badge-selector-box">
           <span
@@ -625,6 +628,7 @@ export default {
         },
         {
           label: "Prezzo",
+          subtitle: "Si riferisce al prezzo medio dei piatti",
           code: "price",
           alternatives: ["p1", "p2", "p3"],
           optional: true,
@@ -1236,12 +1240,7 @@ export default {
       let dishfiltersLen = 0;
       for (const [key, value] of Object.entries(this.selectedFilters)) {
         if (
-          [
-            "allergens",
-            "cuisines",
-            "nutritionalAspects",
-            "foodRestrictions",
-          ].includes(key)
+          ["allergens", "nutritionalAspects", "foodRestrictions"].includes(key)
         ) {
           if (value && Array.isArray(value)) {
             dishfiltersLen += value.length;
@@ -1609,7 +1608,7 @@ export default {
   left: 0;
 }
 
-.map-view .list-link {
+.list-link {
   width: fit-content;
   background-color: #fff;
   padding: 8px 10px;
@@ -1617,12 +1616,12 @@ export default {
   font-weight: bold;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
   position: absolute;
-  top: 70px;
+  bottom: -50px;
   right: 5px;
   z-index: 1000;
 }
 
-.map-view .list-link > .b-icon {
+.list-link > .b-icon {
   margin-right: 5px;
   color: rgba(255, 102, 51, 0.8);
 }

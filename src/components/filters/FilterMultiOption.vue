@@ -10,6 +10,7 @@
         v-if="selectedFilters && selectedFilters.length > 0"
       >{{selectedFilters.length}}</span>-->
     </label>
+    <label class="subtitle" v-if="subtitle">{{ subtitle }}</label>
     <template v-if="options.length">
       <div v-if="options.length <= maxListItems">
         <ul>
@@ -152,6 +153,9 @@ export default {
     title: {
       type: String,
     },
+    subtitle: {
+      type: String,
+    },
     filtersAvailable: {
       type: Array,
     },
@@ -252,6 +256,13 @@ export default {
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 0;
+}
+
+.filter-box label.subtitle {
+  display: block;
+  font-weight: normal;
+  font-size: 12px;
+  color: rgba(24, 24, 24, 0.5);
 }
 
 .filter-box > div {
