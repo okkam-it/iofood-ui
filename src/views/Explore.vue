@@ -215,6 +215,16 @@ export default {
           filters: [{ type: "moments", value: ["APERITIF"] }],
         },
         {
+          title: "traditional_cuisine",
+          foodServices: [],
+          filters: [
+            {
+              type: "cuisines",
+              value: [129, 130],
+            } /* , { type: "cuisine", value: 1 } */,
+          ],
+        },
+        {
           title: "delivery_takeaway",
           foodServices: [],
           filters: [
@@ -233,14 +243,9 @@ export default {
           filters: [{ type: "price", value: ["p1"] }],
         },
         {
-          title: "traditional_cuisine",
+          title: "nearby",
           foodServices: [],
-          filters: [
-            {
-              type: "cuisines",
-              value: [129, 130],
-            } /* , { type: "cuisine", value: 1 } */,
-          ],
+          filters: [{ type: "sort", value: "DISTANCE" }],
         },
       ],
       foodServices: [],
@@ -306,8 +311,11 @@ export default {
           language: "it",
           unVerified: false,
         };
+        let sort = "RELEVANCE";
         for (let filter of categoryPreview.filters) {
-          if (filter.type === "price") {
+          if (filter.type === "sort") {
+            sort = filter.value;
+          } else if (filter.type === "price") {
             let priceRange = [];
             for (let priceValue of filter.value) {
               if (priceValue === "p1") {
@@ -340,6 +348,7 @@ export default {
             params: {
               page: 0,
               size: 5,
+              sort,
             },
           });
           if (response.data) {
