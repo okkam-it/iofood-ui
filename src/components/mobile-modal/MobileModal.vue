@@ -6,7 +6,9 @@
         <span class="close-button" v-if="showclosebuttontop" @click="hide()"
           ><b-icon-x scale="2.2"></b-icon-x
         ></span>
+        <span class="subtitle"><slot name="subtitle"></slot></span>
       </p>
+
       <div class="contentmodal">
         <slot name="content"></slot>
       </div>
@@ -107,6 +109,13 @@ export default {
 .title .close-button {
   float: right;
   margin-right: 5px;
+}
+
+.subtitle {
+  display: block;
+  font-weight: normal;
+  font-size: 12px;
+  color: rgba(24, 24, 24, 0.5);
 }
 
 .badge-selector-box {

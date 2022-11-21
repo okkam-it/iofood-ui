@@ -218,7 +218,8 @@
                         <input
                           :checked="dishes4youonly"
                           @input="
-                            $store.dispatch('userModule/toggleDishes4youonly')
+                            /* $store.dispatch('userModule/toggleDishes4youonly') */ dishes4youonly =
+                              !dishes4youonly
                           "
                           type="checkbox"
                         />
@@ -435,6 +436,7 @@ export default {
       gen_f_active: require("@/assets/gen_f_active.png"),
       suggestedPfps: [],
       deliveryMenu: null,
+      dishes4youonly: false,
     };
   },
   methods: {
@@ -773,9 +775,11 @@ export default {
         .then((response) => {
           var menus = [];
           for (let menu of response.data) {
-            console.log(menu.type);
-            if (!menu.type || menu.type !== "DELIVERY") {
-              menus.push(menu);
+            if (menu.active) {
+              console.log(menu.type);
+              if (!menu.type || menu.type !== "DELIVERY") {
+                menus.push(menu);
+              }
             }
           }
           this.menus = menus;
@@ -913,9 +917,9 @@ export default {
     gender() {
       return this.$store.getters["userModule/gender"];
     },
-    dishes4youonly() {
+    /* dishes4youonly() {
       return this.$store.getters["userModule/dishes4youonly"];
-    },
+    }, */
     sharingEnabled() {
       return navigator.share;
     },
