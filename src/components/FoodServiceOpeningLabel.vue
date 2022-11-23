@@ -21,7 +21,11 @@
       }}
     </span>
   </span>
-  <span v-else-if="timetables && timetables.length" class="opening-label open" :class="{ small }">
+  <span
+    v-else-if="timetables && timetables.length"
+    class="opening-label open"
+    :class="{ small }"
+  >
     <b-icon-clock-fill />Aperto ora
   </span>
 </template>
@@ -172,10 +176,6 @@ export default {
           this.closedNow = false;
           return;
         }
-
-        // TODO
-        // console.log(JSON.stringify(timetablesToday));
-        // console.log(JSON.stringify(openings));
       } else {
         this.closedNow = false;
         return;

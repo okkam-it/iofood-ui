@@ -18,8 +18,6 @@
         <img :src="demo" />
       </div>
     </div>
-    <!-- <p class="title">Visualizzazione web non ancora disponibile</p>
-    <p class="desc">Scannerizza il qrcode con il tuo telefono per ricercare i ristoranti su MyFood.</p>-->
   </div>
 </template>
 
@@ -30,15 +28,13 @@ export default {
   components: {},
   data() {
     return {
-      // qrcode: require("@/assets/qrcode-web.png"),
       qrcode: null,
       logo: require("@/assets/myfood-logo-large-dark.png"),
-      demo: require("@/assets/demo.png")
+      demo: require("@/assets/demo.png"),
     };
   },
   mounted() {
     this.generateQrCode();
-    // console.log(window.location.origin + this.$route.query.nextUrl);
   },
   methods: {
     generateQrCode() {
@@ -51,15 +47,14 @@ export default {
 
       this.axios
         .get(api.GET_QRCODE, { params: { url: nextUrl } })
-        .then(response => {
+        .then((response) => {
           this.qrcode = "data:image/png;base64," + response.data.imageBytes;
-          // console.log(JSON.stringify(response.data));
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

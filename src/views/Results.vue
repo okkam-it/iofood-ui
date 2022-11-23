@@ -8,10 +8,7 @@
         <b-icon-search scale=".8" />
         <input type="text" placeholder="Pesce, milanese, nome ristorante" />
       </div>
-      <!-- <p @click="showLocationPicker()">
-          <b-icon-geo-alt class="mr-2" />
-          {{userLocation.address.village || userLocation.address.city || userLocation.address.town}}
-      </p>-->
+
       <div class="filters-box">
         <div @click="showFiltersBox()">
           <b-icon-sliders scale="1.2" />
@@ -62,12 +59,6 @@
         <span @click="openSearchPage()">Altro?</span>
       </div>
 
-      <!-- <div class="selected-filters-box" v-if="userLocation">
-        <div @click="showLocationPicker()">
-          <b-icon-geo-alt-fill class="mr-2" />
-          {{userLocation.address.village || userLocation.address.city || userLocation.address.town}}
-        </div>
-      </div>-->
       <div class="slider" v-if="loadingContent">
         <div class="line"></div>
         <div class="subline inc"></div>
@@ -104,12 +95,6 @@
         >
           <l-tile-layer :url="url" :attribution="attribution" />
           <template v-for="marker in markers">
-            <!-- <l-marker
-              :lat-lng="marker.coords"
-              :icon="currentPreview && currentPreview == marker.foodServiceId ? markerRedIcon : markerIcon"
-              :key="marker.name"
-              @click="showRestPreview(marker)"
-            >{{marker.name}}</l-marker>-->
             <l-marker
               :key="'marker_' + marker.name"
               :lat-lng="marker.coords"
@@ -155,10 +140,6 @@
               v-if="selectedFoodService && hiddenList"
               @scroll="handleScrollRestsPreview"
             >
-              <!-- <div>Uno</div>
-              <div>Due</div>
-              <div>Tre</div>-->
-
               <div
                 class="rest-card"
                 @click="showFoodServicePage(selectedFoodService)"
@@ -555,7 +536,6 @@ import FiltersContent from "@/components/FiltersContent";
 import MobileModal from "@/components/mobile-modal/MobileModal";
 import api from "@/helpers/api";
 import FoodServiceOpeningLabel from "@/components/FoodServiceOpeningLabel";
-// import restsData from '../assets/rests.json';
 import "leaflet/dist/leaflet.css";
 import FoodServiceOccasions from "@/components/FoodServiceOccasions";
 export default {
@@ -578,7 +558,7 @@ export default {
     return {
       zoom: 13,
       currentZoom: 13,
-      // center: latLng(47.41322, -1.219482),
+
       center: null,
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       attribution:
@@ -599,7 +579,6 @@ export default {
         iconUrl: require("@/assets/icons/marker.png"),
         iconSize: [31, 40],
         iconAnchor: [15, 35],
-        //shadowUrl: require('@/assets/images/tte_logo.png')
       }),
       markerRedIcon: icon({
         iconRetinaUrl: require("@/assets/icons/marker_red.png"),
@@ -607,7 +586,6 @@ export default {
         iconSize: [31, 40],
         // iconAnchor: [23, 47]
         iconAnchor: [15, 35],
-        //shadowUrl: require('@/assets/images/tte_logo.png')
       }),
       staticAnchor: [16, 37],
       selectedFoodService: null,
@@ -679,7 +657,6 @@ export default {
       if (this.selectedFilters) {
         Object.values(this.selectedFilters).forEach((value) => {
           if (Array.isArray(value)) {
-            // variable is a boolean
             size += value.length;
           } else {
             if (typeof value == "boolean") {
@@ -692,30 +669,13 @@ export default {
               }
             }
           }
-          /* if (typeof value == "boolean") {
-            // variable is a boolean
-            if (value) {
-              size++;
-            }
-          } else {
-            size += value.length;
-          } */
         });
       }
-      // console.log(size);
+
       return size - 2;
     },
   },
   mounted() {
-    /* var whatFilter = this.$route.query.what;
-    if (whatFilter && whatFilter !== "allfs") {
-      if (this.checkNotFilter(whatFilter)) {
-        this.selectedFilters[whatFilter] = true;
-      } else {
-        this.selectedWhat.push(whatFilter);
-      }
-    } */
-    // this.loadContexts();
     var filters = this.$route.query;
     if (filters) {
       for (let filter in filters) {
@@ -745,16 +705,6 @@ export default {
                 this.selectedFilters[filter] = [val];
               }
             }
-
-            // this.selectedFilters[filter] = filters[filter];
-            // this.selectedFilters[filter] = filters[filter].split(",");
-            // console.log("is array")
-            // console.log(filters[filter]);
-            /* for (let val of filters[filter]) {
-              this.selectedFilters[filter].push(val);
-              console.log(val);
-            } */
-            // this.selectedFilters[filter].push(filters[filter]);
           } else {
             var val = filters[filter];
             if (this.isNumeric(val)) {
@@ -770,10 +720,7 @@ export default {
         }
       }
     }
-    // console.log(filters);
 
-    // this.getUserLocation();
-    // this.$refs.myMap.mapObject.invalidateSize();
     setTimeout(() => {
       let listview = this.$refs.listview;
       if (listview) {
@@ -781,15 +728,9 @@ export default {
       }
     }, 200);
 
-    // this.loadFoodServices();
     this.reloadFoodServices();
 
-    // this.loadContexts();
     this.checkRouteState(this.$route);
-    /* this.$nextTick(() => {
-      this.reloadFoodServices();
-    }); */
-    // this.buildMarkers();
   },
   methods: {
     printCuisines(cuisines) {
@@ -800,16 +741,7 @@ export default {
       this.selectedFilters = this.initSelectedFilters();
       this.reloadFoodServices();
     },
-    /* loadContexts() {
-      this.axios
-        .get(api.GET_FILTERS_OCCASIONS)
-        .then((response) => {
-          this.contexts = response.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }, */
+
     isNumeric(val) {
       return /^-?\d+$/.test(val);
     },
@@ -819,35 +751,7 @@ export default {
       }
       return false;
     },
-    /* updateMarkerLabels() {
-      for (var marker of this.markers) {
-        this.checkLabelVisibility(marker);
-      }
-    },
-    checkLabelVisibility(currentMarker) {
-      var show = true;
-      var zoom = this.$refs.map.mapObject.getZoom();
-      // var targetV = 2 + (zoom / 100);
 
-      for (var marker of this.markers) {
-        if (marker.foodServiceId !== currentMarker.foodServiceId) {
-          var value = this.calcCrow(
-            marker.coords.lat,
-            marker.coords.lng,
-            currentMarker.coords.lat,
-            currentMarker.coords.lng
-          );
-           var targetV = value * (zoom / 100);
-          console.log(targetV);
-
-          if (targetV < 0.09) {
-            return false;
-          }
-        }
-      }
-      return show;
-      // return true;
-    }, */
     getUserLocationString() {
       if (!this.userLocation) {
         return "";
@@ -877,57 +781,34 @@ export default {
       this.$router.replace({ query });
     },
     resetSelectedFilters() {
-      // console.log(this.selectedFilters.opennow);
       this.selectedFilters = this.initSelectedFilters();
-      // console.log(this.selectedFilters.opennow);
-      // console.log(JSON.stringify(this.selectedFilters));
     },
     initSelectedFilters() {
       return {
         cuisines: [],
         delivery: false,
         digitalPayments: [],
-        // foodChoices: [],
+
         geoDistance: 10000,
         mealVouchers: [],
         moments: [],
-        // name: "string",
+
         nutritionalAspects: [],
         occasions: [],
-        price: [] /* null */,
+        price: [],
         facilities: [],
         takeaway: false,
         type: [],
         variety: false,
-        /*OLD*/
+
         openNow: false,
         allergens: [],
         orderby: "RELEVANCE",
         foodRestrictions: [],
-
-        /* opennow: false,
-        orderby: "Pertinenza",
-        delivery: false,
-        takeaway: false,
-        payments: [],
-        geoDistance: 2000,
-        price: [],
-        context: [],
-        allergens: [],
-        fsType: [],
-        services: [],
-        mealVouchers: [],
-        cuisine: [],
-        offerVariety: false,
-        situations: [],
-        foodRestrictions: [],
-        nutritionalFacts: [],
-        pois: [] */
       };
     },
     onChangeSelectedFilters(filters) {
       this.selectedFilters = filters;
-      // console.log("change");
     },
     toggleAlternative(isArray, alternative, optional) {
       if (isArray) {
@@ -943,20 +824,6 @@ export default {
         }
       }
       this.updateQueryParams();
-
-      /* if (!this.selectedFilter.selectedAlternatives) {
-        this.$set(this.selectedFilter, "selectedAlternatives", []);
-        this.selectedFilter.selectedAlternatives.push(alternative);
-      } else {
-        var index = this.selectedFilter.selectedAlternatives.findIndex(
-          x => x === alternative
-        );
-        if (index > -1) {
-          this.selectedFilter.selectedAlternatives.splice(index, 1);
-        } else {
-          this.selectedFilter.selectedAlternatives.push(alternative);
-        }
-      } */
     },
     showFiltersBox() {
       this.$router.push({ name: "ResultsFilters" });
@@ -970,23 +837,13 @@ export default {
       var scrollPos = e.target.scrollLeft;
       var scrollWidth = e.target.scrollWidth - e.target.clientWidth;
       var steps = scrollWidth / this.foodServices.length;
-      // this.scrollPos = scrollWidth;
-      var step = parseInt((e.target.offsetWidth + scrollPos) / steps) - 1;
-      // console.log(step);
-      // this.currentPreview = this.foodServices[step - 1];
-      // console.log(this.currentPreview ? this.currentPreview.name : "null");
 
-      // console.log(e.target.offsetWidth);
-      // console.log(step);
+      var step = parseInt((e.target.offsetWidth + scrollPos) / steps) - 1;
+
       var child = e.target.children[step];
       if (child) {
         this.currentPreview = child.dataset.restid;
-        /* this.currentPreview = this.foodServices.find(
-          x => x.id === child.dataset.restid
-        ); */
       }
-      // console.log(e.target);
-      // console.log(child ? child.dataset.restid : "null");
     },
     getRestImage(foodService) {
       return (
@@ -1020,7 +877,6 @@ export default {
       const signal = this.requestController.signal;
 
       try {
-        console.log("load page: " + this.scrollingPage);
         let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
           params: {
             page: this.scrollingPage,
@@ -1061,35 +917,11 @@ export default {
         language: "it",
       };
       var selectedFilters = JSON.parse(JSON.stringify(currentFilters));
-      /* if (selectedFilters.price) {
-        if (selectedFilters.price === '€') {
-          selectedFilters.price = 0.30;
-        } else if (selectedFilters.price === '€€') {
-          selectedFilters.price = 0.65;
-        } else if (selectedFilters.price === '€€€') {
-          selectedFilters.price = 1;
-        }
-      } */
-      // delete selectedFilters.price;
-      // delete selectedFilters.type;
 
       delete selectedFilters.orderby;
-      // delete selectedFilters.moment;
-      // delete selectedFilters.foodRestrictions;
-      // delete selectedFilters.allergens;
-      // delete selectedFilters.mealVouchers;
+
       var priceValues = selectedFilters.price;
-      /* if (priceValue === "€") {
-        selectedFilters["priceRangeMin"] = "0";
-        selectedFilters["priceRangeMax"] = "0.3";
-      } else if (priceValue === "€€") {
-        selectedFilters["priceRangeMin"] = "0.31";
-        selectedFilters["priceRangeMax"] = "0.7";
-      }
-      if (priceValue === "€€€") {
-        selectedFilters["priceRangeMin"] = "0.71";
-        selectedFilters["priceRangeMax"] = "1";
-      } */
+
       let priceRange = [];
       for (let priceValue of priceValues) {
         if (priceValue === "p1") {
@@ -1113,11 +945,9 @@ export default {
         }
       }
 
-      // console.log(JSON.stringify(this.selectedWhat));
       var pfpFilter = {
         allergens: selectedFilters.allergens,
-        // category: [],
-        // name: this.selectedWhat.length ? this.selectedWhat[0] : null,
+
         name: this.selectedWhat.length ? this.selectedWhat : null,
         nutritionalAspects: selectedFilters.nutritionalAspects,
         foodRestrictions: selectedFilters.foodRestrictions,
@@ -1168,14 +998,6 @@ export default {
       } else {
         this.showNewPositionBanner = false;
       }
-      /* console.log(
-        this.calcCrow(
-          newCenter.lat,
-          newCenter.lng,
-          oldCenter.lat,
-          oldCenter.lng
-        )
-      ); */
     },
     calcCrow(nlat1, nlon1, olat2, olon2) {
       var R = 6371; // km
@@ -1198,7 +1020,6 @@ export default {
       return (Value * Math.PI) / 180;
     },
     mapCLick() {
-      // alert("click");
       this.selectedFoodService = null;
       this.currentPreview = null;
     },
@@ -1270,34 +1091,6 @@ export default {
       } else {
         this.$router.replace({ name: "Explore" });
       }
-
-      // this.foodServiceIdToShow = null;
-      // this.$router.go(-1);
-      // this.$router.go(-1);
-      // this.$router.replace({ name: "Results" });
-      /* console.log(this.$route.query);
-      this.$router.replace({
-        name: "Results",
-        params: this.$route.params,
-        query: this.$route.query
-      }); */
-
-      // this.$router.go(-1);
-      /* while (this.$route.name !== "Results") {
-        setTimeout(() => {
-          this.$router.go(-1);
-        }, 100);
-      } */
-      // this.$router.go(-1);
-      /* var historyLen = window.history.length;
-      for (let r in historyLen) {
-        console.log(r);
-        this.$router.go(-1);
-        if (this.$route.name === "Results") {
-          break;
-        }
-      } */
-      // this.$router.back();
     },
     hideFilters() {
       this.$router.go(-1);
@@ -1310,11 +1103,6 @@ export default {
         this.userLocation.longitude
       );
       this.loadingUserLoc = false;
-      // this.reloadFoodServices();
-      // console.log(JSON.stringify(userLocation));
-      /* this.userLocation = this.$store.getters[
-        "geolocationModule/lastUserLocation"
-      ]; */
     },
     showList() {
       this.hiddenList = false;
@@ -1333,13 +1121,11 @@ export default {
     },
     zoomUpdate(zoom) {
       this.currentZoom = zoom;
-      // this.updateMarkerLabels();
     },
     centerUpdate(center) {
       this.currentCenter = center;
     },
     checkRouteState(to) {
-      // console.log(to.name);
       if (to.name === "FoodServiceResult" && to.params.id) {
         this.foodServiceIdToShow = to.params.id;
       } else if (to.name === "ResultsFilters") {
@@ -1379,19 +1165,12 @@ export default {
       }
     },
     updateQueryParams() {
-      // const query = Object.assign({}, this.$route.query);
       var query = {};
-      // let filters = [];
+
       for (let qp in this.selectedFilters) {
         var filter = this.selectedFilters[qp];
         if ((Array.isArray(filter) && filter.length) || filter) {
           query[qp] = filter;
-          // filters.push({qp: filter });
-          /* if (typeof filter == "boolean") {
-            filters.push(qp);
-          } else if (Array.isArray(filter) && filter.length) {
-            filters.push(qp);
-          } */
         } else {
           if (query[qp]) {
             delete query[qp];
@@ -1401,34 +1180,12 @@ export default {
 
       query["what"] = this.selectedWhat;
 
-      // query.filters = filters.join(",");
-
-      // this.addParamsToLocation(query);
       if (this.$route.name !== "Results") {
         this.$router.replace({ name: "Results", query });
       } else {
         this.$router.replace({ query });
       }
-
-      /* const query = Object.assign({}, this.$route.query);
-      delete query.what;
-      this.$router.replace({ query }); */
     },
-    /* addParamsToLocation(params) {
-      history.pushState(
-        {},
-        null,
-        this.$route.path +
-          "?" +
-          Object.keys(params)
-            .map(key => {
-              return (
-                encodeURIComponent(key) + "=" + encodeURIComponent(params[key])
-              );
-            })
-            .join("&")
-      );
-    } */
   },
   watch: {
     $route(to) {
@@ -1460,33 +1217,10 @@ export default {
         }
         this.updateQueryParams();
         this.reloadFoodServices();
-        /* setTimeout(() => {
-          this.$nextTick(() => {
-            this.updateQueryParams();
-            this.reloadFoodServices();
-            // this.loadFoodServices();
-          });
-        }, 100); */
-        /* this.updateQueryParams();
-        this.reloadFoodServices(); */
       },
       deep: true,
     },
   },
-  /* selectedWhat: {
-    handler: function() {
-      this.loadFoodServices();
-    },
-    deep: true
-  } */
-  /* beforeRouteEnter(to, from, next) {
-    console.log("we");
-    if (to.name === "FoodServiceResult") {
-      this.foodServiceIdToShow = to.params.id;
-    }
-    console.log("we");
-    next();
-  } */
 };
 </script>
 

@@ -1,5 +1,4 @@
 import Vue from "vue";
-// import router from "@/router/index.js";
 const state = {
   items: [],
   deliveryTime: null,
@@ -15,16 +14,7 @@ const state = {
 };
 // getters
 const getters = {
-  /* cartProducts: (state, getters, rootState) => {
-    return state.items.map(({ id, quantity }) => {
-      const product = rootState.products.all.find(product => product.id === id);
-      return {
-        title: product.name,
-        price: product.price,
-        quantity
-      };
-    });
-  },*/
+
   deliveryTime: state => {
     return state.deliveryTime;
   },
@@ -77,7 +67,7 @@ const getters = {
   },
 
   orderFileMessage: (state /* , getters */) => {
-    // return JSON.stringify(state);
+
     var msg = "*Nuovo ordine da MyFood* ";
     if (state.deliveryTypeSelected === 0) {
       msg +=
@@ -109,7 +99,7 @@ const getters = {
   },
 
   orderMessage: (state, getters) => {
-    // return JSON.stringify(state);
+
     var msg = "*Nuovo ordine da MyFood* ";
     if (state.deliveryTypeSelected === 0) {
       msg +=
@@ -172,55 +162,27 @@ const actions = {
       );
       if (cartItems && cartItems.length) {
         for (var item of cartItems) {
-          console.log(JSON.stringify(product));
 
           let itemToCompare = JSON.parse(JSON.stringify(item.item));
           delete itemToCompare.quantity;
-          console.log(JSON.stringify(itemToCompare));
+
           if (JSON.stringify(itemToCompare) === JSON.stringify(product)) {
             context.commit("incrementItemQuantity", item);
-            console.log("wee");
+
             return;
           }
         }
       }
       context.commit("pushProduct", product);
 
-      console.log(JSON.stringify(context.state.items));
-
-      /* if (!cartItems) {
-        context.commit("pushProduct", product);
-      } else {
-        context.commit("incrementItemQuantity", cartItem);
-      } */
     }
   },
   removeItem(context, payload) {
     // context.commit("resetCart");
     var id = payload.index;
-    console.log("index: " + id);
+
     if (id > -1) {
       context.commit("removeProduct", id);
-      /* let cartItems = context.state.items.filter(
-        item => item.item.id === id
-      );
-      if (cartItems && cartItems.length) {
-        for (var item of cartItems) {
-          let itemToCompare = JSON.parse(JSON.stringify(item.item));
-          delete itemToCompare.quantity;
-          if (JSON.stringify(itemToCompare) === JSON.stringify(payload)) {
-
-          }
-        }
-      } */
-      /* const cartItem = context.state.items.find(item => item.item.id === id);
-      if (cartItem) {
-        if (cartItem.quantity === 1) {
-          context.commit("removeProduct", id);
-        } else {
-          context.commit("decrementItemQuantity", payload);
-        }
-      } */
     }
   },
   updateNote(context, payload) {
@@ -270,7 +232,7 @@ const mutations = {
     cartItem.notes.push(""); */
   },
   removeProduct(state, id) {
-    console.log("remove: " + id);
+
     state.items.splice(id, 1);
     /* state.items = state.items.filter(function(item) {
       return item.item.id !== id;

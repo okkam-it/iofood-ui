@@ -19,32 +19,19 @@ export default {
   },
   data() {
     return {
-      // deferredPrompt: null
       showLanding: true,
     };
   },
   created() {
-    /* window.addEventListener("beforeinstallprompt", e => {
-      e.preventDefault();
-      // Stash the event so it can be triggered later.
-      this.deferredPrompt = e;
-    }); */
     this.checkIsPwa();
   },
   methods: {
     checkIsPwa() {
-      /* if (window.matchMedia("(display-mode: standalone)").matches) {
-        this.showLanding = false;
-      } else { */
       this.showLanding = true;
       setTimeout(() => {
         this.showLanding = false;
       }, 2500);
-      // }
     },
-    /* async install() {
-      this.deferredPrompt.prompt();
-    } */
   },
 };
 </script>
@@ -58,16 +45,6 @@ export default {
   --danger-color: #df4759;
   --info-color: #17a2b8;
   --success-color: #8abf20;
-  /* --light-primary-color: rgba(138, 191, 32, 0.6);
-  --light1-primary-color: rgba(138, 191, 32, 0.3);
-  --ultra-light-primary-color: rgba(138, 191, 32, 0.1);
-  --dark-primary-color: #6e991a;
-  --alert-text-color: #e6ac00;
-  --info-color: #17a2b8;
-  --ultra-light-info-color: rgba(23, 162, 184, 0.1);
-  --info-light-color: rgba(23, 162, 184, 0.3);
-  --alert-color: #dc3545;
-  --alert-light-color: rgba(220, 53, 69, 0.2); */
 }
 
 @import url("https://fonts.googleapis.com/css?family=Montserrat");

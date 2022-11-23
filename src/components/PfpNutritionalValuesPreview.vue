@@ -1,7 +1,10 @@
 <template>
-  <div class="val-nut-box" v-if="nutritionalValues && nutritionalValues.energyKcal > 0">
+  <div
+    class="val-nut-box"
+    v-if="nutritionalValues && nutritionalValues.energyKcal > 0"
+  >
     <span>
-      {{nutritionalValues.energyKcal.toFixed(0)}}
+      {{ nutritionalValues.energyKcal.toFixed(0) }}
       <span>Kcal</span>
     </span>
     <span>
@@ -26,7 +29,9 @@
       <b-icon-reception4 scale="1.2" v-else />
     </span>
     <div class="badges">
-      <span v-for="badge of badges" :key="badge">{{$t("dietary." + badge)}}</span>
+      <span v-for="badge of badges" :key="badge">{{
+        $t("dietary." + badge)
+      }}</span>
     </div>
   </div>
 </template>
@@ -59,41 +64,41 @@ export default {
         "integral",
         "sugarFree",
         "healthyForLunch",
-        "healthyForDinner"
+        "healthyForDinner",
       ],
       adaptFor: {
         adaptForEquilibratedDinner: {
           male: "adaptForMaleEquilibratedDinner",
-          female: "adaptForFemaleEquilibratedDinner"
+          female: "adaptForFemaleEquilibratedDinner",
         },
         adaptForEquilibratedLunch: {
           male: "adaptForMaleEquilibratedLunch",
-          female: "adaptForFemaleEquilibratedLunch"
+          female: "adaptForFemaleEquilibratedLunch",
         },
         adaptForHypocaloricDinner: {
           male: "adaptForMaleHypocaloricDinner",
-          female: "adaptForFemaleHypocaloricDinner"
+          female: "adaptForFemaleHypocaloricDinner",
         },
         adaptForHypocaloricLunch: {
           male: "adaptForMaleHypocaloricLunch",
-          female: "adaptForFemaleHypocaloricLunch"
-        }
-      }
+          female: "adaptForFemaleHypocaloricLunch",
+        },
+      },
     };
   },
   props: {
     pfpId: {
-      type: String
+      type: String,
     },
     gender: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   watch: {
     gender() {
       this.setNutritionalDailyLimits();
       this.loadDietary();
-    }
+    },
   },
   computed: {
     carbPercent() {
@@ -110,7 +115,7 @@ export default {
         this.nutritionalValues.proteins,
         this.protDaily
       );
-    }
+    },
   },
   methods: {
     calcDailyPercent(val, limit) {
@@ -119,7 +124,7 @@ export default {
     loadDietary() {
       this.axios
         .get(api.GET_PFP_DIETARY.replace("{id}", this.pfpId))
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             var badges = [];
             for (let badge of this.badgeToShow) {
@@ -142,10 +147,9 @@ export default {
             }
 
             this.badges = badges;
-            // console.log(JSON.stringify(this.dietary));
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -153,7 +157,7 @@ export default {
       this.setNutritionalDailyLimits();
       this.axios
         .get(api.GET_PFP_NUTRITIONAL_VALUES.replace("{id}", this.pfpId))
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             var nutritionalValues = response.data;
             if (
@@ -166,18 +170,17 @@ export default {
             ) {
               this.nutritionalValues = nutritionalValues;
             }
-            // console.log(JSON.stringify(this.dietary));
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
-    }
+    },
   },
   mounted() {
     this.loadDietary();
     this.loadNutritionalValues();
-  }
+  },
 };
 </script>
 
@@ -189,56 +192,6 @@ export default {
   margin-bottom: 2vh;
   opacity: 0.7;
 }
-
-/* .val-nut-box > span {
-  margin-right: 5px;
-  border-radius: 5px;
-  padding: 2px 3px;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
-}
-.val-nut-box > span > span {
-  margin-right: 5px;
-}
-
-.val-nut-box > span > .b-icon {
-  color: var(--info-color);
-}
-
-.val-nut-box > span > .b-icon.green {
-  color: #209c05;
-}
-
-.val-nut-box > span > .b-icon.lightgreen {
-  color: #85e62c;
-}
-
-.val-nut-box > span > .b-icon.yellow {
-  color: #f2ce02;
-}
-
-.val-nut-box > span > .b-icon.red {
-  color: #ff0a0a;
-} */
-
-/* .val-nut-box > div {
-  margin: 0 5px;
-  width: calc(25% - 10px);
-  display: inline-block;
-  text-align: center;
-}
-
-.val-nut-box > div .progress {
-  height: 2px;
-}
-
-.val-nut-box > div label {
-  
-}
-
-.val-nut-box > div span {  
-  font-weight: normal;
-  font-size: 12px;
-} */
 
 .val-nut-box > span {
   background-color: #fff;

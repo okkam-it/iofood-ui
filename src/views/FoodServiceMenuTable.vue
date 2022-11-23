@@ -1,5 +1,9 @@
 <template>
-  <div class="food-service-page" @scroll="handleContentScroll" id="menu-content-box">
+  <div
+    class="food-service-page"
+    @scroll="handleContentScroll"
+    id="menu-content-box"
+  >
     <template v-if="loadingMenus">
       <loader-full-screen text />
     </template>
@@ -12,16 +16,13 @@
           <img :src="require('@/assets/bg_blank.png')" />
         </template>
         <div class="rest-name">
-          <p>{{foodService.name}}</p>
+          <p>{{ foodService.name }}</p>
         </div>
-        <!-- <div class="logo">
-          <img :src="logo" />
-        </div>-->
       </div>
       <div class="sticky-header" v-if="showStickyHeader && selectedMenu">
         <div class="selector" @click="showMenuSelector = true">
           <div class="menu">
-            {{getTrad(selectedMenu.name)}}
+            {{ getTrad(selectedMenu.name) }}
             <b-icon-caret-down-fill v-if="menus.length > 1" />
           </div>
           <div class="lang-selector" @click="showLangSelector()">
@@ -32,10 +33,11 @@
           <template v-for="section in selectedMenu.sections">
             <span
               :key="section.id"
-              :id="'section-button-'+ section.id"
-              :class="{ active : activeSection && activeSection === section.id }"
+              :id="'section-button-' + section.id"
+              :class="{ active: activeSection && activeSection === section.id }"
               @click="scrollToSection(section)"
-            >{{getTrad(section.name)}}</span>
+              >{{ getTrad(section.name) }}</span
+            >
           </template>
         </div>
       </div>
@@ -43,73 +45,13 @@
         <div v-if="selectedMenu">
           <div class="selector">
             <div class="menu" @click="showMenuSelector = true">
-              {{getTrad(selectedMenu.name)}}
+              {{ getTrad(selectedMenu.name) }}
               <b-icon-caret-down-fill v-if="menus.length > 1" />
             </div>
             <div class="lang-selector" @click="showLangSelector()">
               <img :src="require('@/assets/flag/' + lang + '_r2.png')" />
             </div>
           </div>
-          <!-- <div class="info mb-2">
-            <span v-if="foodService.type">{{getTrad(foodService.type.name)}}</span>
-            <b-icon-dot />
-            <span>Pizza, Italiano</span>
-            <br />
-            <span>€€</span>
-            <b-icon-dot />
-            <span>1.5 km</span>
-            <label v-if="closedNow" @click="showMoreInfo = true" class="closed-now">
-              <b-icon-clock-fill />Chiuso ora
-              <span v-if="openAt">
-                - apre alle {{openAt.getHours().toLocaleString("it-IT", {
-                minimumIntegerDigits: 2,
-                useGrouping: false,
-                }) + ":" + openAt.getMinutes().toLocaleString("it-IT", {
-                minimumIntegerDigits: 2,
-                useGrouping: false,
-                })}}
-              </span>
-            </label>
-            <div class="openings-box" v-if="openings.length">
-              <ul>
-                <template v-for="opening in openings">
-                  <li :key="opening.id">
-                    <template v-if="opening.singleDay">
-                      <p v-if="opening.opening">Apertura straordinaria il</p>
-                      <p v-else>Chiuso il</p>
-                      <strong>{{new Date(opening.fromDate).toLocaleDateString('default', dateOptions)}}</strong>
-                    </template>
-                    <template v-else>
-                      <p v-if="opening.opening">Apertura straordinaria dal</p>
-                      <p v-else>Chiuso dal</p>
-                      <strong>{{new Date(opening.fromDate).toLocaleDateString('default', dateOptions)}}</strong>
-                      {{" al "}}
-                      <strong>{{ new Date(opening.toDate).toLocaleDateString('default', dateOptions)}}</strong>
-                    </template>
-                  </li>
-                </template>
-              </ul>
-            </div>
-            <label class="more-info" @click="showMoreInfo = true">
-              Clicca qui per visualizzare orari, indirizzo e altre
-              <span>
-                informazioni
-                <b-icon-chevron-right scale="1.2" />
-              </span>
-            </label>
-          </div>-->
-          <!-- <p class="info" v-if="foodService.location">
-            <span>
-              <b-icon-geo-fill />
-              {{address}}
-            </span>
-          </p>
-          <p class="info" v-if="foodService.openings">
-            <span>
-              <b-icon-clock-fill />
-              {{foodService.openings}}
-            </span>
-          </p>-->
 
           <template v-if="loadingMenus">
             <div class="loading-menus-box">
@@ -123,21 +65,25 @@
               </div>-->
               <div class="menu-content" v-if="selectedMenu">
                 <!-- <p class="menu-title" v-if="menus.length === 1">{{getTrad(selectedMenu.name)}}</p> -->
-                <p
-                  class="menu-desc"
-                  v-if="selectedMenu.description"
-                >{{getTrad(selectedMenu.description)}}</p>
+                <p class="menu-desc" v-if="selectedMenu.description">
+                  {{ getTrad(selectedMenu.description) }}
+                </p>
                 <template v-for="section in selectedMenu.sections">
                   <div
                     v-if="section.preparedFoodProducts.length"
                     :key="section.id"
                     class="section-box"
                   >
-                    <div :id="'section_anchor_' + section.id" class="section_anchor" />
-                    <label class="section-title">{{getTrad(section.name)}}</label>
+                    <div
+                      :id="'section_anchor_' + section.id"
+                      class="section_anchor"
+                    />
+                    <label class="section-title">{{
+                      getTrad(section.name)
+                    }}</label>
                     <div
                       class="pfp-item"
-                      :class="{'image-layout' : pfp.image }"
+                      :class="{ 'image-layout': pfp.image }"
                       v-for="pfp in section.preparedFoodProducts"
                       :key="pfp.id"
                       @click="dishToShow = pfp"
@@ -146,17 +92,23 @@
                         <img :src="pfp.imageUrl" />
                       </div>
                       <!-- <b-icon-chevron-right class="more-info-icon" /> -->
-                      <p class="pfp-title">{{getTrad(pfp.name)}}</p>
+                      <p class="pfp-title">{{ getTrad(pfp.name) }}</p>
                       <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
                       <pfp-price :pfp="pfp" />
-                      <p class="pfp-ingredients">{{printIngredients(pfp.ingredients)}}</p>
+                      <p class="pfp-ingredients">
+                        {{ printIngredients(pfp.ingredients) }}
+                      </p>
                       <pfp-modifiers :pfp="pfp" />
                       <p class="pfp-info">
                         <template v-for="allergen in pfp.allergens">
                           <img
                             class="allergen-icon"
                             :key="allergen"
-                            :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
+                            :src="
+                              require('@/assets/allergens/' +
+                                allergen.toUpperCase() +
+                                '.png')
+                            "
                           />
                         </template>
                       </p>
@@ -178,16 +130,22 @@
               <div class="menu-selector-modal">
                 <label>Seleziona menu</label>
                 <ul>
-                  <li v-for="menu in menus" :key="menu.id" @click="selectMenu(menu)">
+                  <li
+                    v-for="menu in menus"
+                    :key="menu.id"
+                    @click="selectMenu(menu)"
+                  >
                     <div
                       class="menu-item"
-                      :class="{ active : selectedMenu && selectedMenu.id === menu.id }"
+                      :class="{
+                        active: selectedMenu && selectedMenu.id === menu.id,
+                      }"
                     >
                       <b-icon-circle-fill
                         scale=".5"
                         v-if="selectedMenu && selectedMenu.id === menu.id"
                       />
-                      {{getTrad(menu.name)}}
+                      {{ getTrad(menu.name) }}
                     </div>
                   </li>
                 </ul>
@@ -195,21 +153,33 @@
             </template>
           </mobile-modal>
 
-          <mobile-modal v-if="allergensToShow" @hide="allergensToShow = null" showclosebutton>
+          <mobile-modal
+            v-if="allergensToShow"
+            @hide="allergensToShow = null"
+            showclosebutton
+          >
             <template #content>
               <div class="allergens-list-modal">
                 <div v-for="allergen in allergensToShow" :key="allergen">
                   <img
                     class="allergen-icon"
                     :key="allergen"
-                    :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
+                    :src="
+                      require('@/assets/allergens/' +
+                        allergen.toUpperCase() +
+                        '.png')
+                    "
                   />
-                  {{allergen}}
+                  {{ allergen }}
                 </div>
               </div>
             </template>
           </mobile-modal>
-          <mobile-modal v-if="dishToShow" @hide="dishToShow = false" showclosebutton>
+          <mobile-modal
+            v-if="dishToShow"
+            @hide="dishToShow = false"
+            showclosebutton
+          >
             <template #content>
               <pfp-info-page :pfp="dishToShow" @hide="dishToShow = null" />
             </template>
@@ -237,7 +207,7 @@ export default {
     PfpInfoPage,
     PfpModifiers,
     PfpPrice,
-    LangSelectorModal
+    LangSelectorModal,
   },
   data() {
     return {
@@ -251,7 +221,7 @@ export default {
       showMenuSelector: false,
       logo: require("@/assets/myfood-logo-large-dark.png"),
       activeSection: null,
-      sectionsPosition: null
+      sectionsPosition: null,
     };
   },
   methods: {
@@ -275,13 +245,10 @@ export default {
       var scrollPos = e.target.scrollTop;
       var innerHeight = window.innerHeight;
       var limit = innerHeight * 0.17;
-      // console.log(scrollPos);
       if (scrollPos > limit) {
         this.showStickyHeader = true;
-        // console.log("true;");
       } else {
         this.showStickyHeader = false;
-        // console.log("false;");
       }
 
       var i = 0;
@@ -322,16 +289,10 @@ export default {
           document.getElementById("menu-sections-buttons-box").scrollTo({
             top: 0,
             left: leftPos - 10,
-            behavior: "smooth"
+            behavior: "smooth",
           });
         }
       }
-
-      /* for (let [key, value] of Object.entries(sectionsPosition)) {
-        if ()
-      } */
-
-      // console.log(scrollPos);
     },
     hide() {
       this.$emit("hide");
@@ -340,39 +301,18 @@ export default {
       // var ingredientsIds = [];
       var ingredientsString = [];
       for (let ing of ingredients) {
-        // if (ing.showInMenu) {
-        // ingredientsString.push(ing.id);
         ingredientsString.push(this.getTrad(ing.name));
-        /* let response = await this.axios.get(api.GET_INGREDIENT, {
-            params: {
-              id: ing.id
-            }
-          });
-          ingredientsString.push(this.getTrad(response.data.name)); */
-        // }
       }
-
-      /* let requests = [];
-
-      for (let ingredient of ingredientsIds) {
-        requests.push(
-          this.axios.get(api.GET_INGREDIENT, {
-            params: {
-              id: ingredient
-            }
-          })
-        );
-      } */
 
       return ingredientsString.join(", ");
     },
     loadFs() {
       this.axios
         .get(api.GET_FOOD_SERVICE_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.foodService = response.data;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -380,49 +320,42 @@ export default {
       this.axios
         .get(api.GET_ALL_RESTAURANT_MENUS, {
           params: {
-            foodServiceId: this.fsId
-          }
+            foodServiceId: this.fsId,
+          },
         })
-        .then(response => {
+        .then((response) => {
           var menus = [];
           for (let menu of response.data) {
-            // console.log(menu.id);
             // if (menu.type === "BASE") {
             menus.push(menu);
             // }
           }
           this.menus = menus;
           if (this.menuId) {
-            // console.log(this.menuId);
             var menu = menus.find(
-              m => parseInt(m.id) === parseInt(this.menuId)
+              (m) => parseInt(m.id) === parseInt(this.menuId)
             );
-            // console.log(JSON.stringify(menus));
+
             if (menu) {
               this.selectedMenu = menu;
               if (
                 !this.selectedMenu.id ||
                 parseInt(this.selectedMenu.id) !== parseInt(this.menuId)
               ) {
-                // console.log("go");
-                /* console.log(this.$route.menuid);
-                console.log(this.menuId); */
-
                 this.$router.replace({
                   name: "FoodServiceMenuTable",
-                  params: { menuid: menu.id }
+                  params: { menuid: menu.id },
                 });
               }
 
               this.showMenuSelector = false;
             }
-            // this.selectedMenu =
           } else {
             if (menus.length === 1) {
               this.selectedMenu = menus[0];
               this.$router.replace({
                 name: "FoodServiceMenuTable",
-                params: { menuid: menus[0].id }
+                params: { menuid: menus[0].id },
               });
               this.showMenuSelector = false;
             }
@@ -430,7 +363,7 @@ export default {
 
           this.loadingMenus = false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -443,23 +376,16 @@ export default {
         positions.push({ id: section.id, val: viewportOffset.bottom - 20 });
       }
       this.sectionsPosition = positions;
-      console.log(JSON.stringify(positions));
     },
     hideMenuSelector() {
       if (this.selectedMenu) {
         this.showMenuSelector = false;
       }
     },
-    contentScrollListener(e) {
-      console.log(e.target.scrollTop);
-      let scrollPosition = window.scrollY;
-      console.log(scrollPosition);
-    }
   },
   watch: {
     selectedMenu() {
       if (this.selectedMenu) {
-        console.log(this.selectedMenu.id);
         this.showMenuSelector = false;
         if (
           !this.menuId ||
@@ -467,29 +393,20 @@ export default {
         ) {
           this.$router.replace({
             name: "FoodServiceMenuTable",
-            params: { menuid: this.selectedMenu.id }
+            params: { menuid: this.selectedMenu.id },
           });
         }
 
         this.calculateSectionsPosition();
       }
-    }
-    /* showMenuSelector() {
-      if (
-        !this.showMenuSelector &&
-        this.$route.hash &&
-        this.$route.hash === "#mobilemodal"
-      ) {
-        this.$router.go(-1);
-      }
-    } */
+    },
   },
   mounted() {
     this.loadingMenus = true;
     if (!this.menuId) {
       this.showMenuSelector = true;
     }
-    // console.log(this.menuId);
+
     this.loadFs();
     this.loadMenus();
   },
@@ -502,8 +419,8 @@ export default {
     },
     lang() {
       return this.$i18n.locale;
-    }
-  }
+    },
+  },
 };
 </script>
 

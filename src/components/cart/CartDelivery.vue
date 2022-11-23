@@ -3,7 +3,7 @@
     <div class="cart">
       <div class="header" @click="hide()">
         <b-icon-cart scale="1.4" />
-        <!-- <p class="cart-size">{{$store.getters.cartSize}}</p> -->
+
         <p>
           <strong v-if="!showCart">Completa ordine</strong>
           <b-icon-x v-else scale="2" />
@@ -16,13 +16,6 @@
             <span>Ordina su WhatsApp e paga alla consegna</span>
           </div>
           <div class="delivery-selector">
-            <!-- <b-form-group>
-              <b-form-radio-group
-                v-model="deliveryOption"
-                :options="$store.getters.deliveryTypes"
-                size="lg"
-              ></b-form-radio-group>
-            </b-form-group>-->
             <div class="delivery-type-selector">
               <template v-for="opt in $store.getters.deliveryTypes">
                 <span
@@ -30,7 +23,6 @@
                   :class="{ active: opt.value === deliveryOption }"
                   @click="deliveryOption = opt.value"
                 >
-                  <!-- <input v-model="deliveryOption" :key="opt.text" type="radio" :value="opt.value" /> -->
                   {{ opt.text }}
                 </span>
               </template>
@@ -54,12 +46,6 @@
               />
             </div>
             <div class="payment-box" v-if="deliveryOption == 1">
-              <!-- <b-form-group>
-                <b-form-checkbox v-model="deliveryPaymentCard">
-                  <b-icon-credit-card />
-                  <span>Richiedi pagamento alla consegna con carta o bancomat</span>
-                </b-form-checkbox>                
-              </b-form-group>-->
               <label class="switch">
                 <input v-model="deliveryPaymentCard" type="checkbox" />
                 <span class="slider"></span>
@@ -79,18 +65,6 @@
                 <b-icon-pencil-fill scale=".8" />
               </template>
             </span>
-            <!-- <select /> -->
-            <!-- <vue-timepicker
-              id="target-tooltip-hour"
-              v-model="deliveryTime"
-              :minute-interval="15"
-              :hour-range="[[startHourRange, endHourRange]]"
-              close-on-complete
-              hour-label="ore"
-              minute-label="minuti"
-              @change="deliveryTimeChange()"
-              :class="{missing : timeDeliveryState}"
-            ></vue-timepicker>-->
           </div>
           <p class="list-title">Articoli</p>
           <ul v-if="cartSize">
@@ -118,35 +92,8 @@
                           <b-icon-trash scale="1" />
                         </div>
                       </b-col>
-                      <!-- <b-col cols="10">
-                        <input
-                          placeholder="Note"
-                          :value="note"
-                          @input="updateNote(item.item.id, $event, index)"
-                        />
-                      </b-col>-->
                     </b-row>
                   </div>
-                  <!-- <div v-for="(note, index) in item.notes" :key="index" class="sub-item-box">
-                    <b-row>
-                      <b-col cols="8">{{item.item.name}}</b-col>
-                      <b-col cols="2">
-                        <span class="light-text">{{item.item.price.toFixed(2)}}€</span>
-                      </b-col>
-                      <b-col cols="1">
-                        <div class="btnTrash" @click="removeItem(item.item.id, index)">
-                          <b-icon-trash scale="1" />
-                        </div>
-                      </b-col>
-                      <b-col cols="10">
-                        <input
-                          placeholder="Note"
-                          :value="note"
-                          @input="updateNote(item.item.id, $event, index)"
-                        />
-                      </b-col>
-                    </b-row>
-                  </div>-->
                 </b-col>
               </b-row>
             </li>
@@ -200,7 +147,6 @@
               :value="1"
             />
             <div v-if="deliveryTimeType == 1">
-              <!-- <span v-if="deliveryTimeTemp">{{deliveryTimeTemp}}</span> -->
               <select v-model="deliveryTimeTemp">
                 <option v-for="(opt, k) in hourOptions" :key="k" :value="opt">
                   {{ opt }}
@@ -219,7 +165,7 @@
 
 <script>
 import MobileModal from "@/components/mobile-modal/MobileModal";
-// import api from "@/helpers/api";
+
 export default {
   name: "CartDelivery",
   components: {
@@ -239,23 +185,10 @@ export default {
       deliveryTimeType: this.$store.getters.deliveryTime ? 1 : 0,
       deliveryTimeTemp: this.$store.getters.deliveryTime,
       hourOptions: this.findFsHourOptions(),
-      // fsTimetables: []
     };
   },
-  mounted() {
-    // this.loadFsTimetables();
-  },
+  mounted() {},
   methods: {
-    /* loadFsTimetables() {
-      this.axios
-        .get(api.GET_FOOD_SERVICE_TIMETABLES_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
-          this.fsTimetables = response.data;
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }, */
     findFsHourOptions() {},
     getNextSlot() {},
     show() {
@@ -312,9 +245,8 @@ export default {
         this.$store.dispatch("resetCart");
         this.$nextTick(() => {
           window.open(
-            "https://wa.me/39" +
-              "3484157464" +
-              /* this.restaurant.info.whatsappDelivery + */
+            "https://wa.me/" +
+              this.restaurant.info.whatsappDelivery +
               "?text=" +
               encodeURI(order_message),
             "_blank"

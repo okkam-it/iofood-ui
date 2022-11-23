@@ -9,17 +9,20 @@
           v-for="menu in menus"
           :key="menu.id"
           @click="selectedMenu = menu"
-          :class="{ active : selectedMenu && selectedMenu.id == menu.id}"
-        >{{getTrad(menu.name)}}</span>
+          :class="{ active: selectedMenu && selectedMenu.id == menu.id }"
+          >{{ getTrad(menu.name) }}</span
+        >
       </div>
       <div class="menu-content" v-if="selectedMenu">
-        <p class="menu-desc" v-if="selectedMenu.description">{{getTrad(selectedMenu.description)}}</p>
+        <p class="menu-desc" v-if="selectedMenu.description">
+          {{ getTrad(selectedMenu.description) }}
+        </p>
         <template v-for="section in selectedMenu.sections">
           <div v-if="section.preparedFoodProducts.length" :key="section.id">
-            <label class="section-title">{{getTrad(section.name)}}</label>
+            <label class="section-title">{{ getTrad(section.name) }}</label>
             <div
               class="pfp-item"
-              :class="{'image-layout' : pfp.image }"
+              :class="{ 'image-layout': pfp.image }"
               v-for="pfp in section.preparedFoodProducts"
               :key="pfp.id"
               @click="dishToShow = pfp"
@@ -28,10 +31,12 @@
                 <img :src="getImage(pfp)" />
               </div>
               <!-- <b-icon-chevron-right class="more-info-icon" /> -->
-              <p class="pfp-title">{{getTrad(pfp.name)}}</p>
+              <p class="pfp-title">{{ getTrad(pfp.name) }}</p>
               <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
               <pfp-price :pfp="pfp" />
-              <p class="pfp-ingredients">{{printIngredients(pfp.ingredients)}}</p>
+              <p class="pfp-ingredients">
+                {{ printIngredients(pfp.ingredients) }}
+              </p>
               <pfp-modifiers :pfp="pfp" />
               <p class="pfp-info">
                 <template v-for="allergen in pfp.allergens">
@@ -39,7 +44,11 @@
                     class="allergen-icon"
                     @click.stop="allergensToShow = pfp.allergens"
                     :key="allergen"
-                    :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
+                    :src="
+                      require('@/assets/allergens/' +
+                        allergen.toUpperCase() +
+                        '.png')
+                    "
                   />
                 </template>
               </p>
@@ -73,8 +82,6 @@
 
 <script>
 import api from "@/helpers/api";
-// import MobileModal from "@/components/mobile-modal/MobileModal";
-// import PfpInfoPage from "@/components/PfpInfoPage";
 import PfpModifiers from "@/components/foodservicemenutable/PfpModifiers";
 import PfpPrice from "@/components/foodservicemenutable/PfpPrice";
 import LoaderFullScreen from "@/components/LoaderFullScreen";
@@ -82,12 +89,11 @@ import LangSelectorModal from "@/components/mobile-modal/LangSelectorModal";
 export default {
   name: "FoodServicePage",
   components: {
-    // MobileModal,
     LoaderFullScreen,
-    // PfpInfoPage,
+
     PfpModifiers,
     PfpPrice,
-    LangSelectorModal
+    LangSelectorModal,
   },
   data() {
     return {
@@ -95,24 +101,17 @@ export default {
       selectedMenu: null,
       menus: [],
       loadingMenus: true,
-      dishToShow: null
-      /* showStickyHeader: false,
-      allergensToShow: null,
       dishToShow: null,
-      showMenuSelector: false,
-      logo: require("@/assets/myfood-logo-large-dark.png"),
-      activeSection: null,
-      sectionsPosition: null */
     };
   },
   methods: {
     loadFs() {
       this.axios
         .get(api.GET_FOOD_SERVICE_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.foodService = response.data;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -120,13 +119,12 @@ export default {
       this.axios
         .get(api.GET_ALL_RESTAURANT_MENUS, {
           params: {
-            foodServiceId: this.fsId
-          }
+            foodServiceId: this.fsId,
+          },
         })
-        .then(response => {
+        .then((response) => {
           var menus = [];
           for (let menu of response.data) {
-            console.log(menu.type);
             if (!menu.type || menu.type !== "DELIVERY") {
               menus.push(menu);
             }
@@ -138,7 +136,7 @@ export default {
 
           this.loadingMenus = false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -148,211 +146,7 @@ export default {
         ingredientsString.push(this.getTrad(ing.name));
       }
       return ingredientsString.join(", ");
-    }
-    /* showLangSelector() {
-      this.$refs.langselectormodal.show();
     },
-    scrollToSection(section) {
-      var elmnt = document.getElementById("section_anchor_" + section.id);
-      elmnt.scrollIntoView({ behavior: "smooth", inline: "nearest" });
-    },
-    selectMenu(menu) {
-      if (this.selectedMenu && this.selectedMenu.id === menu.id) {
-        this.showMenuSelector = false;
-      } else {
-        this.selectedMenu = menu;
-      }
-      var elmnt = document.getElementById("menu-content-box");
-      elmnt.scrollTop = 0;
-    },
-    handleContentScroll(e) {
-      var scrollPos = e.target.scrollTop;
-      var innerHeight = window.innerHeight;
-      var limit = innerHeight * 0.17;
-      // console.log(scrollPos);
-      if (scrollPos > limit) {
-        this.showStickyHeader = true;
-        // console.log("true;");
-      } else {
-        this.showStickyHeader = false;
-        // console.log("false;");
-      }
-
-      var i = 0;
-      scrollPos = scrollPos >= 0 ? scrollPos : 0;
-      for (let pos of this.sectionsPosition) {
-        let isLast = this.sectionsPosition.length === i + 1;
-        if (isLast && scrollPos > pos.val) {
-          this.activeSection = pos.id;
-          break;
-        } else if (
-          scrollPos > pos.val &&
-          scrollPos < this.sectionsPosition[i + 1].val
-        ) {
-          this.activeSection = pos.id;
-          break;
-        }
-        i++;
-      }
-
-      let el = document.getElementById("section-button-" + this.activeSection);
-      if (el) {
-        var rect = el.getBoundingClientRect();
-
-        let isInViewport =
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight ||
-              document.documentElement
-                .clientHeight) &&
-          rect.right <=
-            (window.innerWidth ||
-              document.documentElement.clientWidth);
-
-        if (!isInViewport) {
-          var leftPos = el.offsetLeft;
-          // document.getElementById("menu-sections-buttons-box").scrollLeft = leftPos - 10;
-          document.getElementById("menu-sections-buttons-box").scrollTo({
-            top: 0,
-            left: leftPos - 10,
-            behavior: "smooth"
-          });
-        }
-      }     
-
-      // console.log(scrollPos);
-    },
-    hide() {
-      this.$emit("hide");
-    },
-    printIngredients(ingredients) {
-      // var ingredientsIds = [];
-      var ingredientsString = [];
-      for (let ing of ingredients) {
-        // if (ing.showInMenu) {
-        // ingredientsString.push(ing.id);
-        ingredientsString.push(this.getTrad(ing.name));        
-        // }
-      }      
-
-      return ingredientsString.join(", ");
-    },
-    loadFs() {
-      this.axios
-        .get(api.GET_FOOD_SERVICE_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
-          this.foodService = response.data;
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-    loadMenus() {
-      this.axios
-        .get(api.GET_ALL_RESTAURANT_MENUS, {
-          params: {
-            foodServiceId: this.fsId
-          }
-        })
-        .then(response => {
-          var menus = [];
-          for (let menu of response.data) {
-            // console.log(menu.id);
-            // if (menu.type === "BASE") {
-            menus.push(menu);
-            // }
-          }
-          this.menus = menus;
-          if (this.menuId) {
-            // console.log(this.menuId);
-            var menu = menus.find(
-              m => parseInt(m.id) === parseInt(this.menuId)
-            );
-            // console.log(JSON.stringify(menus));
-            if (menu) {
-              this.selectedMenu = menu;
-              if (
-                !this.selectedMenu.id ||
-                parseInt(this.selectedMenu.id) !== parseInt(this.menuId)
-              ) {
-                // console.log("go");                
-
-                this.$router.replace({
-                  name: "FoodServiceMenuTable",
-                  params: { menuid: menu.id }
-                });
-              }
-
-              this.showMenuSelector = false;
-            }
-            // this.selectedMenu =
-          } else {
-            if (menus.length === 1) {
-              this.selectedMenu = menus[0];
-              this.$router.replace({
-                name: "FoodServiceMenuTable",
-                params: { menuid: menus[0].id }
-              });
-              this.showMenuSelector = false;
-            }
-          }
-
-          this.loadingMenus = false;
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-    async calculateSectionsPosition() {
-      await this.$nextTick();
-      var positions = [];
-      for (let section of this.selectedMenu.sections) {
-        let el = document.getElementById("section_anchor_" + section.id);
-        let viewportOffset = el.getBoundingClientRect();
-        positions.push({ id: section.id, val: viewportOffset.bottom - 20 });
-      }
-      this.sectionsPosition = positions;
-      console.log(JSON.stringify(positions));
-    },
-    hideMenuSelector() {
-      if (this.selectedMenu) {
-        this.showMenuSelector = false;
-      }
-    },
-    contentScrollListener(e) {
-      console.log(e.target.scrollTop);
-      let scrollPosition = window.scrollY;
-      console.log(scrollPosition);
-    }
-  },
-  watch: {
-    selectedMenu() {
-      if (this.selectedMenu) {
-        console.log(this.selectedMenu.id);
-        this.showMenuSelector = false;
-        if (
-          !this.menuId ||
-          parseInt(this.selectedMenu.id) !== parseInt(this.menuId)
-        ) {
-          this.$router.replace({
-            name: "FoodServiceMenuTable",
-            params: { menuid: this.selectedMenu.id }
-          });
-        }
-
-        this.calculateSectionsPosition();
-      }
-    }
-    /* showMenuSelector() {
-      if (
-        !this.showMenuSelector &&
-        this.$route.hash &&
-        this.$route.hash === "#mobilemodal"
-      ) {
-        this.$router.go(-1);
-      }
-    } */
   },
   mounted() {
     this.loadingMenus = true;
@@ -369,8 +163,8 @@ export default {
     },
     lang() {
       return this.$i18n.locale;
-    }
-  }
+    },
+  },
 };
 </script>
 

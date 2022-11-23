@@ -33,21 +33,6 @@ export default {
       this.$emit("update:selectedFilter", !this.selectedFilter);
       // selectedFilter[option] = !Boolean(selectedFilter[option])
     },
-    /* filterElements(filtered, full) {
-      if (filtered && filtered.length > 0 && filtered.length < full.length) {
-        return full;
-      }
-      var max = full.length;
-      return full.slice(0, this.maxListItems <= max ? this.maxListItems : max);
-    },
-    toggleArrayItem(data, array) {
-      var index = array.findIndex(x => (x.id ? x.id === data.id : x === data));
-      if (index > -1) {
-        array.splice(index, 1);
-      } else {
-        array.push(data);
-      }
-    } */
   },
 };
 </script>

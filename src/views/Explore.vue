@@ -1,34 +1,10 @@
 <template>
   <div>
-    <!-- Explore
-    <p>{{userLocation}}</p>-->
-    <!-- <template v-if="loading">
-      <div class="loading-box">
-        <div class="loading-header">
-          <div>
-            <b-skeleton width="40vw" height="4vh"></b-skeleton>
-            <b-skeleton width="100%" height="8vh"></b-skeleton>
-          </div>
-        </div>
-        <div class="loading-badges">
-          <div v-for="i in 8" :key="i">
-            <b-skeleton width="30vw" height="5vh"></b-skeleton>
-          </div>
-        </div>
-        <div class="loading-content">
-          <div v-for="i in 3" :key="i">
-            <b-skeleton width="50vw" height="5vh"></b-skeleton>
-            <b-skeleton width="100%" height="20vh"></b-skeleton>
-          </div>
-        </div>
-      </div>
-    </template>
-    <template v-else>-->
     <div class="header">
       <template v-if="!loadingHeader">
         <p v-if="userLocation" @click="showLocationPicker()">
           <b-icon-geo-alt-fill scale="1.3" class="geo-icon" />
-          <!-- {{userLocation.address.village || userLocation.address.city || userLocation.address.town}} -->
+
           {{ userLocation.name }}
         </p>
         <div class="search-input-box" @click="searchClick()">
@@ -47,8 +23,6 @@
       <transition name="fade">
         <template v-if="!loadingContent">
           <div key="content">
-            <!-- <install-banner key="banner-loader" /> -->
-            <!-- <div @click="goToResults()">Risultati</div> -->
             <div class="categories-shortcuts-box" key="shortcuts-loaders">
               <div @click="goToResults()">
                 <b-img :src="require('@/assets/food_icons/restaurant.png')" />
@@ -190,7 +164,6 @@
 
 <script>
 import LocationPicker from "@/components/LocationPicker";
-// import InstallBanner from "@/components/InstallBanner";
 import FoodServicePage from "@/components/FoodServicePage";
 import FoodServiceOpeningLabel from "@/components/FoodServiceOpeningLabel";
 import api from "@/helpers/api";
@@ -198,14 +171,14 @@ export default {
   name: "Explore",
   components: {
     LocationPicker,
-    // InstallBanner,
+
     FoodServicePage,
     FoodServiceOpeningLabel,
   },
   data() {
     return {
       userLocation: null,
-      // loading: true,
+
       foodServiceIdToShow: null,
       categoriesShortcuts: ["pizza", "sushi", "salad", "hamburger", "grill"],
       categoriesPreviews: [
@@ -221,7 +194,7 @@ export default {
             {
               type: "cuisines",
               value: [129, 130],
-            } /* , { type: "cuisine", value: 1 } */,
+            },
           ],
         },
         {
@@ -283,24 +256,6 @@ export default {
       event.target.src = require("@/assets/rest-placeholder_lg.png");
     },
     async loadFoodServices() {
-      /* this.axios
-        .get("/rests.json")
-        .then(response => {
-          this.foodServices = response.data;
-          for (var categoryPreview of this.categoriesPreviews) {
-            this.$set(
-              categoryPreview,
-              "foodServices",
-              this.foodServices.slice(0, 4)
-            );
-          }
-          this.loadingContent = false;
-
-          // console.log(JSON.stringify(response.data));
-        })
-        .catch(error => {
-          console.log(error);
-        }); */
       var userLoc = this.userLocation;
 
       for (var categoryPreview of this.categoriesPreviews) {
@@ -327,21 +282,9 @@ export default {
               }
             }
             body["priceRange"] = priceRange;
-            /* if (filter.value === "€") {
-              body["priceRange"] = "0";
-              body["priceRangeMax"] = "0.3";
-            } else if (filter.value === "€€") {
-              body["priceRangeMin"] = "0.31";
-              body["priceRangeMax"] = "0.7";
-            }
-            if (filter.value === "€€€") {
-              body["priceRangeMin"] = "0.71";
-              body["priceRangeMax"] = "1";
-            } */
           } else {
             body[filter.type] = filter.value;
           }
-          // body[filter.type] = filter.value;
         }
         try {
           let response = await this.axios.post(api.FIND_FOOD_SERVICES, body, {
@@ -370,36 +313,11 @@ export default {
         foodService.logoUrl ||
         require("@/assets/rest-placeholder_lg.png")
       );
-      /* if (foodService.coverImageUrl) {
-        return coverImageUrl;
-      }
-      if (foodService.logo) {
-        return coverImageUrl;
-      } */
-
-      // return require("@/assets/pics-demo/" + foodService.coverImage);
     },
     showFoodServicePage(fsId) {
       this.$router.push({ name: "FoodServiceExplore", params: { id: fsId } });
     },
     hideFoodServicePage() {
-      // this.$router.go(-1);
-      // this.$router.replace({ name: "Explore", params: this.$route.params });
-      /* console.log(this.$route.query);
-      this.$router.replace({
-        name: "Explore",
-        params: this.$route.params,
-        query: this.$route.query
-      }); */
-      /* var historyLen = window.history.length;
-      for (let r in historyLen) {
-        console.log(r);
-        this.$router.go(-1);
-        if (this.$route.name === "Explore") {
-          break;
-        }
-      } */
-      console.log("back");
       this.hidingFsPage = true;
       this.$router.back();
     },
@@ -415,12 +333,7 @@ export default {
             query[filter.type] = filter.value;
           }
         }
-        /* let query = {};
-        for (let filter of filters) {
-          query[filter.type] = filter.value;
-        } */
 
-        // let query = { what: encodeURIComponent(filter.toLowerCase()) };
         this.$router.push({
           name: "Results",
           query,
@@ -440,8 +353,6 @@ export default {
       if (!loc) {
         try {
           loc = await this.getGeolocation();
-
-          // this.location = await this.getLocation();
         } catch (e) {
           alert("Location error");
         }
@@ -451,7 +362,6 @@ export default {
       this.loadFoodServices();
     },
     checkRouteState(to) {
-      // console.log(to.name);
       if (to.name === "FoodServiceExplore" && to.params.id) {
         this.foodServiceIdToShow = to.params.id;
       } else {
@@ -462,7 +372,6 @@ export default {
   mounted() {
     this.getUserLocation();
     this.checkRouteState(this.$route);
-    // this.loadFoodServices();
   },
 };
 </script>

@@ -3,42 +3,41 @@
     <div class="pfp-image" v-if="pfp.image">
       <img :src="getImage(pfp)" />
     </div>
-    <p class="title">{{getTrad(pfp.name)}}</p>
+    <p class="title">{{ getTrad(pfp.name) }}</p>
     <hr />
-    <p class="desc" v-if="getTrad(pfp.description)">{{getTrad(pfp.description)}}</p>
+    <p class="desc" v-if="getTrad(pfp.description)">
+      {{ getTrad(pfp.description) }}
+    </p>
     <div class="info-box">
-      <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
       <pfp-price :pfp="pfp" />
       <template v-if="suggestedBeverage">
         <label>Bevanda consigliata</label>
         <p class="suggested-beverage">
-          {{getTrad(suggestedBeverage.name)}}
-          <span
-            v-if="suggestedBeverage.price"
-          >{{suggestedBeverage.price}} €</span>
+          {{ getTrad(suggestedBeverage.name) }}
+          <span v-if="suggestedBeverage.price"
+            >{{ suggestedBeverage.price }} €</span
+          >
         </p>
       </template>
       <template v-if="pfp.ingredients && pfp.ingredients.length">
         <label>Ingredienti</label>
         <div>
-          <p class="pfp-ingredients">{{printIngredients()}}</p>
+          <p class="pfp-ingredients">{{ printIngredients() }}</p>
         </div>
       </template>
       <template v-if="modifiers && modifiers.length">
         <label>Opzioni sul piatto</label>
         <div class="pfp-modifiers">
           <div v-for="modifier in modifiers" :key="modifier.id">
-            {{getTrad(modifier.name)}}:
+            {{ getTrad(modifier.name) }}:
             <div class="alternative-box">
               <div
                 class="alternative"
                 v-for="alternative in modifier.alternatives"
                 :key="alternative.id"
-              >{{getTrad(alternative.name)}}</div>
-              <!-- <span
-                v-for="alternative in modifier.alternatives"
-                :key="alternative.id"
-              >{{getTrad(alternative.name)}}</span>-->
+              >
+                {{ getTrad(alternative.name) }}
+              </div>
             </div>
           </div>
         </div>
@@ -46,17 +45,27 @@
       <template v-if="pfp.allergens && pfp.allergens.length">
         <label>Allergeni</label>
         <div>
-          <div v-for="allergen in pfp.allergens" :key="allergen" class="allergen-item">
+          <div
+            v-for="allergen in pfp.allergens"
+            :key="allergen"
+            class="allergen-item"
+          >
             <img
               class="allergen-icon"
               :key="allergen"
-              :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
+              :src="
+                require('@/assets/allergens/' + allergen.toUpperCase() + '.png')
+              "
             />
-            {{$t('allergen.' + allergen)}}
+            {{ $t("allergen." + allergen) }}
           </div>
         </div>
       </template>
-      <div class="nut-val-box" v-if="showNutritionalValues" :key="'gender_' + gender">
+      <div
+        class="nut-val-box"
+        v-if="showNutritionalValues"
+        :key="'gender_' + gender"
+      >
         <label>
           Valori nutrizionali
           <span>(Su base giornaliera)</span>
@@ -65,27 +74,26 @@
           <span>
             <template v-if="gender === 0">
               <img :src="gen_m_active" class="active" />
-              <img :src="gen_f" @click="$store.dispatch('userModule/setGenderFemale');" />
+              <img
+                :src="gen_f"
+                @click="$store.dispatch('userModule/setGenderFemale')"
+              />
             </template>
             <template v-else>
-              <img :src="gen_m" @click="$store.dispatch('userModule/setGenderMale');" />
+              <img
+                :src="gen_m"
+                @click="$store.dispatch('userModule/setGenderMale')"
+              />
               <img :src="gen_f_active" class="active" />
             </template>
           </span>
         </div>
-        <!-- <div>
-          <donut-chart title="Calorie" sub1="500" sub2="di 1500" :value="30" />
-        </div>
-        <div>
-          <donut-chart title="Carboidrati" sub1="24.2g" sub2="di 25g" :value="90" />
-        </div>
-        <div>
-          <donut-chart title="Grassi" sub1="164g" sub2="di 150g" :value="65" />
-        </div>
-        <div>
-          <donut-chart title="Proteine" sub1="92g" sub2="di 81g" :value="130" />
-        </div>-->
-        <div v-if="nutritionalValues.energyKcal || nutritionalValues.energyKcal == 0">
+
+        <div
+          v-if="
+            nutritionalValues.energyKcal || nutritionalValues.energyKcal == 0
+          "
+        >
           <donut-chart
             title="Calorie"
             :sub1="String(nutritionalValues.energyKcal.toFixed(2))"
@@ -93,11 +101,16 @@
             :value="calcDailyPercent(nutritionalValues.energyKcal, kcalDaily)"
           />
         </div>
-        <div v-if="nutritionalValues.carbohydrate || nutritionalValues.carbohydrate == 0">
+        <div
+          v-if="
+            nutritionalValues.carbohydrate ||
+            nutritionalValues.carbohydrate == 0
+          "
+        >
           <donut-chart
             title="Carboidrati"
             :sub1="String(nutritionalValues.carbohydrate.toFixed(2) + 'g')"
-            :sub2="'di ' + String(carbDaily)+ 'g'"
+            :sub2="'di ' + String(carbDaily) + 'g'"
             :value="calcDailyPercent(nutritionalValues.carbohydrate, carbDaily)"
           />
         </div>
@@ -105,57 +118,53 @@
           <donut-chart
             title="Grassi"
             :sub1="String(nutritionalValues.fat.toFixed(2) + 'g')"
-            :sub2="'di ' + String(fatDaily)+ 'g'"
+            :sub2="'di ' + String(fatDaily) + 'g'"
             :value="calcDailyPercent(nutritionalValues.fat, fatDaily)"
           />
         </div>
-        <div v-if="nutritionalValues.proteins || nutritionalValues.proteins == 0">
+        <div
+          v-if="nutritionalValues.proteins || nutritionalValues.proteins == 0"
+        >
           <donut-chart
             title="Proteine"
             :sub1="String(nutritionalValues.proteins.toFixed(2) + 'g')"
-            :sub2="'di ' + String(protDaily)+ 'g'"
+            :sub2="'di ' + String(protDaily) + 'g'"
             :value="calcDailyPercent(nutritionalValues.proteins, protDaily)"
           />
         </div>
       </div>
 
-      <div class="balanced-meal-box" v-if="dietary && Object.keys(dietary).length">
+      <div
+        class="balanced-meal-box"
+        v-if="dietary && Object.keys(dietary).length"
+      >
         <label>Combinazioni per un pasto equilibrato</label>
         <div class="gender-selector">
           <span>
             <template v-if="gender === 0">
               <img :src="gen_m_active" class="active" />
-              <img :src="gen_f" @click="$store.dispatch('userModule/setGenderFemale');" />
+              <img
+                :src="gen_f"
+                @click="$store.dispatch('userModule/setGenderFemale')"
+              />
             </template>
             <template v-else>
-              <img :src="gen_m" @click="$store.dispatch('userModule/setGenderMale');" />
+              <img
+                :src="gen_m"
+                @click="$store.dispatch('userModule/setGenderMale')"
+              />
               <img :src="gen_f_active" class="active" />
             </template>
           </span>
         </div>
         <div class="combination" v-for="(pfps, k) in dietary" :key="k">
-          <!-- <p>{{getTrad(pfp.name)}}</p> -->
-          <p>{{$t("dietary." + k)}}</p>
+          <p>{{ $t("dietary." + k) }}</p>
           <p v-for="pfp in pfps" :key="pfp.id">
             <b-icon-arrow90deg-down rotate="-90" shift-v="3" />
-            {{getTrad(pfp.name)}}
+            {{ getTrad(pfp.name) }}
           </p>
         </div>
-        <!-- <div class="combination">
-          <p>{{getTrad(pfp.name)}}</p>
-          <p>
-            <b-icon-arrow90deg-down rotate="-90" shift-v="4" />Nome piatto
-          </p>
-        </div>
-        <div class="combination">
-          <p>{{getTrad(pfp.name)}}</p>
-          <p>
-            <b-icon-arrow90deg-down rotate="-90" shift-v="4" />Nome piatto 2
-          </p>
-        </div>-->
       </div>
-
-      <!-- <button @click="hide()">Chiudi</button> -->
     </div>
   </div>
 </template>
@@ -168,7 +177,7 @@ export default {
   name: "PfpInfoPage",
   components: {
     PfpPrice,
-    DonutChart
+    DonutChart,
   },
   data() {
     return {
@@ -187,27 +196,27 @@ export default {
       adaptFor: {
         adaptForEquilibratedDinnerCombinedWith: {
           male: "adaptForMaleEquilibratedDinnerCombinedWith",
-          female: "adaptForFemaleEquilibratedDinnerCombinedWith"
+          female: "adaptForFemaleEquilibratedDinnerCombinedWith",
         },
         adaptForEquilibratedLunchCombinedWith: {
           male: "adaptForMaleEquilibratedLunchCombinedWith",
-          female: "adaptForFemaleEquilibratedLunchCombinedWith"
+          female: "adaptForFemaleEquilibratedLunchCombinedWith",
         },
         adaptForHypocaloricDinnerCombinedWith: {
           male: "adaptForMaleHypocaloricDinnerCombinedWith",
-          female: "adaptForFemaleHypocaloricDinnerCombinedWith"
+          female: "adaptForFemaleHypocaloricDinnerCombinedWith",
         },
         adaptForHypocaloricLunchCombinedWith: {
           male: "adaptForMaleHypocaloricLunchCombinedWith",
-          female: "adaptForFemaleHypocaloricLunchCombinedWith"
-        }
-      }
+          female: "adaptForFemaleHypocaloricLunchCombinedWith",
+        },
+      },
     };
   },
   props: {
     pfp: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   computed: {
     fsId() {
@@ -221,17 +230,18 @@ export default {
       return (
         nutritionalValues &&
         ((nutritionalValues.energyKcal && nutritionalValues.energyKcal > 0) ||
-          (nutritionalValues.carbohydrate && nutritionalValues.carbohydrate > 0) ||
+          (nutritionalValues.carbohydrate &&
+            nutritionalValues.carbohydrate > 0) ||
           (nutritionalValues.fat && nutritionalValues.fat > 0) ||
           (nutritionalValues.proteins && nutritionalValues.proteins > 0))
       );
-    }
+    },
   },
   watch: {
     gender() {
       this.setNutritionalDailyLimits();
       this.loadDietary();
-    }
+    },
   },
   mounted() {
     this.loadModifiers();
@@ -246,15 +256,10 @@ export default {
     loadDietary() {
       this.axios
         .get(api.GET_PFP_DIETARY.replace("{id}", this.pfp.id))
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             var dietary = {};
-            /* for (let key in response.data) {
-               let val = response.data[key];
-              if (Array.isArray(val) && val.length && key !== "name") {
-               dietary[key] = val;
-              }
-            }  */
+
             for (let key in this.adaptFor) {
               let gender = this.gender ? "female" : "male";
               let genderKey = this.adaptFor[key][gender];
@@ -267,21 +272,19 @@ export default {
               }
             }
             this.dietary = dietary;
-            // console.log(JSON.stringify(this.dietary));
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
     loadNutritionalValues() {
       // load nutritional daily limits
       this.setNutritionalDailyLimits();
-      console.log(this.carbDaily);
 
       this.axios
         .get(api.GET_PFP_NUTRITIONAL_VALUES.replace("{id}", this.pfp.id))
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             var nutritionalValues = response.data;
             if (
@@ -294,11 +297,9 @@ export default {
             ) {
               this.nutritionalValues = nutritionalValues;
             }
-
-            // console.log(JSON.stringify(this.dietary));
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -306,11 +307,10 @@ export default {
       if (this.pfp.suggestedBeverage) {
         this.axios
           .get(api.GET_PFP.replace("{id}", this.pfp.suggestedBeverage))
-          .then(response => {
+          .then((response) => {
             this.suggestedBeverage = response.data;
-            // this.loadAlternatives();
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error);
           });
       }
@@ -330,9 +330,9 @@ export default {
     loadModifiers() {
       this.axios
         .get(api.GET_PFP_MODIFIERS.replace("{id}", this.pfp.id))
-        .then(response => {
+        .then((response) => {
           this.modifiers = response.data.filter(
-            x => x.classification !== "PRICE"
+            (x) => x.classification !== "PRICE"
           );
           for (let modifier of this.modifiers) {
             this.axios
@@ -342,15 +342,15 @@ export default {
                   this.fsId
                 ).replace("{modifierId}", modifier.id)
               )
-              .then(response => {
+              .then((response) => {
                 this.$set(modifier, "alternatives", response.data);
               })
-              .catch(error => {
+              .catch((error) => {
                 console.log(error);
               });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -358,14 +358,11 @@ export default {
       var ingredientsString = [];
 
       for (let ing of this.pfp.ingredients) {
-        // if (ing.showInMenu) {
         ingredientsString.push(this.getTrad(ing.name));
-        // }
       }
-      console.log(ingredientsString.join(", "));
       return ingredientsString.join(", ");
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -428,12 +425,6 @@ label {
   color: #808080;
   font-size: 15px;
 }
-
-/* .pfp-price {
-  margin-bottom: 4px;
-  color: #4d4d4d;
-  font-size: 16px;
-} */
 
 .price-box {
   font-size: 18px;

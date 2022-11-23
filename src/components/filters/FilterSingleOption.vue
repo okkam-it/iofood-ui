@@ -33,16 +33,6 @@
         </li>
       </ul>
     </div>
-    <!-- <p class="expand-collapse-button" @click="options = filterElements(options, contexts)">
-      <template v-if="options.length < contexts.length">
-        Mostra di più
-        <b-icon-caret-down-fill />
-      </template>
-      <template v-else>
-        Mostra meno
-        <b-icon-caret-up-fill />
-      </template>
-    </p>-->
   </div>
 </template>
 
@@ -93,13 +83,6 @@ export default {
       } else {
         this.$emit("update:selectedFilter", data);
       }
-
-      /* var index = array.findIndex(x => (x.id ? x.id === data.id : x === data));
-      if (index > -1) {
-        array.splice(index, 1);
-      } else {
-        array.push(data);
-      } */
     },
   },
 };

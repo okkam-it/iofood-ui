@@ -492,13 +492,10 @@ export default {
         var scrollPos = e.target.scrollTop;
         var innerHeight = window.innerHeight;
         var limit = innerHeight * 0.17;
-        // console.log(scrollPos);
         if (scrollPos > limit) {
           this.showStickyHeader = true;
-          // console.log("true;");
         } else {
           this.showStickyHeader = false;
-          // console.log("false;");
         }
       }
     },
@@ -506,32 +503,10 @@ export default {
       this.$emit("hide");
     },
     printIngredients(ingredients) {
-      // var ingredientsIds = [];
       var ingredientsString = [];
       for (let ing of ingredients) {
-        // if (ing.showInMenu) {
-        // ingredientsString.push(ing.id);
         ingredientsString.push(this.getTrad(ing.name));
-        /* let response = await this.axios.get(api.GET_INGREDIENT, {
-            params: {
-              id: ing.id
-            }
-          });
-          ingredientsString.push(this.getTrad(response.data.name)); */
-        // }
       }
-
-      /* let requests = [];
-
-      for (let ingredient of ingredientsIds) {
-        requests.push(
-          this.axios.get(api.GET_INGREDIENT, {
-            params: {
-              id: ingredient
-            }
-          })
-        );
-      } */
 
       return ingredientsString.join(", ");
     },
@@ -607,40 +582,33 @@ export default {
                 imageUrl: "rist_demo_3.jpeg",
                 order: 1,
                 demo: true,
-                // preferred: true
               },
               {
                 id: 1,
                 imageUrl: "rist_demo_5.jpeg",
                 order: 2,
                 demo: true,
-                // preferred: true
               },
               {
                 id: 2,
                 imageUrl: "rist_demo_7.jpeg",
                 order: 3,
                 demo: true,
-                // preferred: true
               },
               {
                 id: 3,
                 imageUrl: "rist_demo_6.jpeg",
                 order: 4,
                 demo: true,
-                // preferred: true
               },
               {
                 id: 4,
                 imageUrl: "rist_demo_4.jpeg",
                 order: 5,
                 demo: true,
-                // preferred: true
               },
             ]);
           }
-          // this.$set(this.foodService, "gallery", response.data);
-          // console.log(JSON.stringify(response.data));
         })
         .catch((error) => {
           console.log(error);
@@ -675,36 +643,6 @@ export default {
         });
     },
     loadFsOpenings() {
-      /* this.axios
-        .get(api.GET_FOOD_SERVICE_OPENINGS_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
-          this.$set(this.foodService, "openings", response.data);
-          var testOp = [
-            {
-              fromDate: "2021-11-30T09:56:30.837Z",
-              fromHour: null,
-              hours: false,
-              id: 0,
-              opening: false,
-              singleDay: false,
-              toDate: "2021-12-20T09:56:30.838Z",
-              toHour: null
-            }
-          ];
-          this.$set(this.foodService, "openings", testOp);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-
-      this.axios
-        .get(api.GET_FOOD_SERVICE_TIMETABLES_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
-          this.$set(this.foodService, "timetables", response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        }); */
       var requestTimetables = this.axios.get(
         api.GET_FOOD_SERVICE_TIMETABLES_BY_ID.replace("{id}", this.fsId)
       );
@@ -721,23 +659,6 @@ export default {
 
             const responseOpenings = responses[1];
             this.$set(this.foodService, "openings", responseOpenings.data);
-            /* var testOp = [
-              {
-                fromDate: "2021-11-30T09:56:30.837Z",
-                fromHour: null,
-                hours: false,
-                id: 0,
-                opening: false,
-                singleDay: false,
-                toDate: "2021-12-20T09:56:30.838Z",
-                toHour: null
-              }
-            ];
-            this.$set(this.foodService, "openings", testOp); */
-
-            // this.checkClosedNow();
-
-            // use/access the results
           })
         )
         .catch((errors) => {
@@ -776,7 +697,6 @@ export default {
           var menus = [];
           for (let menu of response.data) {
             if (menu.active) {
-              console.log(menu.type);
               if (!menu.type || menu.type !== "DELIVERY") {
                 menus.push(menu);
               }
@@ -794,110 +714,6 @@ export default {
         });
     },
     checkStickyHeader() {},
-    /* checkClosedNow() {
-      let openings = this.foodService.openings;
-      let timetables = this.foodService.timetables;
-      // var closedNow = true;
-
-      for (let opening of openings) {
-        let fromDate = new Date(opening.fromDate);
-        let toDate = opening.singleDay ? null : new Date(opening.fromDate);
-        if (opening.hours) {
-          fromDate.setHours(
-            opening.fromHour.split(":")[0],
-            opening.fromHour.split(":")[1],
-            0
-          );
-          toDate.setHours(
-            opening.toHour.split(":")[0],
-            opening.toHour.split(":")[1],
-            0
-          );
-        } else {
-          fromDate.setHours(0, 0, 0, 0);
-          toDate.setHours(24, 0, 0, 0);
-        }
-
-        if (toDate) {
-          if (
-            new Date() >= new Date(fromDate) &&
-            new Date() <= new Date(toDate)
-          ) {
-            this.closedNow = true;
-            return;
-          }
-        } else {
-          let currentDate = new Date();
-          fromDate.setHours(0, 0, 0, 0);
-          if (currentDate === fromDate) {
-            this.closedNow = true;
-            return;
-          }
-        }
-      }
-
-      if (timetables && timetables.length) {
-        var days = [
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ];
-        var d = new Date();
-        var dayName = days[d.getDay()];
-
-        var timetablesToday = timetables.filter(
-          (x) => x.day === dayName.toUpperCase()
-        );
-        if (timetablesToday.length) {
-          var currentDate = new Date();
-          for (let timetable of timetablesToday) {
-            var fromDate = new Date();
-            fromDate.setHours(
-              timetable.fromHour.split(":")[0],
-              timetable.fromHour.split(":")[1],
-              0
-            );
-            var toDate = new Date();
-            toDate.setHours(
-              timetable.toHour.split(":")[0],
-              timetable.toHour.split(":")[1],
-              0
-            );
-
-            if (toDate < fromDate) {
-              toDate.setDate(toDate.getDate() + 1);
-            }
-            if (currentDate > fromDate && currentDate < toDate) {
-              this.closedNow = false;
-              return;
-            }
-
-            if (
-              currentDate < fromDate &&
-              (!this.openAt || this.openAt > fromDate)
-            ) {
-              this.openAt = fromDate;
-            }
-          }
-        } else {
-          this.closedNow = false;
-          return;
-        }
-
-        // TODO
-        // console.log(JSON.stringify(timetablesToday));
-        // console.log(JSON.stringify(openings));
-      } else {
-        this.closedNow = false;
-        return;
-      }
-
-      this.closedNow = true;
-    }, */
   },
   mounted() {
     this.loadingMenus = true;
@@ -917,16 +733,12 @@ export default {
     gender() {
       return this.$store.getters["userModule/gender"];
     },
-    /* dishes4youonly() {
-      return this.$store.getters["userModule/dishes4youonly"];
-    }, */
     sharingEnabled() {
       return navigator.share;
     },
     openings() {
       var openings = [];
       var fsOpenings = this.foodService.openings;
-      // TODO add hours and food truck locations
       if (fsOpenings && fsOpenings.length) {
         for (let opening of fsOpenings) {
           if (opening.singleDay) {
@@ -938,7 +750,6 @@ export default {
           } else {
             let d = new Date(opening.fromDate);
             d.setDate(d.getDate() - 10);
-            console.log(d);
             if (
               new Date() >= d ||
               (opening.toDate && new Date(opening.toDate) <= new Date())
@@ -1224,35 +1035,6 @@ div.actions2 button .b-icon {
   margin-right: 10px;
 }
 
-/* div.actions > div {
-  display: flex;
-  overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  margin-bottom: 0px;
-  padding: 5px 0;
-} */
-
-/* div.actions > div::-webkit-scrollbar {
-  display: none;
-} */
-
-/* div.actions button {
-  border-radius: 30px;
-  margin: 5px 5px;
-  color: var(--primary-color);
-  opacity: 1;
-  font-weight: bold;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-div.actions button .b-icon {
-  margin-top: 10px;
-  display: block;
-  color: rgba(17, 17, 17, 0.1);
-} */
-
 label.more-info {
   font-size: 13px;
   font-weight: bold;
@@ -1392,17 +1174,7 @@ p.pfp-price {
   margin-bottom: 0;
 }
 
-/* .more-info-icon {
-  position: absolute;
-  right: 0;
-  top: 35%;
-  transform: translateY(-35%);
-  color: #ccc;
-} */
-
 .balanced-badge {
-  /*  margin-top: -1.5vh;
-  margin-bottom: 1vh; */
   margin-left: 5px;
 }
 
@@ -1434,7 +1206,6 @@ p.pfp-price {
 }
 
 .gender-selector > span {
-  /* border: 1px solid #ccc; */
   border-radius: 15px;
   padding: 8px 15px;
 }

@@ -5,7 +5,7 @@
         <ul>
           <li v-for="lang in langs" :key="lang" @click="selectLang(lang)">
             <img :src="require('@/assets/flag/' + lang + '_r2.png')" />
-            {{$t('langs.' + lang)}}
+            {{ $t("langs." + lang) }}
           </li>
         </ul>
       </div>
@@ -18,12 +18,12 @@ import MobileModal from "@/components/mobile-modal/MobileModal";
 export default {
   name: "LangSelectorModal",
   components: {
-    MobileModal
+    MobileModal,
   },
   data() {
     return {
       showModal: false,
-      langs: ["it", "en", "de"]
+      langs: ["it", "en", "de"],
     };
   },
   methods: {
@@ -40,12 +40,6 @@ export default {
       if (this.$i18n.locale !== locale) {
         this.$i18n.locale = locale;
         localStorage.setItem("locale", locale);
-        /* let routeParams = this.$route.params;
-        routeParams.locale = locale;
-        this.$router.replace({
-          name: this.$route.name,
-          params: routeParams
-        }); */
       }
       this.showModal = false;
       this.$nextTick(() => {
@@ -55,8 +49,8 @@ export default {
       });
 
       // this.$router.go(-1);
-    }
-  }
+    },
+  },
 };
 </script>
 
