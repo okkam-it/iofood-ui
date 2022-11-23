@@ -3,42 +3,41 @@
     <div class="pfp-image" v-if="pfp.image">
       <img :src="getImage(pfp)" />
     </div>
-    <p class="title">{{getTrad(pfp.name)}}</p>
+    <p class="title">{{ getTrad(pfp.name) }}</p>
     <hr />
-    <p class="desc" v-if="getTrad(pfp.description)">{{getTrad(pfp.description)}}</p>
+    <p class="desc" v-if="getTrad(pfp.description)">
+      {{ getTrad(pfp.description) }}
+    </p>
     <div class="info-box">
-      <!-- <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p> -->
       <pfp-price :pfp="pfp" />
       <template v-if="suggestedBeverage">
         <label>Bevanda consigliata</label>
         <p class="suggested-beverage">
-          {{getTrad(suggestedBeverage.name)}}
-          <span
-            v-if="suggestedBeverage.price"
-          >{{suggestedBeverage.price}} €</span>
+          {{ getTrad(suggestedBeverage.name) }}
+          <span v-if="suggestedBeverage.price"
+            >{{ suggestedBeverage.price }} €</span
+          >
         </p>
       </template>
       <template v-if="pfp.ingredients && pfp.ingredients.length">
         <label>Ingredienti</label>
         <div>
-          <p class="pfp-ingredients">{{printIngredients()}}</p>
+          <p class="pfp-ingredients">{{ printIngredients() }}</p>
         </div>
       </template>
       <template v-if="modifiers && modifiers.length">
         <label>Opzioni sul piatto</label>
         <div class="pfp-modifiers">
           <div v-for="modifier in modifiers" :key="modifier.id">
-            {{getTrad(modifier.name)}}:
+            {{ getTrad(modifier.name) }}:
             <div class="alternative-box">
               <div
                 class="alternative"
                 v-for="alternative in modifier.alternatives"
                 :key="alternative.id"
-              >{{getTrad(alternative.name)}}</div>
-              <!-- <span
-                v-for="alternative in modifier.alternatives"
-                :key="alternative.id"
-              >{{getTrad(alternative.name)}}</span>-->
+              >
+                {{ getTrad(alternative.name) }}
+              </div>
             </div>
           </div>
         </div>
@@ -50,9 +49,11 @@
             <img
               class="allergen-icon"
               :key="allergen"
-              :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
+              :src="
+                require('@/assets/allergens/' + allergen.toUpperCase() + '.png')
+              "
             />
-            {{allergen}}
+            {{ allergen }}
           </div>
         </div>
       </template>
@@ -61,7 +62,7 @@
           <span @click="removeItem()">
             <b-icon-dash-circle scale=".8" />
           </span>
-          <span>{{quantity}}</span>
+          <span>{{ quantity }}</span>
           <span @click="addItem()">
             <b-icon-plus-circle scale=".8" />
           </span>
@@ -69,13 +70,9 @@
         <button class="primary" @click="addItems()">
           Aggiungi
           <b-icon-circle-fill scale=".3" />
-          <span class="price">{{pfp.price*quantity}}€</span>
+          <span class="price">{{ pfp.price * quantity }}€</span>
         </button>
       </div>
-      <!-- <label>Valori nutrizionali</label>
-      <div></div>-->
-
-      <!-- <button @click="hide()">Chiudi</button> -->
     </div>
   </div>
 </template>
@@ -86,27 +83,24 @@ import PfpPrice from "@/components/foodservicemenutable/PfpPrice";
 export default {
   name: "PfpInfoPage",
   components: {
-    PfpPrice
+    PfpPrice,
   },
   data() {
     return {
       modifiers: [],
       suggestedBeverage: null,
-      quantity: 1
+      quantity: 1,
     };
   },
   props: {
     pfp: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   computed: {
     fsId() {
       return this.$route.params.id;
-    }
-    /* quantity() {
-      return this.$store.getters.itemQuantity(this.pfp.id);
-    } */
+    },
   },
   mounted() {
     this.loadModifiers();
@@ -121,10 +115,10 @@ export default {
         id: this.pfp.id,
         name: this.getTrad(this.pfp.name),
         desc: this.getTrad(this.pfp.description),
-        price: this.pfp.price
+        price: this.pfp.price,
         // quantity: this.quantity
       };
-      for (let i = 0; i < this.quantity; i++)  {
+      for (let i = 0; i < this.quantity; i++) {
         this.$store.dispatch("addItem", item);
       }
 
@@ -132,21 +126,15 @@ export default {
     },
     removeItem() {
       this.quantity--;
-      /* var payload = {
-        id: this.pfp.id,
-        index: null
-      };
-      this.$store.dispatch("removeItem", payload); */
     },
     loadSuggestedBeverage() {
       if (this.pfp.suggestedBeverage) {
         this.axios
           .get(api.GET_PFP.replace("{id}", this.pfp.suggestedBeverage))
-          .then(response => {
+          .then((response) => {
             this.suggestedBeverage = response.data;
-            // this.loadAlternatives();
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error);
           });
       }
@@ -166,9 +154,9 @@ export default {
     loadModifiers() {
       this.axios
         .get(api.GET_PFP_MODIFIERS.replace("{id}", this.pfp.id))
-        .then(response => {
+        .then((response) => {
           this.modifiers = response.data.filter(
-            x => x.classification !== "PRICE"
+            (x) => x.classification !== "PRICE"
           );
           for (let modifier of this.modifiers) {
             this.axios
@@ -178,15 +166,15 @@ export default {
                   this.fsId
                 ).replace("{modifierId}", modifier.id)
               )
-              .then(response => {
+              .then((response) => {
                 this.$set(modifier, "alternatives", response.data);
               })
-              .catch(error => {
+              .catch((error) => {
                 console.log(error);
               });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -194,14 +182,11 @@ export default {
       var ingredientsString = [];
 
       for (let ing of this.pfp.ingredients) {
-        // if (ing.showInMenu) {
         ingredientsString.push(this.getTrad(ing.name));
-        // }
       }
-      console.log(ingredientsString.join(", "));
       return ingredientsString.join(", ");
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -281,12 +266,6 @@ label {
   color: #808080;
   font-size: 15px;
 }
-
-/* .pfp-price {
-  margin-bottom: 4px;
-  color: #4d4d4d;
-  font-size: 16px;
-} */
 
 .price-box {
   font-size: 18px;

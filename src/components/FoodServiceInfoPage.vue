@@ -24,15 +24,10 @@
           <b-icon-phone />
           {{ phoneNumber }}
         </p>
-        <!-- <p v-if="timetables">
-          <b-icon-clock-fill />
-          {{timetables}}
-        </p>-->
       </div>
       <hr />
       <div v-if="timetables" class="info-box">
         <label>Orari</label>
-        <!-- <div>{{JSON.stringify(timetables)}}</div> -->
         <div class="openings-box">
           <ul>
             <template v-for="opening in openings">
@@ -183,9 +178,7 @@ export default {
         iconRetinaUrl: require("@/assets/icons/marker_red.png"),
         iconUrl: require("@/assets/icons/marker_red.png"),
         iconSize: [31, 40],
-        // iconAnchor: [23, 47]
         iconAnchor: [15, 35],
-        //shadowUrl: require('@/assets/images/tte_logo.png')
       }),
       services: [
         "bookingRequest",
@@ -214,7 +207,6 @@ export default {
         "Saturday",
       ];
       var d = new Date();
-      // var dayName = days[d.getDay()];
       return days[d.getDay()].toLowerCase();
     },
     center() {
@@ -253,16 +245,6 @@ export default {
       if (!timetables || !timetables.length) {
         return null;
       }
-      // console.log(JSON.stringify(timetables));
-      /* var days = {
-        { code: "sunday", hours: [] },
-        { code: "monday", hours: [] },
-        { code: "tuesday", hours: [] },
-        { code: "wednesday", hours: [] },
-        { code: "thursday", hours: [] },
-        { code: "friday", hours: [] },
-        { code: "saturday", hours: [] }
-      }; */
       var days = {
         sunday: [],
         monday: [],

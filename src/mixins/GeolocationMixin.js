@@ -6,31 +6,25 @@ export default {
       var longitude;
       return new Promise((resolve, reject) => {
         if (!("geolocation" in navigator)) {
-          // this.errorStr = "Geolocation is not available.";
+
           reject(new Error("Geolocation is not available."));
         }
-        // var ctx = this;
-        // const pos = await new Promise((resolve, reject) => {
-        //navigator.geolocation.getCurrentPosition(resolve, reject);
-        // });
+
 
         navigator.geolocation.getCurrentPosition(
           position => {
             localStorage.setItem("userGeolocationPermission", true);
-            /* var location = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude
-            }; */
+
             latitude = position.coords.latitude;
             longitude = position.coords.longitude;
 
             this.axios
               .get(
                 "https://nominatim.openstreetmap.org/reverse?lat=" +
-                  latitude +
-                  "&lon=" +
-                  +longitude +
-                  "&format=json"
+                latitude +
+                "&lon=" +
+                +longitude +
+                "&format=json"
               )
               .then(response => {
                 var location = {
@@ -42,8 +36,7 @@ export default {
                   "geolocationModule/setUserLocation",
                   location
                 );
-                // console.log(JSON.stringify(response.data));
-                // ctx.$store.dispatch("geolocationModule/setUserLocationNominatim", coords);
+
                 resolve(location);
               })
               .catch(error => {
@@ -56,36 +49,11 @@ export default {
           }
         );
 
-        /* if (pos) {
-        localStorage.setItem("userGeolocationPermission", true);
-        this.$store.dispatch("geolocationModule/setUserLocation", pos.coords);
-      } */
 
-        // return pos;
+
+
       });
-      /* navigator.geolocation.getCurrentPosition(
-        pos => {
-          ctx.gettingLocation = false;
-          // this.location = pos;
-          ctx.$store.dispatch("geolocationModule/setUserLocation", pos.coords);
-        },
-        err => {
-          ctx.gettingLocation = false;
-          ctx.errorStr = err.message;
-        }
-      ); */
-      /* this.gettingLocation = true;
-        navigator.geolocation.watchPosition(
-          pos => {
-            this.gettingLocation = false;
-  
-            this.location = pos.coords.latitude + " -- " + pos.coords.longitude;
-          },
-          err => {
-            this.gettingLocation = false;
-            this.checkPositionError(err);
-          }
-        ); */
+
     },
     async getGeolocationNominatim() {
       try {

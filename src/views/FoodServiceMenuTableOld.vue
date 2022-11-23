@@ -10,18 +10,21 @@
           <!-- <div>
             <p class="fs-name">{{foodService.name}}</p>
           </div> -->
-          <div class="selector" @click="showMenuSelector = true" v-if="menus.length > 1">
+          <div
+            class="selector"
+            @click="showMenuSelector = true"
+            v-if="menus.length > 1"
+          >
             <div class="menu">
-              {{getTrad(selectedMenu.name)}}
+              {{ getTrad(selectedMenu.name) }}
               <b-icon-caret-down-fill />
             </div>
           </div>
           <div class="menu-sections">
             <template v-for="section in selectedMenu.sections">
-              <span
-                :key="section.id"
-                :class="{ active : section.id === 24 }"
-              >{{getTrad(section.name)}}</span>
+              <span :key="section.id" :class="{ active: section.id === 24 }">{{
+                getTrad(section.name)
+              }}</span>
             </template>
           </div>
         </template>
@@ -32,14 +35,18 @@
        
       </div>-->
       <div class="menu-content" v-if="selectedMenu">
-        <p class="menu-title" v-if="menus.length === 1">{{getTrad(selectedMenu.name)}}</p>
-        <p class="menu-desc" v-if="selectedMenu.description">{{getTrad(selectedMenu.description)}}</p>
+        <p class="menu-title" v-if="menus.length === 1">
+          {{ getTrad(selectedMenu.name) }}
+        </p>
+        <p class="menu-desc" v-if="selectedMenu.description">
+          {{ getTrad(selectedMenu.description) }}
+        </p>
         <template v-for="section in selectedMenu.sections">
           <div v-if="section.preparedFoodProducts.length" :key="section.id">
-            <label class="section-title">{{getTrad(section.name)}}</label>
+            <label class="section-title">{{ getTrad(section.name) }}</label>
             <div
               class="pfp-item"
-              :class="{'image-layout' : pfp.image }"
+              :class="{ 'image-layout': pfp.image }"
               v-for="pfp in section.preparedFoodProducts"
               :key="pfp.id"
               @click="dishToShow = pfp"
@@ -48,16 +55,24 @@
                 <img :src="pfp.imageUrl" />
               </div>
               <!-- <b-icon-chevron-right class="more-info-icon" /> -->
-              <p class="pfp-title">{{getTrad(pfp.name)}}</p>
-              <p class="pfp-price" v-if="pfp.price">{{pfp.price.toFixed(2)}} €</p>
-              <p class="pfp-ingredients">{{printIngredients(pfp.ingredients)}}</p>
+              <p class="pfp-title">{{ getTrad(pfp.name) }}</p>
+              <p class="pfp-price" v-if="pfp.price">
+                {{ pfp.price.toFixed(2) }} €
+              </p>
+              <p class="pfp-ingredients">
+                {{ printIngredients(pfp.ingredients) }}
+              </p>
               <p class="pfp-info">
                 <template v-for="allergen in pfp.allergens">
                   <img
                     class="allergen-icon"
                     @click.stop="allergensToShow = pfp.allergens"
                     :key="allergen"
-                    :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
+                    :src="
+                      require('@/assets/allergens/' +
+                        allergen.toUpperCase() +
+                        '.png')
+                    "
                   />
                 </template>
               </p>
@@ -72,23 +87,33 @@
         <div class="menu-selector-modal">
           <label>Seleziona menu</label>
           <ul>
-            <li v-for="menu in menus" :key="menu.id" @click="selectedMenu = menu">
-              <div class="menu-item">{{getTrad(menu.name)}}</div>
+            <li
+              v-for="menu in menus"
+              :key="menu.id"
+              @click="selectedMenu = menu"
+            >
+              <div class="menu-item">{{ getTrad(menu.name) }}</div>
             </li>
           </ul>
         </div>
       </template>
     </mobile-modal>
-    <mobile-modal v-if="allergensToShow" @hide="allergensToShow = null" showclosebutton>
+    <mobile-modal
+      v-if="allergensToShow"
+      @hide="allergensToShow = null"
+      showclosebutton
+    >
       <template #content>
         <div class="allergens-list-modal">
           <div v-for="allergen in allergensToShow" :key="allergen">
             <img
               class="allergen-icon"
               :key="allergen"
-              :src="require('@/assets/allergens/' + allergen.toUpperCase() + '.png')"
+              :src="
+                require('@/assets/allergens/' + allergen.toUpperCase() + '.png')
+              "
             />
-            {{allergen}}
+            {{ allergen }}
           </div>
         </div>
       </template>
@@ -109,7 +134,7 @@ export default {
   name: "FoodServiceMenuTable",
   components: {
     MobileModal,
-    PfpInfoPage
+    PfpInfoPage,
   },
   data() {
     return {
@@ -119,14 +144,14 @@ export default {
       allergensToShow: null,
       dishToShow: null,
       foodService: null,
-      logo: require("@/assets/myfood-logo-large-dark.png")
+      logo: require("@/assets/myfood-logo-large-dark.png"),
     };
   },
   mounted() {
     if (!this.menuId) {
       this.showMenuSelector = true;
     }
-    // console.log(this.menuId);
+
     this.loadFs();
     this.loadMenus();
   },
@@ -136,7 +161,7 @@ export default {
     },
     menuId() {
       return this.$route.params.menuid;
-    }
+    },
     /* categories() {
       var menu = this.selectedMenu;
       if (menu) {
@@ -148,7 +173,6 @@ export default {
   watch: {
     selectedMenu() {
       if (this.selectedMenu) {
-        console.log(this.selectedMenu.id);
         this.showMenuSelector = false;
         if (
           !this.menuId ||
@@ -156,7 +180,7 @@ export default {
         ) {
           this.$router.replace({
             name: "FoodServiceMenuTable",
-            params: { menuid: this.selectedMenu.id }
+            params: { menuid: this.selectedMenu.id },
           });
         }
       }
@@ -169,7 +193,7 @@ export default {
       ) {
         this.$router.go(-1);
       }
-    }
+    },
   },
   methods: {
     printIngredients(ingredients) {
@@ -179,26 +203,9 @@ export default {
         // if (ing.showInMenu) {
         // ingredientsString.push(ing.id);
         ingredientsString.push(this.getTrad(ing.name));
-        /* let response = await this.axios.get(api.GET_INGREDIENT, {
-            params: {
-              id: ing.id
-            }
-          });
-          ingredientsString.push(this.getTrad(response.data.name)); */
+
         // }
       }
-
-      /* let requests = [];
-
-      for (let ingredient of ingredientsIds) {
-        requests.push(
-          this.axios.get(api.GET_INGREDIENT, {
-            params: {
-              id: ingredient
-            }
-          })
-        );
-      } */
 
       return ingredientsString.join(", ");
     },
@@ -210,10 +217,10 @@ export default {
     loadFs() {
       this.axios
         .get(api.GET_FOOD_SERVICE_BY_ID.replace("{id}", this.fsId))
-        .then(response => {
+        .then((response) => {
           this.foodService = response.data;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
@@ -221,37 +228,31 @@ export default {
       this.axios
         .get(api.GET_ALL_RESTAURANT_MENUS, {
           params: {
-            foodServiceId: this.fsId
-          }
+            foodServiceId: this.fsId,
+          },
         })
-        .then(response => {
+        .then((response) => {
           var menus = [];
           for (let menu of response.data) {
-            // console.log(menu.id);
             // if (menu.type === "BASE") {
             menus.push(menu);
             // }
           }
           this.menus = menus;
           if (this.menuId) {
-            // console.log(this.menuId);
             var menu = menus.find(
-              m => parseInt(m.id) === parseInt(this.menuId)
+              (m) => parseInt(m.id) === parseInt(this.menuId)
             );
-            // console.log(JSON.stringify(menus));
+
             if (menu) {
               this.selectedMenu = menu;
               if (
                 !this.selectedMenu.id ||
                 parseInt(this.selectedMenu.id) !== parseInt(this.menuId)
               ) {
-                // console.log("go");
-                /* console.log(this.$route.menuid);
-                console.log(this.menuId); */
-
                 this.$router.replace({
                   name: "FoodServiceMenuTable",
-                  params: { menuid: menu.id }
+                  params: { menuid: menu.id },
                 });
               }
 
@@ -263,7 +264,7 @@ export default {
               this.selectedMenu = menus[0];
               this.$router.replace({
                 name: "FoodServiceMenuTable",
-                params: { menuid: menus[0].id }
+                params: { menuid: menus[0].id },
               });
               this.showMenuSelector = false;
             }
@@ -271,11 +272,11 @@ export default {
 
           this.loadingMenus = false;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

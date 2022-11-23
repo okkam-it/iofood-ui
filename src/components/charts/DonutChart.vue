@@ -1,19 +1,25 @@
 <template>
   <div>
-    <!-- <div
+    <div
       class="item"
-      :style="'--value: ' + percentage > 100 ? 100 : percentage + '; --value2: ' + percentage - 100"
-    >-->
-    <div class="item" :style="'--value: ' + percentage + '; --valueover: ' + percentageOver">
+      :style="'--value: ' + percentage + '; --valueover: ' + percentageOver"
+    >
       <div class="inner-text" v-if="!small">
-        <p class="title">{{title}}</p>
-        <p class="sub1">{{sub1}}</p>
-        <p class="sub2">{{sub2}}</p>
+        <p class="title">{{ title }}</p>
+        <p class="sub1">{{ sub1 }}</p>
+        <p class="sub2">{{ sub2 }}</p>
       </div>
       <svg width="160" height="160" xmlns="http://www.w3.org/2000/svg">
         <g>
           <title>Layer 1</title>
-          <circle r="60" cy="81" cx="81" stroke-width="8" stroke="#f2f2f2" fill="none" />
+          <circle
+            r="60"
+            cy="81"
+            cx="81"
+            stroke-width="8"
+            stroke="#f2f2f2"
+            fill="none"
+          />
           <circle
             class="circle_animation1"
             r="60"
@@ -47,45 +53,43 @@ export default {
   data() {
     return {
       percentage: 377 - (this.value > 100 ? 100 : this.value) * 3.77,
-      percentageOver: 377 - (this.value - 100) * 3.77
+      percentageOver: 377 - (this.value - 100) * 3.77,
     };
   },
   props: {
     title: {
       type: String,
-      default: ""
+      default: "",
     },
     sub1: {
       type: String,
-      default: ""
+      default: "",
     },
     sub2: {
       type: String,
-      default: ""
+      default: "",
     },
     value: {
       type: Number,
-      default: 0
+      default: 0,
     },
     small: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
   methods: {},
   computed: {
     circleHex() {
       var val = this.value;
       if (val > 80) {
-        return  '#f7d4d8';
+        return "#f7d4d8";
       }
       if (val > 60) {
-        return  '#ffdd99';
+        return "#ffdd99";
       }
       return "#c2f0c2";
-
-      // return value > 100 ? '#f7d4d8' : /* '#17a2b8' */'#ccc'
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -151,55 +155,4 @@ svg {
   /* stroke-dashoffset: var(--value2); */
   stroke-dashoffset: var(--valueover);
 }
-
-/* .css .circle_animation {
-  -webkit-animation: css 1s ease-out forwards;
-  animation: css 1s ease-out forwards;
-} */
-
-/* @-webkit-keyframes item1 {
-  to {
-    stroke-dashoffset: var(
-      --value1
-    );  180;  50% would be 220 (half the initial value specified above) 
-  }
-} */
-
-/* @-webkit-keyframes item {
-  to {
-    stroke-dashoffset: var(--value);
-  }
-}
-
-@keyframes item {
-  to {
-    stroke-dashoffset: var(--value);
-  }
-}
-
-@-webkit-keyframes item2 {
-  to {
-    stroke-dashoffset: var(
-      --value2
-    );
-  }
-}
-
-@keyframes item2 {
-  to {
-    stroke-dashoffset: var(--value2);
-  }
-} */
-
-/* @-webkit-keyframes css {
-  to {
-    stroke-dashoffset: 160;
-  }
-}
-
-@keyframes css {
-  to {
-    stroke-dashoffset: 160;
-  }
-} */
 </style>

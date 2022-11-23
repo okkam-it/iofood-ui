@@ -14,13 +14,6 @@
           placeholder="Pesce, milanese, nome ristorante"
           v-on:keyup.enter="showResult(searchString.trim())"
         />
-        <!-- <input
-          ref="searchinput"
-          v-model="searchString"
-          type="text"
-          @input="search()"
-          placeholder="Cerca piatti, ingredienti, ristoranti.."
-        />-->
       </div>
       <hr />
       <div class="content">
@@ -84,22 +77,6 @@ export default {
       ],
       autocompleteItems: [],
       userLocation: null,
-      // results: [],
-      /* items: [
-        { name: "Braciola" },
-        { name: "Braciola di maiale" },
-        { name: "Pesce" },
-        { name: "Pizza" },
-        { name: "Fiorentina" },
-        { name: "Tagliata" },
-        { name: "Bistecca" },
-        { name: "Ristorante La Braciera", id: 12 },
-        { name: "Ristorante Pizzeria Alla Torre", id: 3 },
-        { name: "Altamarea Enoteca Bistrot", id: 4 },
-        { name: "Bar Ristorantino Tecla alle Gru", id: 5 },
-        { name: "Chiosco Skipper", id: 6 },
-        { name: "Ošterija Na Planinci", id: 10 }
-      ] */
     };
   },
   mounted() {
@@ -112,10 +89,6 @@ export default {
     getUserLocation() {
       this.userLocation =
         this.$store.getters["geolocationModule/lastUserLocation"];
-      // console.log(JSON.stringify(userLocation));
-      /* this.userLocation = this.$store.getters[
-        "geolocationModule/lastUserLocation"
-      ]; */
     },
     isOpen() {
       return this.showPicker;
@@ -142,23 +115,6 @@ export default {
         );
         if (this.searchString.length > 2) {
           try {
-            /* let response = await this.axios.post(
-            api.FIND_INGREDIENTS,
-            {
-              language: "it",
-              search: this.searchString,
-              unVerified: false,
-            },
-            {
-              params: {
-                page: 0,
-                size: 5,
-              },
-            }
-          );
-          if (response.data) {
-            autocompleteItems = response.data;
-          } */
             var userLoc = this.userLocation;
             let fsResponse = await this.axios.post(
               api.FIND_FOOD_SERVICES,

@@ -34,15 +34,7 @@ export default {
       this.$router.go(-1);
     },
   },
-  mounted() {
-    // this.getUserLocation();
-    /* this.$nextTick(() => {
-     
-    }); */
-    /* setTimeout(() => {
-      this.$refs.searchinput.focus();
-    }, 100); */
-  },
+  mounted() {},
 };
 </script>
 

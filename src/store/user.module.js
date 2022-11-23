@@ -28,9 +28,8 @@ export const userModule = {
     },
     toggleDishes4youonly: context => {
       context.commit("dishes4youonly", !context.state.dishes4youonly);
-      console.log(context.state.dishes4youonly);
     },
-    
+
   },
   getters: {
     gender: state => {

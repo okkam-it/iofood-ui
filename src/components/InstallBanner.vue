@@ -51,30 +51,6 @@ export default {
 </script>
 
 <style scoped>
-/* .install-banner {
-  padding: 10px 10px;
-  opacity: 0.7;
-  position: relative;
-}
-
-.install-banner > div {
-  background-color: var(--primary-color);
-  color: #fff;
-  border-radius: 15px;
-  padding: 20px 20px;
-  text-align: center;
-  border: 2px solid var(--dark-primary-color);  
-}
-
-button {
-  color: #fff;
-  font-weight: bold;
-  opacity: 1;
-  width: 100%;
-  border: 1px solid #fff;
-  border-radius: 20px;
-} */
-
 .install-banner {
   position: relative;
   border-bottom: 1px solid rgba(25, 25, 25, 0.1);

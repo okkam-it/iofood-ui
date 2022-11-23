@@ -41,29 +41,14 @@ export default {
       if (!to.hash || to.hash !== "#mobilemodal") {
         this.hide();
       }
-      // console.log(to.hash);
-      // console.log(this.$route.hash);
-      // if (to.)
-      // this.hide();
     },
   },
   methods: {
     hide() {
-      /* var uri = window.location.toString();
-
-      if (uri.indexOf("#") > 0) {
-        var clean_uri = uri.substring(0, uri.indexOf("#"));
-
-        window.history.replaceState({}, document.title, clean_uri);
-      } */
       this.$emit("hide");
       this.$nextTick(() => {
         if (this.$route.hash && this.$route.hash === "#mobilemodal") {
           this.$router.back();
-          /* this.$router.replace({
-            name: this.$route.name,
-            params: this.$route.params
-          }); */
         }
       });
     },
@@ -74,9 +59,6 @@ export default {
         path: this.$route.path + "#mobilemodal",
       });
     }
-
-    // location.hash = "mobilemodal";
-    // location.hash = "mobilemodal";
   },
 };
 </script>
