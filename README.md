@@ -1,6 +1,6 @@
-# myfood-pwa
+# iofood-ui
 
-myfood-pwa is a progressive web app (PWA) developed with Vue 2. 
+iofood-ui is a progressive web app (PWA) developed with Vue 2. 
 
 Vue guide: https://v2.vuejs.org/v2/guide/
 
@@ -28,3 +28,6 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Backend services
+Swagger with the documentation of the backend service can be found [here](https://api.okkam.org/okkam-core/swagger-ui/index.html)
