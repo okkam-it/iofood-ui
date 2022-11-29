@@ -30,4 +30,4 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Backend services
-Swagger with the documentation of the backend service can be found [here](https://api.okkam.org/okkam-core/swagger-ui/index.html)
+Swagger with the documentation of the backend service can be found [here](https://myfood-demo.okkam.org/io-food-api/swagger-ui.html)
